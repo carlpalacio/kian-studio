@@ -1,0 +1,7 @@
+# macOS
+.DS_Store
+
+# Local tools and notes (not part of the website)
+.claude/
+PROMPT.md
+*.sb-*
