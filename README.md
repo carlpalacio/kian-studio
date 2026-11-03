@@ -178,18 +178,22 @@ publish directory to `/`).
 **Vercel:** put the folder in a GitHub repo, then on <https://vercel.com/new> import the repo,
 choose **Framework preset: Other**, leave the build command empty and the output directory as `.`.
 
-**GitHub Pages:** push the folder to a GitHub repo, then go to **Settings → Pages**, choose
-**Deploy from a branch**, pick `main` and `/ (root)`. The `.nojekyll` file is already included.
+**GitHub Pages (how the site is live now):** the site is the repo
+<https://github.com/carlpalacio/kian-studio>, published from the `main` branch at
+<https://carlpalacio.github.io/kian-studio/>. Every push to `main` updates the live site within a
+minute or two. `PROMPT.md` and `.claude/` are left out by `.gitignore`. The `.nojekyll` file is
+already included.
 
-After it's live:
+If you move to a custom domain or another host:
 
-- Put the live address in `seo.siteUrl` in `content/site.js`.
-- Social share images: some apps (Facebook, LinkedIn) only read full URLs. If a shared link shows
-  no image, change `content="og-image.png"` to your full address, e.g.
-  `content="https://yourdomain.com/og-image.png"`, in the `<head>` of each `.html` file.
-- The custom 404 page works on Netlify, Vercel and GitHub Pages with a custom domain or a
-  `username.github.io` site. On a project site (`username.github.io/repo/`) the 404 page will look
-  unstyled. Everything else still works.
+- Change `seo.siteUrl` in `content/site.js` to the new address.
+- Change the share image address in the `<head>` of each `.html` file
+  (`content="https://carlpalacio.github.io/kian-studio/og-image.png"`). Some apps, like Facebook and
+  LinkedIn, only read full addresses.
+- The custom 404 page works on Netlify, Vercel, a custom domain, and GitHub Pages project sites like
+  this one (`username.github.io/repo/`). The one exception is a `username.github.io` user site with
+  no repo folder in the address, where it would need `<base href="/">` in `404.html` instead of the
+  small script.
 
 ## Notes
 

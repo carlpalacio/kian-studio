@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <!-- 404 pages are served at any address, so links resolve from the site root. -->
-  <base href="/">
+  <!-- 404 pages are served at any address, so links resolve from the site root,
+       or from /<repo>/ on a GitHub Pages project site (username.github.io/repo/). -->
+  <script>
+    (function () {
+      var repo = location.pathname.split("/")[1];
+      var base = /\.github\.io$/.test(location.hostname) && repo ? "/" + repo + "/" : "/";
+      document.write('<base href="' + base + '">');
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Page not found</title>
   <meta name="description" content="This page doesn&#x27;t exist.">
@@ -11,7 +18,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Page not found">
   <meta property="og:description" content="This page doesn&#x27;t exist.">
-  <meta property="og:image" content="og-image.png">
+  <meta property="og:image" content="https://carlpalacio.github.io/kian-studio/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
