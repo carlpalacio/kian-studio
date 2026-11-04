@@ -5,3 +5,6 @@
 .claude/
 PROMPT.md
 *.sb-*
+
+# Marketplace listing images and gig copy (not part of the website)
+listing-kit/

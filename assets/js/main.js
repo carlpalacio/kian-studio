@@ -199,9 +199,22 @@
   var NAV = [
     { key: "work", label: "Work", href: "work.html" },
     { key: "services", label: "Services", href: "services.html" },
+    { key: "scaling", label: "Brand scaling", href: "brand-scaling.html" },
     { key: "about", label: "About", href: "about.html" },
     { key: "resume", label: "Resume", href: "resume.html" },
   ];
+
+  // Profiles and chat apps that have a link set in content/site.js.
+  function listed(arr) { return (arr || []).filter(function (m) { return m && m.url && !isPh(m.url); }); }
+  function chatApps() {
+    var out = [];
+    if (C.whatsapp) out.push({ label: "WhatsApp", url: C.whatsapp });
+    if (C.viber) out.push({ label: "Viber", url: C.viber });
+    return out;
+  }
+  function outLink(m, cls, inner) {
+    return '<a' + (cls ? ' class="' + cls + '"' : "") + ' href="' + esc(m.url) + '" target="_blank" rel="noopener">' + (inner || esc(m.label)) + "</a>";
+  }
   var activeKey = page === "project" ? "work" : page;
 
   // The stock-ticker strip across the top of every page (SITE.ticker).
@@ -229,7 +242,7 @@
       '<span class="mark" aria-hidden="true">' + esc(monogram()) + '</span><span class="nav__wordmark" aria-hidden="true">' + esc(SITE.studioName) + "</span></a>" +
       '<div class="nav__links">' + links + "</div>" +
       '<div class="nav__end">' +
-      '<a class="nav__link plus" href="' + NAV[3].href + '"' + cur("resume") + "><span>" + NAV[3].label + "</span></a>" +
+      '<a class="nav__link plus" href="' + NAV[3].href + '"' + cur(NAV[3].key) + "><span>" + NAV[3].label + "</span></a>" +
       '<a class="btn btn--dark btn--sm nav__contact" href="contact.html#planner"' + cur("contact") + ">Get a quote</a>" +
       '<button class="btn btn--line btn--sm menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>' +
       "</div></nav></header>" +
@@ -240,7 +253,7 @@
       "</nav>" +
       '<div class="menu__foot">' +
       (C.phoneDisplay ? '<a class="btn btn--dark" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") +
-      (C.instagram ? '<a class="btn btn--line" href="' + esc(C.instagram.url) + '" target="_blank" rel="noopener">Instagram ' + esc(C.instagram.handle) + "</a>" : "") +
+      chatApps().map(function (m) { return outLink(m, "btn btn--line"); }).join("") +
       "</div></div>"
     );
   }
@@ -253,9 +266,7 @@
 
   function footer() {
     var year = new Date().getFullYear();
-    var socials = (SITE.socials || []).map(function (s) {
-      return '<li><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.label) + "</a></li>";
-    }).join("");
+    var findUs = listed(SITE.marketplaces).concat(listed(SITE.socials)).map(function (s) { return "<li>" + outLink(s) + "</li>"; }).join("");
     return (
       '<footer class="site-footer"><div class="wrap">' +
       '<div class="footer__top">' +
@@ -267,9 +278,9 @@
       '<div class="footer__col"><h2 class="eyebrow">Contact</h2><ul>' +
       (C.phoneDisplay ? '<li><a href="' + telHref() + '">' + esc(C.phoneDisplay) + "</a></li>" : "") +
       (C.email ? '<li><a href="mailto:' + esc(C.email) + '">' + esc(C.email) + "</a></li>" : "") +
-      (C.instagram ? '<li><a href="' + esc(C.instagram.url) + '" target="_blank" rel="noopener">' + esc(C.instagram.handle) + "</a></li>" : "") +
+      chatApps().map(function (m) { return "<li>" + outLink(m) + "</li>"; }).join("") +
       "</ul></div>" +
-      '<div class="footer__col"><h2 class="eyebrow">Social</h2><ul>' + socials + "</ul></div>" +
+      (findUs ? '<div class="footer__col"><h2 class="eyebrow">Find us on</h2><ul>' + findUs + "</ul></div>" : "") +
       "</div>" +
       '<p class="footer__big display" aria-hidden="true" data-reveal="letters"><span>' + letters(SITE.studioName || "") + "</span></p>" +
       '<div class="footer__bottom"><span>© ' + year + " " + esc(SITE.studioName) + ". All rights reserved.</span>" +
@@ -282,14 +293,16 @@
   function cta() {
     var links = [];
     if (C.phoneDisplay) links.push('<a class="cta__link" href="' + telHref() + '"><span><small>Call or text</small>' + esc(C.phoneDisplay) + "</span>" + ICON.arrow + "</a>");
-    if (C.instagram) links.push('<a class="cta__link" href="' + esc(C.instagram.url) + '" target="_blank" rel="noopener"><span><small>Instagram</small>' + esc(C.instagram.handle) + "</span>" + ICON.arrow + "</a>");
     if (C.email) links.push('<a class="cta__link" href="mailto:' + esc(C.email) + '"><span><small>Email</small>' + esc(C.email) + "</span>" + ICON.arrow + "</a>");
+    chatApps().forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Chat</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
+    listed(SITE.marketplaces).forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Hire us on</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
     links.push('<a class="cta__link" href="contact.html#planner"><span><small>Two-minute planner</small>Plan your project</span>' + ICON.arrow + "</a>");
     return (
       '<section class="cta section" aria-labelledby="cta-title"><div class="wrap cta__inner">' +
       '<div data-reveal><p class="eyebrow" style="margin-bottom:20px">Have a project in mind?</p>' +
       '<h2 class="display cta__title" id="cta-title">Let’s build<br>it <span class="serif">together.</span></h2>' +
-      (PRICING.startingAt ? '<p class="cta__price">Websites start as low as <strong>' + esc(PRICING.startingAt) + "</strong>. Tell us what you need, and we’ll handle the rest.</p>" : "") +
+      (PRICING.startingAt ? '<p class="cta__price">Websites start as low as <strong>' + esc(PRICING.startingAt) + "</strong>. Tell us what you need, and we’ll handle the rest." +
+        (C.replyTime ? " We reply " + esc(C.replyTime) + "." : "") + "</p>" : "") +
       "</div>" +
       '<div class="cta__links" data-reveal style="--d:.1s">' + links.join("") + "</div>" +
       "</div></section>"
@@ -327,7 +340,7 @@
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Pricing</p>' +
       '<h2 class="h2" id="' + id + '" data-reveal>Starts as low<br>as <span class="serif">' + esc(PRICING.startingAt || "") + ".</span></h2></div>" +
       "<p data-reveal>" + t(PRICING.note || "") + " Not sure what you need? Tell us about your business and we’ll suggest the right mix.</p></div>" +
-      '<div class="plans">' + cards + "</div></section>";
+      '<div class="plans">' + cards + '</div><p class="swipe-hint" aria-hidden="true">Swipe to see all ' + plans.length + " plans →</p></section>";
   }
 
   /* ---------- home sections ---------- */
@@ -413,7 +426,97 @@
     return '<section class="section wrap" aria-labelledby="why-title">' +
       '<div class="section-head"><h2 class="h2" id="why-title" data-reveal>Why work<br>with <span class="serif">us.</span></h2>' +
       "<p data-reveal>A small studio that designs, builds and grows it all. Here’s what you can count on, from the first call to long after launch.</p></div>" +
-      '<div class="why">' + price + tiles + call + "</div></section>";
+      '<div class="why">' + price + '<div class="why__reasons">' + tiles + '</div><p class="swipe-hint" aria-hidden="true">Swipe for more reasons →</p>' + call + "</div></section>";
+  }
+
+  // Where a service's links go: its own page if it has one, else its row on the Services page.
+  function serviceHref(s, i) { return s.page ? s.page : "services.html#service-" + (i + 1); }
+  function scalingService() { return SERVICES.filter(function (s) { return s.page === "brand-scaling.html"; })[0]; }
+  function quoteHref(need) { return "contact.html" + (need ? "?need=" + encodeURIComponent(need) : "") + "#planner"; }
+
+  // A rising line that draws itself in (decorative).
+  function growthChart() {
+    var line = "M10 250 C 70 246, 96 262, 150 226 S 232 206, 272 210 S 340 150, 392 158 S 462 92, 512 98 S 566 40, 590 26";
+    return '<svg class="growth-chart" viewBox="0 0 600 280" aria-hidden="true">' +
+      '<defs><linearGradient id="gc-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".28"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>' +
+      [70, 140, 210].map(function (y) { return '<line x1="0" x2="600" y1="' + y + '" y2="' + y + '" class="growth-chart__grid"/>'; }).join("") +
+      '<path class="growth-chart__area" d="' + line + ' L 590 280 L 10 280 Z" fill="url(#gc-fill)"/>' +
+      '<path class="growth-chart__line" d="' + line + '" pathLength="1"/>' +
+      [[150, 226], [272, 210], [392, 158], [512, 98], [590, 26]].map(function (pt, i) {
+        return '<circle class="growth-chart__dot" cx="' + pt[0] + '" cy="' + pt[1] + '" r="7" style="--i:' + i + '"/>';
+      }).join("") + "</svg>";
+  }
+
+  // The scaling loop as numbered steps.
+  function loopSteps(cls) {
+    var steps = (window.GROWTH && GROWTH.steps) || [];
+    return '<ol class="' + cls + '">' + steps.map(function (st, i) {
+      return '<li data-reveal="ticket" style="--d:' + i * 0.07 + 's"><span class="loop__num">' + pad(i + 1) + "</span><b>" + t(st.name) + "</b><span>" + t(st.body) + "</span></li>";
+    }).join("") + "</ol>";
+  }
+
+  // Home: the bright band that says what the studio wants to be known for.
+  function growthBand() {
+    var G = window.GROWTH;
+    if (!G) return "";
+    var svc = scalingService();
+    var chans = (G.channels || []).map(function (c) { return '<li class="plus">' + t(c.name) + "</li>"; }).join("");
+    return '<section class="growth-band" aria-labelledby="growth-title"><div class="wrap">' +
+      '<div class="growth-band__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Brand scaling &amp; ads</p>' +
+      '<h2 class="h2" id="growth-title" data-reveal>Don’t just launch.<br><span class="serif">Scale.</span></h2></div>' +
+      '<div class="growth-band__side"><p data-reveal>We plan, make and run the ads that bring in customers, then test every week and put more behind what works. Your brand, content and landing pages, built to back them up.</p>' +
+      '<ul class="growth-band__chans" data-reveal>' + chans + "</ul>" +
+      '<div class="growth-band__btns" data-reveal><a class="btn btn--light" href="brand-scaling.html">How we scale brands ' + ICON.arrow + "</a>" +
+      '<a class="btn btn--ghost-light" href="' + quoteHref(svc && svc.name) + '">Get an ads quote</a></div></div>' +
+      '<div class="growth-band__chart" data-reveal>' + growthChart() + "</div></div>" +
+      loopSteps("loop loop--band") +
+      "</div></section>";
+  }
+
+  // Home: what we do with AI, an example chat that plays itself, and how fast we reply.
+  function aiSection() {
+    var A = SITE.ai || {};
+    var chat = A.chat || [];
+    if (!chat.length && !(A.points || []).length) return "";
+    var brand = LAB.brand;
+    var msgs = chat.map(function (m) {
+      var ai = m.from === "ai";
+      return '<li class="msg ' + (ai ? "msg--ai" : "msg--them") + '">' + (ai ? '<span class="msg__who">AI</span>' : "") + "<p>" + t(m.text) + "</p></li>";
+    }).join("");
+    var window_ = chat.length
+      ? '<figure class="ai-chat" data-reveal aria-label="Example: a conversation with an AI assistant for ' + esc(brand) + ', a made-up café">' +
+        '<div class="ai-chat__head"><span class="ai-chat__avatar" aria-hidden="true">' + esc(brand.charAt(0)) + "</span>" +
+        "<div><b>" + esc(brand) + " · AI assistant</b><span><i aria-hidden=\"true\"></i>Online now · answers in seconds</span></div></div>" +
+        '<ol class="ai-chat__log" aria-live="off">' + msgs + '<li class="msg msg--ai msg--typing" aria-hidden="true"><p><i></i><i></i><i></i></p></li></ol>' +
+        '<div class="ai-chat__input" aria-hidden="true"><span>Type a message…</span><i>' + ICON.right + "</i></div>" +
+        '<figcaption>Example conversation. ' + esc(brand) + " is a made-up café.</figcaption></figure>"
+      : "";
+    var points = (A.points || []).map(function (pt, i) {
+      return '<li data-reveal style="--d:' + i * 0.06 + 's"><span class="ai__num">' + pad(i + 1) + "</span><div><h3>" + t(pt.title) + "</h3><p>" + t(pt.body) + "</p></div></li>";
+    }).join("");
+    var fast = C.replyTime
+      ? '<div class="ai__fast" data-reveal><p class="eyebrow">Responsive, both ways</p>' +
+        '<div class="ai__fast-row"><p><strong>' + esc(C.replyTime.replace(/^within /, "")) + "</strong>Reply time, any day of the week</p>" +
+        "<p><strong>Every screen</strong>What we build fits phones, tablets and desktops</p></div></div>"
+      : "";
+    return '<section class="section wrap ai" aria-labelledby="ai-title"><div class="ai__grid">' +
+      '<div class="ai__head"><p class="eyebrow" data-reveal style="margin-bottom:16px">AI, used well</p>' +
+      '<h2 class="h2" id="ai-title" data-reveal>AI that works.<br><span class="serif">People who answer.</span></h2>' +
+      "<p data-reveal>We build AI into your business where it actually helps, and we use it ourselves to work faster. You still get real people who reply quickly and care how it turns out.</p></div>" +
+      window_ + '<div class="ai__rest"><ol class="ai__points">' + points + "</ol>" + fast +
+      '<div class="ai__btns" data-reveal><a class="btn btn--dark" href="' + quoteHref("AI Assistants & Automation") + '">Get an AI assistant ' + ICON.arrow + "</a>" +
+      '<a class="btn btn--line" href="services.html">All services</a></div></div></div></section>';
+  }
+
+  // Reviews, once there are real ones in content/site.js (about.testimonials).
+  function quotes() {
+    var Q = (SITE.about && SITE.about.testimonials) || [];
+    if (!Q.length) return "";
+    return '<section class="section wrap" aria-labelledby="quotes-title" style="padding-top:0"><div class="section-head"><h2 class="h2" id="quotes-title" data-reveal>Kind <span class="serif">words.</span></h2>' +
+      "<p data-reveal>What clients say after working with us.</p></div>" +
+      '<div class="quotes">' + Q.map(function (q) {
+        return '<blockquote class="quote" data-reveal><p>“' + t(q.quote) + '”</p><cite>' + t(q.name) + (q.title ? ", " + t(q.title) : "") + "</cite></blockquote>";
+      }).join("") + "</div></section>";
   }
 
   /* ---------- pages ---------- */
@@ -450,7 +553,7 @@
     var tones = [["#e9dfcf", "#0f0f0e"], ["#f2c230", "#0f0f0e"], ["#c8341c", "#ffffff"], ["#b9d4f0", "#0f0f0e"], ["#0f0f0e", "#f7f2ea"], ["#c5e35a", "#0f0f0e"]];
     var svc = SERVICES.map(function (s, i) {
       var tone = tones[i % tones.length];
-      return '<li style="--i:' + Math.min(i, 11) + ";--pill-bg:" + tone[0] + ";--pill-fg:" + tone[1] + '"><a class="pills__pill" href="services.html#service-' + (i + 1) + '">' +
+      return '<li style="--i:' + Math.min(i, 11) + ";--pill-bg:" + tone[0] + ";--pill-fg:" + tone[1] + '"><a class="pills__pill" href="' + serviceHref(s, i) + '">' +
         '<span class="pills__num" aria-hidden="true">' + pad(i + 1) + '</span><span class="pills__name">' + t(s.name) + "</span>" +
         (s.price ? '<span class="pills__tag">' + t(s.price) + "</span>" : "") + "</a></li>";
     }).join("");
@@ -465,6 +568,7 @@
         '<p class="stat__label">' + s[1] + "</p></div>";
     }).join("");
     var avail = (C.availability || "").split(". ")[0].replace(/\.$/, "");
+    var hire = listed(SITE.marketplaces);
 
     return (
       '<section class="hero wrap" aria-labelledby="hero-title"><div class="hero__grid">' +
@@ -474,6 +578,7 @@
       (avail ? '<p class="pill"><span class="pill__dot" aria-hidden="true"></span>' + t(avail) + "</p>" : "") +
       "<p>" + t(SITE.taglineSub) + "</p>" +
       '<div class="hero__ctas"><a class="btn btn--dark" href="contact.html#planner">Get a quote ' + ICON.arrow + '</a><a class="btn btn--line" href="work.html">View work</a></div>' +
+      (hire.length ? '<p class="hero__hire">Also on ' + hire.map(function (m) { return outLink(m); }).join(" · ") + "</p>" : "") +
       (PRICING.startingAt ? '<p class="hero__price" data-reveal="slap" style="--d:.7s"><span>Websites from</span> <strong>' + roll(PRICING.startingAt) + "</strong></p>" : "") + "</div>" +
       '<div class="hero__visual" data-reveal style="--d:.35s"><div class="iso" aria-hidden="true"><div class="iso__stage"><div class="iso__base"></div>' + iso + "</div></div></div>" +
       "</div></section>" +
@@ -494,8 +599,10 @@
       (thumb ? '<div class="about-strip__thumb" data-reveal>' + img(thumb, { sizes: "220px", decorative: true }) + '<a class="plus" href="work.html">Our work</a></div>' : "") +
       "</div>" +
       '<div class="about-strip__main"><p class="lead" data-reveal>Good design should be easy for everybody. At ' + esc(SITE.studioName) +
-      ", we design and build the brands, websites, apps and systems that run a business, then help it grow with AI assistants and ads. One team for all of it, in any style.</p>" +
+      ", we design and build the brands, websites, apps and systems that run a business, then scale it with ads and AI. One team for all of it, in any style.</p>" +
       '<div class="stats">' + stats + "</div></div></div></section>" +
+
+      growthBand() +
 
       lab() +
 
@@ -512,6 +619,8 @@
       '<ul class="featured__cats">' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul></div>" +
       "</section>" +
 
+      aiSection() +
+
       whyUs() +
 
       '<section class="section wrap" aria-labelledby="svc-title" style="padding-top:0">' +
@@ -520,6 +629,7 @@
       '<ul class="pills" data-reveal="pills">' + svc + "</ul>" +
       '<div style="margin-top:32px" data-reveal><a class="btn btn--line" href="services.html">See what’s included ' + ICON.arrow + "</a></div>" +
       "</section>" +
+      quotes() +
       pricing("pricing-title") +
       cta()
     );
@@ -650,7 +760,7 @@
       (gallery ? '<div class="gallery">' + gallery + "</div>" : "") +
       (more ? '<section class="watch" aria-labelledby="watch-title"><h2 class="h3" id="watch-title" data-reveal>More to watch</h2><div class="watch__grid">' + more + "</div></section>" : "") +
       '<aside class="like" data-reveal aria-label="Start a similar project"><p class="like__title">Want something like <span class="serif">' + esc(p.title) + "</span>?</p>" +
-      '<p class="like__text">We can design and build one for your business, in your style.' + (PRICING.startingAt ? " Projects start at " + esc(PRICING.startingAt) + "." : "") + "</p>" +
+      '<p class="like__text">We can design and build one for your business, in your style, with a clear quote after a free call.</p>' +
       '<div class="like__btns"><a class="btn btn--dark" href="contact.html?like=' + encodeURIComponent(p.title) + '#planner">Plan your project ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div></aside>" +
       (next && next !== p ? '<a class="next-project" href="' + projectUrl(next) + '"><span class="eyebrow">Next project</span><span class="display next-project__title">' + esc(next.title) + ICON.arrow + "</span></a>" : "") +
@@ -665,19 +775,20 @@
         '<p class="svc__desc">' + t(s.description) + "</p>" +
         '<ul class="svc__includes" aria-label="Included">' + (s.includes || []).map(function (x) { return "<li>" + t(x) + "</li>"; }).join("") + "</ul>" +
         '<span class="svc__price">' + (s.price ? t(s.price) : '<span class="muted">Quoted per project</span>') +
-        '<a class="svc__ask" href="contact.html?need=' + encodeURIComponent(s.name) + '#planner">Get a quote<span class="sr-only"> for ' + esc(s.name) + "</span> " + ICON.arrow + "</a></span></li>";
+        '<a class="svc__ask" href="contact.html?need=' + encodeURIComponent(s.name) + '#planner">Get a quote<span class="sr-only"> for ' + esc(s.name) + "</span> " + ICON.arrow + "</a>" +
+        (s.page ? '<a class="svc__ask" href="' + esc(s.page) + '">How it works<span class="sr-only"> for ' + esc(s.name) + "</span> " + ICON.arrow + "</a>" : "") + "</span></li>";
     }).join("");
     var steps = [
       ["Talk", "A quick call or chat about your business, your customers and the style you like."],
       ["Design", "We design in your chosen style and refine it with your feedback until it feels right."],
       ["Build", "We build it mobile-first, fast and easy for your team to use and update."],
-      ["Launch & grow", "We launch, hand everything over, and stay on for hosting, updates, ads and growth."],
+      ["Launch & scale", "We launch, hand everything over, and stay on to run your ads and keep the brand growing."],
     ].map(function (s, i) {
       return '<div class="step" data-reveal style="--d:' + i * 0.08 + 's"><span class="step__num">' + pad(i + 1) + "</span><h3>" + s[0] + "</h3><p>" + s[1] + "</p></div>";
     }).join("");
     var faq = FAQ.length
       ? '<section class="section wrap" aria-labelledby="faq-title" style="padding-top:0"><div class="section-head"><h2 class="h2" id="faq-title" data-reveal>Questions</h2>' +
-        "<p data-reveal>The things people usually ask before we start. Anything else, just call or message us.</p></div>" +
+        "<p data-reveal>The things people usually ask before we start. Anything else, just call or message us" + (C.replyTime ? ". We reply " + esc(C.replyTime) : "") + ".</p></div>" +
         '<div class="faq">' + FAQ.map(function (f) {
           return '<details class="faq__item" data-reveal><summary>' + t(f.q) + '<span class="faq__icon" aria-hidden="true"></span></summary><p>' + t(f.a) + "</p></details>";
         }).join("") + "</div></section>"
@@ -690,6 +801,51 @@
       '<section class="section wrap" aria-labelledby="process-title" style="padding-top:0"><div class="section-head"><h2 class="h2" id="process-title" data-reveal>How it works</h2>' +
       "<p data-reveal>Simple from start to finish. You always talk to the people designing and building your project.</p></div>" +
       '<div class="steps">' + steps + "</div></section>" + faq + cta();
+  }
+
+  function scaling() {
+    var G = window.GROWTH || {};
+    var svc = scalingService();
+    var need = svc ? svc.name : "";
+    setMeta("Brand scaling & ads", "Brand scaling and ads by " + SITE.studioName + ": strategy, ad creative, AI-made variations, landing pages and weekly tuning on Facebook, Instagram, Google and TikTok.");
+    var chans = (G.channels || []).map(function (c, i) {
+      return '<li class="chan" data-reveal="ticket" style="--d:' + (i % 3) * 0.07 + 's"><span class="chan__num">' + pad(i + 1) + "</span><h3>" + t(c.name) + "</h3><p>" + t(c.body) + "</p></li>";
+    }).join("");
+    var gets = (G.deliverables || []).map(function (d) { return "<li>" + t(d) + "</li>"; }).join("");
+    var bars = [38, 52, 47, 66, 74, 92];
+    var report = '<figure class="report" data-reveal aria-label="Sample monthly report for ' + esc(LAB.brand) + ', a made-up café, with made-up numbers">' +
+      '<div class="report__head"><b>' + esc(LAB.brand) + ' · Monthly report</b><span class="report__tag">Sample · made-up numbers</span></div>' +
+      '<div class="report__kpis"><p><small>Ad spend</small>$600</p><p><small>Bookings from ads</small>148</p><p><small>Cost per booking</small>$4.05</p></div>' +
+      '<div class="report__bars" aria-hidden="true">' + bars.map(function (h, i) { return '<i style="--h:' + h + "%;--i:" + i + '"></i>'; }).join("") + "</div>" +
+      '<div class="report__rows"><p><span>Best ad</span>“Sunday brunch” video, Instagram</p><p><span>Next month</span>Move budget to video, test 3 new offers</p></div>' +
+      "<figcaption>What a monthly report looks like. Yours shows your real numbers.</figcaption></figure>";
+    var faq = (G.faq || []).length
+      ? '<section class="section wrap" aria-labelledby="gfaq-title" style="padding-top:0"><div class="section-head"><h2 class="h2" id="gfaq-title" data-reveal>Ads, <span class="serif">answered.</span></h2>' +
+        "<p data-reveal>What people usually ask before we run their ads.</p></div>" +
+        '<div class="faq">' + G.faq.map(function (f) {
+          return '<details class="faq__item" data-reveal><summary>' + t(f.q) + '<span class="faq__icon" aria-hidden="true"></span></summary><p>' + t(f.a) + "</p></details>";
+        }).join("") + "</div></section>"
+      : "";
+    var quick = '<div class="page-head__btns"><a class="btn btn--dark" href="' + quoteHref(need) + '">Get an ads quote ' + ICON.arrow + "</a>" +
+      '<a class="btn btn--line" href="#loop-title">See how it works</a></div>';
+    return pageHead("Brand scaling &amp; ads", "Scale your <span class=\"serif\">brand.</span>",
+      "We plan, make and run ads on Facebook, Instagram, Google and TikTok, then test every week and put more behind what works. Your brand, content and landing pages, built to back them up.", quick) +
+      '<section class="growth-band growth-band--page" aria-labelledby="chan-title"><div class="wrap">' +
+      '<div class="growth-band__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Where we run your ads</p>' +
+      '<h2 class="h2" id="chan-title" data-reveal>Wherever your<br>customers <span class="serif">scroll.</span></h2></div>' +
+      '<div class="growth-band__chart" data-reveal>' + growthChart() + "</div></div>" +
+      '<ul class="chans">' + chans + "</ul></div></section>" +
+      '<section class="section wrap" aria-labelledby="loop-title"><div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">The scaling loop</p>' +
+      '<h2 class="h2" id="loop-title" data-reveal>Test. Learn.<br><span class="serif">Scale.</span></h2></div>' +
+      "<p data-reveal>Scaling isn’t one big launch. It’s a loop we run with you every week, with AI helping us make and test more ideas, faster.</p></div>" +
+      loopSteps("loop") + "</section>" +
+      '<section class="section wrap" aria-labelledby="gets-title" style="padding-top:0"><div class="gets">' +
+      '<div><h2 class="h2" id="gets-title" data-reveal>What you <span class="serif">get.</span></h2>' +
+      '<ul class="gets__list" data-reveal>' + gets + "</ul>" +
+      '<p class="gets__note" data-reveal>Brand scaling is quoted per project after a free call. The ad budget itself is paid straight to Meta, Google or TikTok, so you see every peso and dollar.</p>' +
+      '<div class="ai__btns" data-reveal><a class="btn btn--dark" href="' + quoteHref(need) + '">Plan your ads ' + ICON.arrow + "</a>" +
+      (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div></div>" +
+      report + "</div></section>" + faq + cta();
   }
 
   function about() {
@@ -740,7 +896,7 @@
   }
 
   function contact() {
-    setMeta("Contact", "Plan your project in two minutes and send it to " + SITE.studioName + " by email, text or Instagram. Websites start at " + (PRICING.startingAt || "$80") + ".");
+    setMeta("Contact", "Plan your project in two minutes and send it to " + SITE.studioName + " by email or text. We reply " + (C.replyTime || "quickly") + ". Websites start at " + (PRICING.startingAt || "$80") + ".");
     var params = new URLSearchParams(location.search);
     var styleId = params.get("style") || "";
     var needs = params.getAll("need");
@@ -755,11 +911,11 @@
 
     var links = [];
     if (C.phoneDisplay) links.push('<a class="cta__link" href="' + telHref() + '"><span><small>Call or text</small>' + esc(C.phoneDisplay) + "</span>" + ICON.arrow + "</a>");
-    if (C.instagram) links.push('<a class="cta__link" href="' + esc(C.instagram.url) + '" target="_blank" rel="noopener"><span><small>Instagram</small>' + esc(C.instagram.handle) + "</span>" + ICON.arrow + "</a>");
     if (C.email) links.push('<a class="cta__link" href="mailto:' + esc(C.email) + '"><span><small>Email</small>' + esc(C.email) + "</span>" + ICON.arrow + "</a>");
-    (SITE.socials || []).forEach(function (s) {
-      if (C.instagram && s.url === C.instagram.url) return;
-      links.push('<a class="cta__link" href="' + esc(s.url) + '" target="_blank" rel="noopener"><span><small>' + esc(s.label) + "</small>" + esc(s.url.replace(/^https?:\/\/(www\.)?/, "")) + "</span>" + ICON.arrow + "</a>");
+    chatApps().forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Chat</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
+    listed(SITE.marketplaces).forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Hire us on</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
+    listed(SITE.socials).forEach(function (s) {
+      links.push(outLink(s, "cta__link", "<span><small>" + esc(s.label) + "</small>" + esc(s.url.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "")) + "</span>" + ICON.arrow));
     });
 
     var pick = function (type, name, value, checked, swatch) {
@@ -778,7 +934,7 @@
       step(1, "What do you need?", "Pick as many as you like.", picks(SERVICES.map(function (s) { return pick("checkbox", "need", s.name, needs.indexOf(s.name) > -1); }).join(""))) +
       step(2, "Pick a style", 'Not sure? <a href="index.html#styles-title">Try them on in the Style Lab</a>.',
         picks(STYLES.map(function (s) { return pick("radio", "style", s.label, s.id === styleId, s.sw); }).join("") + pick("radio", "style", "Not sure yet", false))) +
-      step(3, "Budget", PRICING.startingAt ? "Projects start at " + esc(PRICING.startingAt) + "." : "", picks((PRICING.budgets || []).map(function (b) { return pick("radio", "budget", b, false); }).join(""))) +
+      step(3, "Budget", PRICING.startingAt ? "Websites start at " + esc(PRICING.startingAt) + "." : "", picks((PRICING.budgets || []).map(function (b) { return pick("radio", "budget", b, false); }).join(""))) +
       step(4, "Timeline", "", picks((PRICING.timelines || []).map(function (x) { return pick("radio", "timeline", x, false); }).join(""))) +
       step(5, "About you", "", '<div class="plan-fields">' +
         field("p-name", "Your name", 'name="name" autocomplete="name"' + req) +
@@ -787,32 +943,31 @@
         '<div class="field plan-fields__wide"><label for="p-msg">Anything else?</label><textarea id="p-msg" data-lenis-prevent name="message" maxlength="1500" ' +
         'placeholder="What your business does, sites you like, deadlines…">' + esc(message.join(" ")) + "</textarea></div></div>");
 
-    var ig = C.instagram ? C.instagram.handle.replace(/^@/, "") : "";
     var send = [];
     if (C.formEndpoint) send.push('<button class="btn btn--light" type="submit">Send now ' + ICON.arrow + "</button>");
     if (C.email) send.push('<a class="btn ' + (C.formEndpoint ? "btn--ghost-light" : "btn--light") + '" data-send="email" href="mailto:' + esc(C.email) + '">Email it ' + ICON.arrow + "</a>");
     if (C.phoneLink) send.push('<a class="btn btn--ghost-light" data-send="sms" href="sms:' + esc(C.phoneLink) + '">Text it ' + ICON.arrow + "</a>");
-    if (ig) send.push('<a class="btn btn--ghost-light" data-send="ig" href="https://ig.me/m/' + encodeURIComponent(ig) + '" target="_blank" rel="noopener">Copy &amp; DM on Instagram ' + ICON.arrow + "</a>");
+    send.push('<button class="btn btn--ghost-light" type="button" data-send="copy">Copy brief</button>');
     var brief = '<aside class="brief" aria-labelledby="brief-title"><div class="brief__head"><h3 class="h3" id="brief-title">Your brief</h3><span class="eyebrow">Updates as you go</span></div>' +
       '<div class="brief__text" tabindex="0" role="region" aria-label="Your project brief" data-lenis-prevent></div>' +
       '<div class="brief__send">' + send.join("") + "</div>" +
       '<p class="brief__status" role="status" aria-live="polite"></p>' +
-      '<ol class="brief__next"><li>Send your brief, any way you like.</li><li>We reply with questions or set up a free first call.</li><li>You get a clear quote before any work starts.</li></ol></aside>';
+      '<ol class="brief__next"><li>Send your brief, any way you like.</li><li>We reply ' + esc(C.replyTime || "quickly") + ' with questions, or set up a free first call.</li><li>You get a clear quote before any work starts.</li></ol></aside>';
 
     var quick = '<div class="page-head__btns"><a class="btn btn--dark" href="#planner">Start the planner ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div>";
 
-    return pageHead("Contact", "Let’s talk.", "Tell us about your business and what you need, whatever it is. Plan it below in two minutes, or just call, text or message.", quick) +
+    return pageHead("Contact", "Let’s talk.", "Tell us about your business and what you need, whatever it is. Plan it below in two minutes, or just call, text or email." + (C.replyTime ? " We reply " + esc(C.replyTime) + "." : ""), quick) +
       '<section class="wrap planner-wrap" id="planner" aria-labelledby="planner-title">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Project planner · about 2 minutes</p>' +
       '<h2 class="h2" id="planner-title" data-reveal>Plan your<br><span class="serif">project.</span></h2></div>' +
-      "<p data-reveal>Tap what you need and the look you like. We turn it into a brief you can send by email, text or Instagram, and you get a clear quote back." +
-      (PRICING.startingAt ? " Projects start at " + esc(PRICING.startingAt) + "." : "") + "</p></div>" +
+      "<p data-reveal>Tap what you need and the look you like. We turn it into a brief you can email, text or copy into any chat, and you get a clear quote back." +
+      (PRICING.startingAt ? " Websites start at " + esc(PRICING.startingAt) + "." : "") + "</p></div>" +
       '<form class="planner" data-planner novalidate' + (C.formEndpoint ? ' action="' + esc(C.formEndpoint) + '" method="POST"' : "") + ">" +
       '<div class="planner__steps">' + steps + "</div>" + brief + "</form></section>" +
       '<section class="wrap section" aria-labelledby="direct-title" style="padding-top:0"><div class="contact-grid">' +
       '<div data-reveal><h2 class="h2" id="direct-title">Rather<br>just <span class="serif">talk?</span></h2>' +
-      '<p class="muted" style="margin-top:20px;max-width:420px">Call, text or message us, whatever is easiest for you.</p>' +
+      '<p class="muted" style="margin-top:20px;max-width:420px">Call, text or email us, whatever is easiest for you.</p>' +
       (C.availability ? '<p class="contact-note">' + t(C.availability) + "</p>" : "") + "</div>" +
       '<div class="cta__links" data-reveal>' + links.join("") + "</div></div></section>";
   }
@@ -1054,8 +1209,8 @@
     apply(pressed ? pressed.getAttribute("data-filter") : "All");
   }
 
-  // The project planner: builds a brief from the picks and sends it by email, text, Instagram,
-  // or straight to Formspree when SITE.contact.formEndpoint is set.
+  // The project planner: builds a brief from the picks and sends it by email or text, copies it
+  // for any chat (WhatsApp, Fiverr, Upwork…), or posts it to Formspree when contact.formEndpoint is set.
   function initPlanner() {
     var form = document.querySelector("[data-planner]");
     if (!form) return;
@@ -1063,7 +1218,7 @@
     var status = form.querySelector(".brief__status");
     var email = form.querySelector('[data-send="email"]');
     var sms = form.querySelector('[data-send="sms"]');
-    var ig = form.querySelector('[data-send="ig"]');
+    var copyBtn = form.querySelector('[data-send="copy"]');
     function val(n) { var el = form.elements[n]; return el ? String(el.value || "").trim() : ""; }
     function picked(n) {
       return [].slice.call(form.querySelectorAll('input[name="' + n + '"]:checked')).map(function (i) { return i.value; });
@@ -1123,11 +1278,11 @@
     update();
     if (email) email.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your email app should open with the brief ready to send."; stamp("Ready!"); });
     if (sms) sms.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your messages app should open with the brief ready to send."; stamp("Ready!"); });
-    // The link opens Instagram as usual; the brief is copied on the way so it can be pasted in.
-    if (ig) ig.addEventListener("click", function () {
+    // Copies the brief so it can be pasted into any chat or message.
+    if (copyBtn) copyBtn.addEventListener("click", function () {
       copy(brief()).then(function (ok) {
         status.className = "brief__status";
-        status.textContent = ok ? "Brief copied. Paste it into the Instagram chat that just opened." : "Copy the brief above, then paste it into the Instagram chat.";
+        status.textContent = ok ? "Brief copied. Paste it into any chat or message to send it to us." : "Select the brief above and copy it, then paste it into any chat or message.";
         if (ok) stamp("Copied!");
       });
     });
@@ -1156,7 +1311,7 @@
         })
         .catch(function () {
           status.className = "brief__status is-error";
-          status.textContent = "Something went wrong. Please email, text or message us on Instagram instead.";
+          status.textContent = "Something went wrong. Please email or text us instead.";
         })
         .then(function () { btn.disabled = false; });
     });
@@ -1257,7 +1412,7 @@
         areaServed: "Worldwide",
         url: site || undefined,
         image: site ? site + "/og-image.png" : undefined,
-        sameAs: (SITE.socials || []).map(function (s) { return s.url; }),
+        sameAs: listed(SITE.marketplaces).concat(listed(SITE.socials)).map(function (s) { return s.url; }),
         hasOfferCatalog: {
           "@type": "OfferCatalog",
           name: "Services",
@@ -1265,6 +1420,13 @@
             return { "@type": "Offer", itemOffered: { "@type": "Service", name: s.name, description: s.description } };
           }),
         },
+      });
+    }
+    if (page === "scaling" && window.GROWTH && (GROWTH.faq || []).length) {
+      add({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: GROWTH.faq.map(function (f) { return { "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } }; }),
       });
     }
     if (page === "services" && FAQ.length) {
@@ -1374,6 +1536,43 @@
     setTimeout(done, 2600);
   }
 
+  // The example AI chat: messages arrive one by one while it's on screen, then it starts over.
+  function initAiChat() {
+    var log = document.querySelector(".ai-chat__log");
+    if (!log || reduceMotion || !("IntersectionObserver" in window)) return;
+    var msgs = [].slice.call(log.querySelectorAll(".msg:not(.msg--typing)"));
+    var typing = log.querySelector(".msg--typing");
+    log.classList.add("is-playing");
+    // The first message is already there, so the window never starts empty.
+    msgs[0].classList.add("is-on");
+    var i = 1, timer = null, visible = false;
+    function next() {
+      timer = null;
+      if (!visible) return;
+      if (i >= msgs.length) {
+        timer = setTimeout(function () { timer = null; msgs.forEach(function (m, k) { m.classList.toggle("is-on", k === 0); }); i = 1; tick(); }, 4200);
+        return;
+      }
+      var m = msgs[i];
+      var ai = m.classList.contains("msg--ai");
+      // The customer "types" for a moment; the assistant shows its typing dots first.
+      if (ai) { log.insertBefore(typing, m); typing.classList.add("is-on"); }
+      timer = setTimeout(function () {
+        timer = null;
+        typing.classList.remove("is-on");
+        m.classList.add("is-on");
+        i++;
+        tick();
+      }, ai ? 1300 : 900);
+    }
+    function tick() { if (!timer) timer = setTimeout(next, 500); }
+    new IntersectionObserver(function (entries) {
+      visible = entries[0].isIntersecting;
+      if (visible) tick();
+      else if (timer) { clearTimeout(timer); timer = null; }
+    }, { threshold: 0.35 }).observe(log);
+  }
+
   // The sideways work reel: swipe it, drag it with the mouse, or use the arrows.
   function initReel() {
     var track = document.querySelector(".reel__track");
@@ -1470,7 +1669,7 @@
   }
 
   /* ---------- boot ---------- */
-  var pages = { home: home, work: work, project: project, services: services, about: about, resume: resume, contact: contact, "404": notFound };
+  var pages = { home: home, work: work, project: project, services: services, scaling: scaling, about: about, resume: resume, contact: contact, "404": notFound };
   document.getElementById("site-header").innerHTML = header();
   document.getElementById("main").innerHTML = (pages[page] || notFound)();
   document.getElementById("site-footer").innerHTML = footer();
@@ -1487,6 +1686,7 @@
   initPlanner();
   initVideos();
   initReel();
+  initAiChat();
   initQuickBar();
   initCursor();
   kernLetters();

@@ -7,9 +7,10 @@ any design code.
 
 ```
 content/
-  site.js       ← studio name, bio, contact details, socials, skills, the "we handle it all" list
+  site.js       ← studio name, bio, contact details, chat apps, marketplaces, skills, the AI section
   projects.js   ← every project (Work page, case studies, home page), with features and videos
-  services.js   ← every service, the pricing plans (websites from $80, plus Custom) and the FAQ
+  services.js   ← every service, the pricing plans (websites from $80, plus Custom), the FAQ and
+                  the brand scaling & ads page (GROWTH)
   resume.js     ← resume summary + which PDF to download
 assets/
   img/projects/ ← project screenshots (one folder per project)
@@ -17,8 +18,13 @@ assets/
   files/        ← Carl-Palacio-Resume.pdf
   css/style.css ← all styling
   js/main.js    ← renders the pages from /content (no need to edit)
-index.html, work.html, project.html, services.html, about.html, resume.html, contact.html, 404.html
+index.html, work.html, project.html, services.html, brand-scaling.html, about.html, resume.html,
+contact.html, 404.html, sitemap.xml
+listing-kit/    ← Fiverr, Upwork and profile images plus ready-to-paste gig text (not part of the site)
 ```
+
+The header shows Work, Services, Brand scaling and About (the list is `NAV` near the top of
+`assets/js/main.js`). Resume and Contact are in the menu and the footer.
 
 ## Run it on your computer
 
@@ -40,7 +46,16 @@ Still to fill in:
 
 - **Contact form:** `content/site.js` → `contact.formEndpoint` (hidden until set, see below)
 - **Profile photo:** add `assets/img/carl.webp` (portrait, about 1000×1250) and set `photo` in `content/site.js`
-- **Other socials:** `content/site.js` → `socials`
+- **Marketplace profiles:** `content/site.js` → `marketplaces`. Paste your Fiverr, Upwork or
+  OnlineJobs.ph profile link into `url` and it appears under the home page buttons ("Also on Fiverr"),
+  in the "Let's build it together" box, in the footer and on the Contact page. Empty ones stay hidden.
+- **Chat apps:** `content/site.js` → `contact.whatsapp` and `contact.viber`, for example
+  `"https://wa.me/639916988880"`. Each shows as a button once it's set.
+- **Other socials:** `content/site.js` → `socials` (LinkedIn, Facebook page, …). Leave it empty to
+  show none. (The personal Instagram was removed from the whole site.)
+- **Reviews:** `content/site.js` → `about.testimonials`. Add real client quotes only; they show on
+  the About page and as "Kind words" on the home page. Ask Fiverr or Upwork clients if you can quote
+  their reviews here.
 - **Results (optional):** each project in `content/projects.js` has an empty `results: []`. Add real
   numbers when you have them (e.g. "120 bookings in the first month") and a Results section appears
 - **Resume:** your real PDF plus the experience and education entries in `content/resume.js`
@@ -58,10 +73,21 @@ Replace them when you have a final name or logo.
 
 Everything on the home page comes from `content/site.js`:
 
-- **Hero:** `heroLead` is the fixed start of the headline and `rotating` is the list of words that
-  cycle after it ("We design, build and grow *websites.*"). They cycle three times, then rest on the
-  first word. `taglineSub` is the line under it.
+- **Hero:** `eyebrow` is the small line above the name, `heroLead` is the fixed start of the headline
+  and `rotating` is the list of words that cycle after it ("We design, build and scale *brands.*").
+  They cycle three times, then rest on the first word. `taglineSub` is the line under it.
+  `contact.availability` is the green "Taking new projects" pill.
 - **The crossing ribbons:** the black one lists `capabilities`, the red one lists `promises`.
+- **The blue brand scaling band** under the about strip uses `GROWTH.steps` in
+  `content/services.js` and links to the Brand scaling page. Its chart is a drawing, not real data.
+- **AI, used well:** `ai.points` in `content/site.js` are the four AI points, and `ai.chat` is the
+  example conversation that plays in the chat window (for the made-up café Mesa; the page says so).
+  Each message has `from: "them"` (the customer) or `from: "ai"`. The black "Responsive, both ways"
+  box uses `contact.replyTime`.
+- **Reply time:** `contact.replyTime` ("within 24 hours") is also used in the call-to-action box on
+  every page, the Services FAQ intro and the Contact page. If you change it, also change "24 hours" in
+  `contact.availability`, `promises`, `ticker`, `fullBio`, `reasons` and the "How fast do you reply?"
+  answer in `FAQ`.
 - **Why Kian Studio:** `reasons` are the tiles. The big price tile comes from `PRICING.startingAt` in
   `content/services.js`. Add `live: true` to a reason to give it links to the live projects.
 - **The ticker strip** across the top of every page is `ticker`. A ▲ shows in green and a ▼ in red,
@@ -81,7 +107,8 @@ Everything on the home page comes from `content/site.js`:
 ## The project planner (Contact page)
 
 Visitors tick what they need, then pick a style, a budget and a timeline. They can send the brief by
-email, by text, or by copying it and opening an Instagram DM. The checkboxes come from the services in
+email, by text, or with **Copy brief**, which copies it so they can paste it into any chat (Fiverr,
+Upwork, WhatsApp, Viber, Messenger). The checkboxes come from the services in
 `content/services.js`, and the budget and timeline choices come from `PRICING.budgets` and
 `PRICING.timelines`.
 
@@ -91,7 +118,8 @@ The site already does this from the Style Lab, the plan cards, each service's "G
 each case study's "Want something like this?" box. A plan link ticks that plan's `need` service and
 adds a line like "I’m interested in the Standard plan ($160)." to the brief.
 
-On phones, a "Get a quote" / "Call" bar appears at the bottom of every page except Contact once a
+On phones, the plan cards, the "Why work with us" tiles and the scaling steps become sideways swipe
+rows so the page stays short. A "Get a quote" / "Call" bar appears at the bottom of every page except Contact once a
 visitor scrolls past the top.
 
 ## Add a project
@@ -149,7 +177,21 @@ The POS and Inventory case studies are OnTrack, captured from its made-up Demo B
 
 Edit `content/services.js`. Each service has a `name`, `description`, `includes` list and an
 optional `price` such as `"From $80"`. Leave `price: ""` to show "Quoted per project" (Brand
-Identity and everything except websites are quoted this way now).
+Identity and everything except websites are quoted this way now). Add `page: "brand-scaling.html"`
+(or any page) to give a service a "How it works" link on the Services page and make its home page
+pill link there.
+
+## The brand scaling & ads page
+
+`brand-scaling.html` is built from `GROWTH` in `content/services.js`:
+
+- `channels`: where the ads run (Facebook & Instagram, Google Search, Google Maps, TikTok, …)
+- `steps`: the scaling loop (Audit, Plan, Create, Launch & test, Scale), also on the home page
+- `deliverables`: the "What you get" list
+- `faq`: the ads questions. They're also given to Google as FAQ data for search results.
+
+The monthly report on the page is a sample with made-up numbers for the made-up café Mesa, and it's
+labeled that way. Keep it labeled until you can show a real client's report (with their permission).
 
 ## Change prices, plans or the FAQ
 
@@ -163,7 +205,8 @@ Also in `content/services.js`:
   one dark, and `need` to the service the planner should tick when someone picks that plan.
 - If you change the prices, also update the words "$80" in `promises` and `ticker` in
   `content/site.js`, `seo.description`, the meta descriptions in `index.html`, `services.html` and
-  `contact.html`, the `<title>` of `services.html`, and the cost answer in `FAQ`.
+  `contact.html`, the `<title>` of `services.html`, the cost answer in `FAQ`, the "Do I need a
+  website first?" answer in `GROWTH.faq`, and the share image `og-image.png`.
 - `FAQ` is the list of questions on the Services page.
 
 ## Replace the resume
@@ -180,13 +223,14 @@ in the same file.
 
 The form appears on the Contact page and sends messages to the email you set in Formspree
 (use the studio address, kianhuatstudio@gmail.com, which is `contact.email` in `content/site.js`).
-Until then, the page shows phone, Instagram and email links.
+Until then, the page shows phone and email links (plus WhatsApp, Viber and your marketplace
+profiles once they're set).
 
 ## Deploy
 
 The site is static files, so it deploys anywhere with **no build command**.
-Upload this whole folder. You can leave out `.claude/`, `README.md` and `PROMPT.md`, which
-aren't part of the site (anything you upload can be opened by visitors). The videos make the folder
+Upload this whole folder. You can leave out `.claude/`, `listing-kit/`, `README.md` and `PROMPT.md`,
+which aren't part of the site (anything you upload can be opened by visitors). The videos make the folder
 about 75 MB, which is fine on all three hosts below.
 
 **Netlify:** go to <https://app.netlify.com/drop> and drag this folder onto the page. Done.
@@ -199,24 +243,30 @@ choose **Framework preset: Other**, leave the build command empty and the output
 **GitHub Pages (how the site is live now):** the site is the repo
 <https://github.com/carlpalacio/kian-studio>, published from the `main` branch at
 <https://carlpalacio.github.io/kian-studio/>. Every push to `main` updates the live site within a
-minute or two. `PROMPT.md` and `.claude/` are left out by `.gitignore`. The `.nojekyll` file is
+minute or two. `PROMPT.md`, `listing-kit/` and `.claude/` are left out by `.gitignore`. The `.nojekyll` file is
 already included.
 
 **After each update, bump the version.** Browsers keep the site's files for up to 10 minutes, so
 returning visitors could otherwise see old prices or text. Every `.html` file loads its CSS, scripts
-and share image with `?v=2` on the end. Change all of them to the next number (`?v=3`, `?v=4`, …)
-whenever you publish changes; a find-and-replace of `?v=2` across the `.html` files does it.
+and share image with a version on the end (now `?v=3`). Change all of them to the next number
+(`?v=4`, `?v=5`, …) whenever you publish changes; a find-and-replace of `?v=3` across the `.html`
+files does it.
 
 If you move to a custom domain or another host:
 
 - Change `seo.siteUrl` in `content/site.js` to the new address.
 - Change the share image address in the `<head>` of each `.html` file
-  (`content="https://carlpalacio.github.io/kian-studio/og-image.png?v=2"`). Some apps, like Facebook and
+  (`content="https://carlpalacio.github.io/kian-studio/og-image.png?v=3"`). Some apps, like Facebook and
   LinkedIn, only read full addresses.
+- Change the addresses in `sitemap.xml`.
 - The custom 404 page works on Netlify, Vercel, a custom domain, and GitHub Pages project sites like
   this one (`username.github.io/repo/`). The one exception is a `username.github.io` user site with
   no repo folder in the address, where it would need `<base href="/">` in `404.html` instead of the
   small script.
+
+**Help Google find the site:** add the site to <https://search.google.com/search-console> (choose
+"URL prefix" and paste the site address), then submit `sitemap.xml` under Sitemaps. Add a page to
+`sitemap.xml` whenever you add one to the site, including each new project's `project.html?p=…`.
 
 ## Notes
 
@@ -229,12 +279,13 @@ If you move to a custom domain or another host:
   wipe in, the ticker, a rubber stamp when the planner brief is sent or copied, springy buttons,
   the rotating hero words, the scrolling ribbons (they pause on hover), the Style Lab slideshow (it
   pauses on hover, while someone types a name, and once a visitor picks a style), the scroll
-  progress bar, the "View" cursor on project cards and the card video clips.
+  progress bar, the "View" cursor on project cards, the card video clips, the brand scaling chart
+  drawing itself, the report bars growing and the AI chat playing (only while it's on screen).
 - **Smooth scrolling** on desktops with a mouse or trackpad uses Lenis (loaded from jsDelivr). Phones
   and touch screens keep their normal scrolling. If Lenis can't load, the site scrolls normally.
 - **Reduce motion:** all of the above turns off for visitors who set "reduce motion" on their
-  device. There's no intro, everything shows in place, the ribbons and ticker are still lists and
-  the lab waits for a click.
+  device. There's no intro, everything shows in place, the ribbons and ticker are still lists, the
+  lab waits for a click, the charts are already drawn and the AI chat shows the whole conversation.
 - **Screenshots** of Inest and Onsite were captured from the live sites, and the OnTrack ones from
   its demo restaurant. Re-capture them whenever those products change.
 - **"First call free"** appears in the red ribbon (`promises` in `content/site.js`), the FAQ
