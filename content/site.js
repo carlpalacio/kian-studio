@@ -39,7 +39,7 @@ window.SITE = {
     phoneDisplay: "0991 698 8880",
     phoneLink: "+639916988880", // international format used for tap-to-call
     instagram: { handle: "@carlpalacio", url: "https://instagram.com/carlpalacio" },
-    email: "carlpalacio05@gmail.com", // Leave "" to hide.
+    email: "kianhuatstudio@gmail.com", // Leave "" to hide.
     // Contact form: create a free form at https://formspree.io and paste its endpoint,
     // e.g. "https://formspree.io/f/abcdwxyz". Leave "" to hide the form.
     formEndpoint: "",
@@ -72,8 +72,11 @@ window.SITE = {
     "Anything else you need",
   ],
 
+  // The stock-ticker strip across the top of every page. ▲ shows in green, ▼ in red.
+  ticker: ["Templates ▼ 0 used", "Websites ▲ from $80", "Design styles ▲ 20", "Reply time ▼ 1–2 days", "Hidden fees ▼ none", "Revisions ▲ until it’s right", "Your competitors ▼ nervous"],
+
   // The red ribbon on the home page: short reasons to pick the studio.
-  promises: ["Projects from $500", "Any style, never a template", "First call free", "One team for everything", "Remote, worldwide", "Support after launch"],
+  promises: ["Websites from $80", "Any style, never a template", "First call free", "One team for everything", "Remote, worldwide", "Support after launch"],
 
   // "Why Kian Studio" on the home page. The first tile is the price (from content/services.js).
   reasons: [
@@ -113,6 +116,6 @@ window.SITE = {
     // Your live address once deployed, e.g. "https://kianstudio.com" (used for share links).
     siteUrl: "https://carlpalacio.github.io/kian-studio",
     description:
-      "Kian Studio designs and builds brands, websites, apps, POS and inventory systems, AI assistants and ad campaigns for growing businesses, in any style. Projects start at $500.",
+      "Kian Studio designs and builds brands, websites, apps, POS and inventory systems, AI assistants and ad campaigns for growing businesses, in any style. Websites start at $80.",
   },
 };

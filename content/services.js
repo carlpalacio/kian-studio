@@ -2,20 +2,20 @@
   SERVICES
   ────────
   One block per service, shown in this order.
-    price   optional starting price, e.g. "From $500". Leave "" to show "Quoted per project".
+    price   optional starting price, e.g. "From $80". Leave "" to show "Quoted per project".
 */
 window.SERVICES = [
   {
     name: "Brand Identity",
     description: "A logo and visual system that makes your business instantly recognizable, on a sign, a cup or a phone screen.",
     includes: ["Logo & variations", "Color palette & typography", "Brand guidelines", "Social media kit", "Business cards & stationery"],
-    price: "From $500",
+    price: "",
   },
   {
     name: "Websites & Landing Pages",
     description: "Fast, mobile-first websites that explain what you do and turn visitors into customers.",
     includes: ["Custom design in any style", "Responsive build", "Contact & booking forms", "Basic SEO & analytics", "Hosting setup & launch"],
-    price: "From $500",
+    price: "From $80",
   },
   {
     name: "E-commerce & Online Ordering",
@@ -83,34 +83,44 @@ window.SERVICES = [
   PRICING
   ───────
   Shown on the home page and the Services page. `startingAt` is the headline price.
-  Each plan's `price` can be a number like "From $500" or "" to show "Custom quote".
+  Each plan's `price` is shown as written, like "$80", or "" to show "Custom quote".
+  `need` (optional) ticks that service in the Contact page planner when someone picks the plan.
   `budgets` and `timelines` are the choices in the project planner on the Contact page.
 */
 window.PRICING = {
-  startingAt: "$500",
-  note: "Every project gets a clear quote before any work starts. Bigger builds are quoted on scope.",
+  startingAt: "$80",
+  note: "Websites have fixed prices. Apps, systems, stores, branding, AI and ads get a custom quote after a free call.",
   plans: [
     {
-      name: "Launch",
-      price: "From $500",
-      for: "New businesses that need to look professional, fast.",
-      includes: ["A logo & brand kit, or a one-page website", "Designed in any style", "Mobile-first and fast", "Social media kit", "Launch support"],
+      name: "Basic",
+      price: "$80",
+      for: "A one-page website or landing page.",
+      includes: ["1 page, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
+      need: "Websites & Landing Pages",
     },
     {
-      name: "Grow",
-      price: "",
-      for: "Brands ready to get more customers.",
-      includes: ["Brand, website and online store", "Ad campaigns & creative", "AI chat assistant", "SEO & Google Business", "Monthly content"],
+      name: "Standard",
+      price: "$160",
+      for: "A three-page website for a small business.",
+      includes: ["3 pages, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
+      need: "Websites & Landing Pages",
       featured: true,
     },
     {
-      name: "Build",
+      name: "Premium",
+      price: "$275",
+      for: "A five-page website with room to grow.",
+      includes: ["5 pages, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
+      need: "Websites & Landing Pages",
+    },
+    {
+      name: "Custom",
       price: "",
-      for: "Businesses that need their own system.",
-      includes: ["Custom web & mobile apps", "POS & inventory systems", "Booking & billing platforms", "Dashboards & automations", "Hosting, care & support"],
+      for: "Apps, systems, stores and anything bigger.",
+      includes: ["More pages or an online store", "Web & mobile apps", "POS & inventory systems", "AI assistants & automation", "Brand identity, ads & content"],
     },
   ],
-  budgets: ["$500 – $1,000", "$1,000 – $3,000", "$3,000 – $10,000", "$10,000+", "Not sure yet"],
+  budgets: ["Under $300", "$300 – $1,000", "$1,000 – $5,000", "$5,000+", "Not sure yet"],
   timelines: ["As soon as possible", "Within a month", "In 1–3 months", "I’m flexible"],
 };
 
@@ -120,7 +130,7 @@ window.PRICING = {
 window.FAQ = [
   {
     q: "How much does a project cost?",
-    a: "Projects start as low as $500 for a logo and brand kit or a one-page website. Bigger websites, apps, POS and inventory systems, AI assistants and ad management depend on what you need, so we quote them after a quick call.",
+    a: "Websites have fixed prices: $80 for one page, $160 for three pages and $275 for five. Brand identities, online stores, apps, POS and inventory systems, AI assistants and ads depend on what you need, so we quote them after a quick call.",
   },
   {
     q: "Is the first call free?",

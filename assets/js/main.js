@@ -152,6 +152,23 @@
     return out;
   }
 
+  // Letters that drop in one at a time (the hero title, the intro and the footer wordmark).
+  // `start` carries the stagger on from an earlier word.
+  function letters(text, start) {
+    var n = start || 0;
+    return String(text).split("").map(function (c) {
+      var i = n++;
+      return c === " " ? " " : '<span class="ltr" style="--i:' + i + ";--r:" + ((i * 37) % 17 - 8) + 'deg">' + esc(c) + "</span>";
+    }).join("");
+  }
+
+  // A price whose characters roll up into place when it comes on screen.
+  function roll(text) {
+    if (isPh(text)) return t(text);
+    return '<span class="sr-only">' + esc(text) + '</span><span class="roll" aria-hidden="true">' +
+      String(text).split("").map(function (c, i) { return '<span style="--n:' + i + '">' + esc(c) + "</span>"; }).join("") + "</span>";
+  }
+
   function categories() {
     var seen = {};
     PROJECTS.forEach(function (p) { if (p.category) seen[p.category] = (seen[p.category] || 0) + 1; });
@@ -187,12 +204,26 @@
   ];
   var activeKey = page === "project" ? "work" : page;
 
+  // The stock-ticker strip across the top of every page (SITE.ticker).
+  function ticker() {
+    var items = SITE.ticker || [];
+    if (!items.length) return "";
+    var list = "<ul>" + items.map(function (it) {
+      var m = String(it).match(/^(.*?)\s*([▲▼])\s*(.*)$/);
+      return m
+        ? "<li>" + esc(m[1]) + ' <span class="' + (m[2] === "▲" ? "up" : "down") + '">' + m[2] + " " + esc(m[3]) + "</span></li>"
+        : "<li>" + esc(it) + "</li>";
+    }).join("") + "</ul>";
+    return '<div class="ticker" aria-hidden="true"><div class="ticker__track">' + list + list + list + list + "</div></div>";
+  }
+
   function header() {
     var cur = function (k) { return k === activeKey ? ' aria-current="page"' : ""; };
     var links = NAV.slice(0, 3).map(function (n, i) {
       return '<a class="nav__link nav__link--' + (i + 1) + ' plus" href="' + n.href + '"' + cur(n.key) + "><span>" + n.label + "</span></a>";
     }).join("");
     return (
+      ticker() +
       '<header class="site-header" id="top"><nav class="nav wrap" aria-label="Main">' +
       '<a class="nav__logo" href="index.html" aria-label="' + esc(SITE.studioName) + ', home">' +
       '<span class="mark" aria-hidden="true">' + esc(monogram()) + '</span><span class="nav__wordmark" aria-hidden="true">' + esc(SITE.studioName) + "</span></a>" +
@@ -202,7 +233,7 @@
       '<a class="btn btn--dark btn--sm nav__contact" href="contact.html#planner"' + cur("contact") + ">Get a quote</a>" +
       '<button class="btn btn--line btn--sm menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>' +
       "</div></nav></header>" +
-      '<div class="menu" id="menu" aria-label="Menu" role="dialog" aria-modal="true">' +
+      '<div class="menu" id="menu" aria-label="Menu" role="dialog" aria-modal="true" data-lenis-prevent>' +
       '<nav class="menu__links" aria-label="Mobile">' +
       [{ label: "Home", href: "index.html", key: "home" }].concat(NAV).concat([{ label: "Contact", href: "contact.html", key: "contact" }])
         .map(function (n, i) { return '<a href="' + n.href + '"' + cur(n.key) + ">" + n.label + "<span>" + pad(i + 1) + "</span></a>"; }).join("") +
@@ -240,7 +271,7 @@
       "</ul></div>" +
       '<div class="footer__col"><h2 class="eyebrow">Social</h2><ul>' + socials + "</ul></div>" +
       "</div>" +
-      '<p class="footer__big display" aria-hidden="true"><span>' + esc(SITE.studioName) + "</span></p>" +
+      '<p class="footer__big display" aria-hidden="true" data-reveal="letters"><span>' + letters(SITE.studioName || "") + "</span></p>" +
       '<div class="footer__bottom"><span>© ' + year + " " + esc(SITE.studioName) + ". All rights reserved.</span>" +
       "<span>" + t(SITE.location) + "</span>" +
       '<a href="#top">Back to top ↑</a></div>' +
@@ -258,7 +289,7 @@
       '<section class="cta section" aria-labelledby="cta-title"><div class="wrap cta__inner">' +
       '<div data-reveal><p class="eyebrow" style="margin-bottom:20px">Have a project in mind?</p>' +
       '<h2 class="display cta__title" id="cta-title">Let’s build<br>it <span class="serif">together.</span></h2>' +
-      (PRICING.startingAt ? '<p class="cta__price">Projects start as low as <strong>' + esc(PRICING.startingAt) + "</strong>. Tell us what you need, and we’ll handle the rest.</p>" : "") +
+      (PRICING.startingAt ? '<p class="cta__price">Websites start as low as <strong>' + esc(PRICING.startingAt) + "</strong>. Tell us what you need, and we’ll handle the rest.</p>" : "") +
       "</div>" +
       '<div class="cta__links" data-reveal style="--d:.1s">' + links.join("") + "</div>" +
       "</div></section>"
@@ -284,13 +315,13 @@
     var plans = PRICING.plans || [];
     if (!plans.length) return "";
     var cards = plans.map(function (pl, i) {
-      return '<div class="plan' + (pl.featured ? " plan--featured" : "") + '" data-reveal style="--d:' + i * 0.08 + 's">' +
+      return '<div class="plan' + (pl.featured ? " plan--featured" : "") + '" data-reveal="ticket" style="--d:' + i * 0.08 + 's">' +
         '<p class="plan__num">' + pad(i + 1) + "</p>" +
         '<h3 class="plan__name">' + t(pl.name) + "</h3>" +
         '<p class="plan__for">' + t(pl.for) + "</p>" +
-        '<p class="plan__price">' + (pl.price ? t(pl.price) : "Custom quote") + "</p>" +
+        '<p class="plan__price">' + (pl.price ? roll(pl.price) : "Custom quote") + "</p>" +
         '<ul class="plan__list">' + (pl.includes || []).map(function (x) { return "<li>" + t(x) + "</li>"; }).join("") + "</ul>" +
-        '<a class="btn ' + (pl.featured ? "btn--light" : "btn--line") + '" href="contact.html?plan=' + encodeURIComponent(pl.name) + '#planner">Get a quote ' + ICON.arrow + "</a></div>";
+        '<a class="btn ' + (pl.featured ? "btn--light" : "btn--line") + '" href="contact.html?plan=' + encodeURIComponent(pl.name) + '#planner">' + (pl.price ? "Choose " + esc(pl.name) : "Get a quote") + " " + ICON.arrow + "</a></div>";
     }).join("");
     return '<section class="section wrap" id="pricing" aria-labelledby="' + id + '">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Pricing</p>' +
@@ -368,15 +399,15 @@
             return '<li><a href="' + esc(p.link) + '" target="_blank" rel="noopener">' + esc(p.link.replace(/^https?:\/\//, "").replace(/\/$/, "")) + " " + ICON.arrow + "</a></li>";
           }).join("") + "</ul>"
         : "";
-      return '<div class="why__tile' + (links ? " why__tile--live" : "") + '" data-reveal style="--d:' + (i % 3) * 0.06 + 's"><span class="why__num">' + pad(i + 1) + "</span>" +
+      return '<div class="why__tile' + (links ? " why__tile--live" : "") + '" data-reveal="ticket" style="--d:' + (i % 3) * 0.06 + 's"><span class="why__num">' + pad(i + 1) + "</span>" +
         "<h3>" + t(r.title) + "</h3><p>" + t(r.body) + "</p>" + links + "</div>";
     }).join("");
     var price = PRICING.startingAt
-      ? '<div class="why__tile why__tile--price" data-reveal><p class="eyebrow">Projects from</p><p class="why__price">' + esc(PRICING.startingAt) + "</p>" +
+      ? '<div class="why__tile why__tile--price" data-reveal="ticket"><p class="eyebrow">Websites from</p><p class="why__price">' + roll(PRICING.startingAt) + "</p>" +
         "<p>" + t(PRICING.note || "") + '</p><a class="btn btn--light" href="contact.html#planner">Plan your project ' + ICON.arrow + "</a></div>"
       : "";
     var call = C.phoneDisplay
-      ? '<a class="why__tile why__tile--call" href="' + telHref() + '" data-reveal><span class="eyebrow">The first call is free</span>' +
+      ? '<a class="why__tile why__tile--call" href="' + telHref() + '" data-reveal="ticket"><span class="eyebrow">The first call is free</span>' +
         '<span class="why__call">' + esc(C.phoneDisplay) + "</span><span>Call or text us today " + ICON.arrow + "</span></a>"
       : "";
     return '<section class="section wrap" aria-labelledby="why-title">' +
@@ -390,29 +421,38 @@
     setMeta("", SITE.seo && SITE.seo.description);
     var land = realShots(false);
     var port = realShots(true);
+    // The stage's phone shows the project marked heroPhone: true, or else the first phone screenshot.
+    var heroPhone = PROJECTS.filter(function (p) { return p.heroPhone; })[0];
+    var phoneShot = heroPhone && (heroPhone.images || []).filter(function (im) { return isPortrait(im) && !isPlaceholderImg(im); })[0] || port[0];
     var words = (SITE.studioName || "").split(/\s+/);
-    var title = words.map(function (w, i) {
-      return '<span class="line"><span style="--d:' + (0.05 + i * 0.1) + 's">' + esc(w) + "</span></span>";
-    }).join("");
+    var at = 0;
+    var title = '<span class="sr-only">' + esc(SITE.studioName) + '</span><span aria-hidden="true">' + words.map(function (w) {
+      var word = '<span class="hero__word">' + letters(w, at) + "</span>";
+      at += w.length;
+      return word;
+    }).join("") + "</span>";
 
     var iso = land.slice(0, 3).map(function (im, i) {
       return '<div class="iso__layer" style="--i:' + (i + 1) + '">' + img(im, { decorative: true, eager: true, sizes: "320px" }) + "</div>";
     }).join("");
 
+    // Featured work runs sideways in one row, each project on a panel in its own color.
     var featured = PROJECTS.filter(function (p) { return p.featured; });
-    var cards = featured.map(function (p) {
+    var reel = featured.map(function (p, i) {
       var n = PROJECTS.indexOf(p) + 1;
-      return '<a class="card" href="' + projectUrl(p) + '" data-reveal>' +
-        cardMedia(p, { sizes: "(min-width: 900px) 40vw, 100vw" }) +
+      return '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(i, 3) * 0.08 + "s;--accent:" + esc(p.accent || "#e9dfcf") + ";--tilt:" + (i % 2 ? 2.5 : -2.5) + 'deg">' +
+        '<a class="card" href="' + projectUrl(p) + '" draggable="false"><div class="reel__panel">' + cardMedia(p, { sizes: "(min-width: 760px) 34vw, 80vw" }) + "</div>" +
         '<div class="card__foot"><div><h3 class="card__title">' + esc(p.title) + '</h3><p class="card__meta">' + esc(p.category) + "</p></div>" +
-        '<span class="card__num">' + pad(n) + "</span></div></a>";
+        '<span class="card__num">' + pad(n) + "</span></div></a></li>";
     }).join("");
 
+    // Every service as a colored pill that slides in from the left.
+    var tones = [["#e9dfcf", "#0f0f0e"], ["#f2c230", "#0f0f0e"], ["#c8341c", "#ffffff"], ["#b9d4f0", "#0f0f0e"], ["#0f0f0e", "#f7f2ea"], ["#c5e35a", "#0f0f0e"]];
     var svc = SERVICES.map(function (s, i) {
-      return '<li class="svc" data-reveal><span class="svc__num">' + pad(i + 1) + "</span>" +
-        '<h3 class="svc__name">' + t(s.name) + "</h3>" +
-        '<p class="svc__desc">' + t(s.description) + "</p>" +
-        '<span class="svc__price">' + (s.price ? t(s.price) : '<span class="muted">Quoted per project</span>') + "</span></li>";
+      var tone = tones[i % tones.length];
+      return '<li style="--i:' + Math.min(i, 11) + ";--pill-bg:" + tone[0] + ";--pill-fg:" + tone[1] + '"><a class="pills__pill" href="services.html#service-' + (i + 1) + '">' +
+        '<span class="pills__num" aria-hidden="true">' + pad(i + 1) + '</span><span class="pills__name">' + t(s.name) + "</span>" +
+        (s.price ? '<span class="pills__tag">' + t(s.price) + "</span>" : "") + "</a></li>";
     }).join("");
 
     var thumb = land[3] || land[1] || land[0];
@@ -434,7 +474,7 @@
       (avail ? '<p class="pill"><span class="pill__dot" aria-hidden="true"></span>' + t(avail) + "</p>" : "") +
       "<p>" + t(SITE.taglineSub) + "</p>" +
       '<div class="hero__ctas"><a class="btn btn--dark" href="contact.html#planner">Get a quote ' + ICON.arrow + '</a><a class="btn btn--line" href="work.html">View work</a></div>' +
-      (PRICING.startingAt ? '<p class="hero__price"><span>Projects from</span> <strong>' + esc(PRICING.startingAt) + "</strong></p>" : "") + "</div>" +
+      (PRICING.startingAt ? '<p class="hero__price" data-reveal="slap" style="--d:.7s"><span>Websites from</span> <strong>' + roll(PRICING.startingAt) + "</strong></p>" : "") + "</div>" +
       '<div class="hero__visual" data-reveal style="--d:.35s"><div class="iso" aria-hidden="true"><div class="iso__stage"><div class="iso__base"></div>' + iso + "</div></div></div>" +
       "</div></section>" +
 
@@ -443,7 +483,7 @@
       '<div class="lamp" aria-hidden="true"></div><div class="platform" aria-hidden="true"></div><div class="pedestal" aria-hidden="true"></div>' +
       (land[1] ? '<figure class="device device--side">' + browser(land[1], { sizes: "(min-width: 700px) 25vw, 1px" }) + "</figure>" : "") +
       (land[0] ? '<figure class="device device--main">' + browser(land[0], { high: true, sizes: "(min-width: 700px) 44vw, 66vw" }) + "</figure>" : "") +
-      (port[0] ? '<figure class="device device--phone">' + phone(port[0], { sizes: "(min-width: 700px) 10vw, 25vw" }) + "</figure>" : "") +
+      (phoneShot ? '<figure class="device device--phone">' + phone(phoneShot, { sizes: "(min-width: 700px) 10vw, 25vw" }) + "</figure>" : "") +
       '<p class="stage__caption">Live work: ' + featured.filter(function (p) { return p.link; }).map(function (p) { return esc(p.title); }).join(" · ") + "</p>" +
       "</section>" +
 
@@ -459,20 +499,25 @@
 
       lab() +
 
-      '<section class="featured section" aria-labelledby="featured-title"><div class="wrap featured__grid">' +
-      '<div class="featured__intro"><h2 class="h2" id="featured-title" data-reveal>Where style<br>meets function.</h2>' +
-      "<p data-reveal>Platforms, apps and business systems we designed and built, each around the people who use it every day. Open any project to watch it in action.</p>" +
-      '<div data-reveal><a class="btn btn--light" href="work.html">View all work ' + ICON.arrow + "</a></div>" +
-      '<ul class="featured__cats" data-reveal>' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul></div>" +
-      '<div class="featured__cards">' + cards + "</div>" +
-      "</div></section>" +
+      '<section class="featured section" aria-labelledby="featured-title">' +
+      '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Selected work · ' + pad(featured.length) + " projects</p>" +
+      '<h2 class="h2" id="featured-title" data-reveal>Where style<br>meets function.</h2></div>' +
+      '<div class="featured__side"><p data-reveal>Platforms, apps and business systems we designed and built, each around the people who use it every day. Swipe through, and open any project to watch it in action.</p>' +
+      '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="work.html">View all work ' + ICON.arrow + "</a>" +
+      '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="reel" aria-label="Previous project">' + ICON.left + "</button>" +
+      '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(featured.length) + "</span>" +
+      '<button class="reel__btn" type="button" data-dir="1" aria-controls="reel" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
+      '<div class="reel"><ul class="reel__track" id="reel" aria-label="Featured projects">' + reel + "</ul></div>" +
+      '<div class="wrap reel__foot"><div class="reel__bar" aria-hidden="true"><i></i></div>' +
+      '<ul class="featured__cats">' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul></div>" +
+      "</section>" +
 
       whyUs() +
 
       '<section class="section wrap" aria-labelledby="svc-title" style="padding-top:0">' +
       '<div class="section-head"><h2 class="h2" id="svc-title" data-reveal>Everything,<br>under one <span class="serif">roof.</span></h2>' +
       '<p data-reveal>From the logo on the door to the system behind the counter, the AI that answers your customers and the ads that bring them in. If your business needs it, we’ll handle it.</p></div>' +
-      '<ul class="svc-list svc-list--compact">' + svc + "</ul>" +
+      '<ul class="pills" data-reveal="pills">' + svc + "</ul>" +
       '<div style="margin-top:32px" data-reveal><a class="btn btn--line" href="services.html">See what’s included ' + ICON.arrow + "</a></div>" +
       "</section>" +
       pricing("pricing-title") +
@@ -613,9 +658,9 @@
   }
 
   function services() {
-    setMeta("Services & pricing", "Brand identity, websites, online stores, apps, POS and inventory systems, AI assistants, ads and more, in any style. Projects start at " + (PRICING.startingAt || "$500") + ".");
+    setMeta("Services & pricing", "Brand identity, websites, online stores, apps, POS and inventory systems, AI assistants, ads and more, in any style. Websites start at " + (PRICING.startingAt || "$80") + ".");
     var list = SERVICES.map(function (s, i) {
-      return '<li class="svc" data-reveal><span class="svc__num">' + pad(i + 1) + "</span>" +
+      return '<li class="svc" id="service-' + (i + 1) + '" data-reveal><span class="svc__num">' + pad(i + 1) + "</span>" +
         '<h2 class="svc__name">' + t(s.name) + "</h2>" +
         '<p class="svc__desc">' + t(s.description) + "</p>" +
         '<ul class="svc__includes" aria-label="Included">' + (s.includes || []).map(function (x) { return "<li>" + t(x) + "</li>"; }).join("") + "</ul>" +
@@ -695,12 +740,16 @@
   }
 
   function contact() {
-    setMeta("Contact", "Plan your project in two minutes and send it to " + SITE.studioName + " by email, text or Instagram. Projects start at " + (PRICING.startingAt || "$500") + ".");
+    setMeta("Contact", "Plan your project in two minutes and send it to " + SITE.studioName + " by email, text or Instagram. Websites start at " + (PRICING.startingAt || "$80") + ".");
     var params = new URLSearchParams(location.search);
     var styleId = params.get("style") || "";
     var needs = params.getAll("need");
     var message = [];
-    (PRICING.plans || []).forEach(function (pl) { if (pl.name === params.get("plan")) message.push("I’m interested in the " + pl.name + " plan."); });
+    (PRICING.plans || []).forEach(function (pl) {
+      if (pl.name !== params.get("plan")) return;
+      message.push("I’m interested in the " + pl.name + " plan" + (pl.price ? " (" + pl.price + ")" : "") + ".");
+      if (pl.need && needs.indexOf(pl.need) < 0) needs.push(pl.need);
+    });
     PROJECTS.forEach(function (p) { if (p.title === params.get("like")) message.push("I’d like something like " + p.title + "."); });
     var req = C.formEndpoint ? " required" : "";
 
@@ -735,7 +784,7 @@
         field("p-name", "Your name", 'name="name" autocomplete="name"' + req) +
         field("p-business", "Business name", 'name="business" autocomplete="organization"', (params.get("name") || "").slice(0, 60)) +
         field("p-contact", "Email or phone", 'name="contact" autocomplete="email"' + req) +
-        '<div class="field plan-fields__wide"><label for="p-msg">Anything else?</label><textarea id="p-msg" name="message" maxlength="1500" ' +
+        '<div class="field plan-fields__wide"><label for="p-msg">Anything else?</label><textarea id="p-msg" data-lenis-prevent name="message" maxlength="1500" ' +
         'placeholder="What your business does, sites you like, deadlines…">' + esc(message.join(" ")) + "</textarea></div></div>");
 
     var ig = C.instagram ? C.instagram.handle.replace(/^@/, "") : "";
@@ -745,7 +794,7 @@
     if (C.phoneLink) send.push('<a class="btn btn--ghost-light" data-send="sms" href="sms:' + esc(C.phoneLink) + '">Text it ' + ICON.arrow + "</a>");
     if (ig) send.push('<a class="btn btn--ghost-light" data-send="ig" href="https://ig.me/m/' + encodeURIComponent(ig) + '" target="_blank" rel="noopener">Copy &amp; DM on Instagram ' + ICON.arrow + "</a>");
     var brief = '<aside class="brief" aria-labelledby="brief-title"><div class="brief__head"><h3 class="h3" id="brief-title">Your brief</h3><span class="eyebrow">Updates as you go</span></div>' +
-      '<div class="brief__text" tabindex="0" role="region" aria-label="Your project brief"></div>' +
+      '<div class="brief__text" tabindex="0" role="region" aria-label="Your project brief" data-lenis-prevent></div>' +
       '<div class="brief__send">' + send.join("") + "</div>" +
       '<p class="brief__status" role="status" aria-live="polite"></p>' +
       '<ol class="brief__next"><li>Send your brief, any way you like.</li><li>We reply with questions or set up a free first call.</li><li>You get a clear quote before any work starts.</li></ol></aside>';
@@ -1056,16 +1105,30 @@
       if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(text).then(function () { return true; }, fallback);
       return Promise.resolve(fallback());
     }
+    // A rubber stamp that thumps onto the brief when it's sent or copied.
+    var panel = form.querySelector(".brief");
+    function stamp(text) {
+      if (reduceMotion || !panel) return;
+      var old = panel.querySelector(".stamp");
+      if (old) panel.removeChild(old);
+      var el = document.createElement("span");
+      el.className = "stamp";
+      el.setAttribute("aria-hidden", "true");
+      el.textContent = text;
+      panel.appendChild(el);
+      el.addEventListener("animationend", function () { if (el.parentNode) el.parentNode.removeChild(el); });
+    }
     form.addEventListener("input", update);
     form.addEventListener("change", update);
     update();
-    if (email) email.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your email app should open with the brief ready to send."; });
-    if (sms) sms.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your messages app should open with the brief ready to send."; });
+    if (email) email.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your email app should open with the brief ready to send."; stamp("Ready!"); });
+    if (sms) sms.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your messages app should open with the brief ready to send."; stamp("Ready!"); });
     // The link opens Instagram as usual; the brief is copied on the way so it can be pasted in.
     if (ig) ig.addEventListener("click", function () {
       copy(brief()).then(function (ok) {
         status.className = "brief__status";
         status.textContent = ok ? "Brief copied. Paste it into the Instagram chat that just opened." : "Copy the brief above, then paste it into the Instagram chat.";
+        if (ok) stamp("Copied!");
       });
     });
 
@@ -1214,14 +1277,65 @@
   }
 
   // Pages are drawn by this script, so jump to #planner (or any #id) once it exists.
+  // Where an element will sit once its reveal finishes. offsetTop ignores the reveal's
+  // transforms, so anchors don't land a few pixels under the sticky header.
+  function restingTop(el) {
+    var y = 0;
+    for (var n = el; n; n = n.offsetParent) y += n.offsetTop;
+    var gap = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    return Math.max(0, y - gap);
+  }
+
   function scrollToHash() {
     var id = location.hash.slice(1);
     var el = id && document.getElementById(decodeURIComponent(id));
     if (!el) return;
     var html = document.documentElement;
     html.style.scrollBehavior = "auto";
-    el.scrollIntoView({ block: "start" });
+    window.scrollTo(0, restingTop(el));
     html.style.scrollBehavior = "";
+  }
+
+  // In-page links glide to their target and stop just below the sticky header.
+  var lenis = null;
+  function initAnchors() {
+    document.addEventListener("click", function (e) {
+      if (e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      var a = e.target.closest && e.target.closest('a[href*="#"]');
+      if (!a || a.classList.contains("skip-link") || a.target) return;
+      if (a.origin !== location.origin || a.pathname !== location.pathname || a.search !== location.search) return;
+      var id = decodeURIComponent(a.hash.slice(1));
+      if (!id) return;
+      var el = id === "top" ? null : document.getElementById(id);
+      if (id !== "top" && !el) return;
+      e.preventDefault();
+      var y = el ? restingTop(el) : 0;
+      if (lenis) lenis.scrollTo(y);
+      else window.scrollTo({ top: y, behavior: reduceMotion ? "auto" : "smooth" });
+      if (el) {
+        if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1");
+        el.focus({ preventScroll: true });
+      }
+      if (history.replaceState) history.replaceState(null, "", a.hash);
+    });
+  }
+
+  // Splitting a word into one span per letter drops the font's kerning, so
+  // letters like "Ki" crowd each other. Measure each pair and add it back.
+  function kernLetters() {
+    var c = document.createElement("canvas").getContext("2d");
+    if (!c) return;
+    document.querySelectorAll(".ltr").forEach(function (el) {
+      var next = el.nextSibling;
+      if (!next || next.nodeType !== 1 || !next.classList.contains("ltr")) return;
+      var a = getComputedStyle(el), b = getComputedStyle(next);
+      var font = a.fontStyle + " " + a.fontWeight + " 100px " + a.fontFamily;
+      if (font !== b.fontStyle + " " + b.fontWeight + " 100px " + b.fontFamily) return;
+      c.font = font;
+      var x = el.textContent, y = next.textContent;
+      var k = c.measureText(x + y).width - c.measureText(x).width - c.measureText(y).width;
+      el.style.marginRight = Math.abs(k) > 0.05 ? (k / 100).toFixed(4) + "em" : "";
+    });
   }
 
   // Size the giant footer wordmark so it spans the full width, whatever the studio name.
@@ -1240,6 +1354,121 @@
     window.addEventListener("resize", function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(fit); });
   }
 
+  // A short curtain with the wordmark the first time someone lands on the home page in a
+  // visit. The hero's letters drop in as it lifts. Skipped with reduced motion.
+  function initIntro() {
+    var title = document.querySelector(".hero__title");
+    function go() { if (title) title.classList.add("is-go"); }
+    var seen = true;
+    try { seen = !!sessionStorage.getItem("ks-intro"); sessionStorage.setItem("ks-intro", "1"); } catch (e) {}
+    if (page !== "home" || reduceMotion || seen) return go();
+    var el = document.createElement("div");
+    el.className = "intro";
+    el.setAttribute("aria-hidden", "true");
+    el.innerHTML = '<p class="intro__mark display">' + letters(SITE.studioName || "") + '</p><p class="intro__tag">' + esc(SITE.eyebrow || "") + "</p>";
+    document.body.appendChild(el);
+    document.documentElement.classList.add("has-intro");
+    function done() { if (el.parentNode) el.parentNode.removeChild(el); }
+    el.addEventListener("animationend", function (e) { if (e.animationName === "introLift") done(); });
+    setTimeout(go, 1150);
+    setTimeout(done, 2600);
+  }
+
+  // The sideways work reel: swipe it, drag it with the mouse, or use the arrows.
+  function initReel() {
+    var track = document.querySelector(".reel__track");
+    if (!track) return;
+    var items = [].slice.call(track.children);
+    var btns = document.querySelectorAll(".reel__btn");
+    var count = document.querySelector(".reel__count b");
+    var thumb = document.querySelector(".reel__bar i");
+    if (!items.length) return;
+    function step() { return items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : track.clientWidth; }
+    function max() { return track.scrollWidth - track.clientWidth; }
+    // A stop this close to the end counts as the end, so no click ever nudges a few pixels.
+    var NEAR = 48;
+    function at(i) { var x = Math.min(max(), items[i].offsetLeft - items[0].offsetLeft); return max() - x < NEAR ? max() : x; }
+    function atEnd() { return track.scrollLeft >= max() - NEAR; }
+    function current() { return atEnd() ? items.length - 1 : Math.round(track.scrollLeft / step()); }
+    function go(i) {
+      i = Math.max(0, Math.min(items.length - 1, i));
+      track.scrollTo({ left: at(i), behavior: reduceMotion ? "auto" : "smooth" });
+    }
+    function update() {
+      if (count) count.textContent = pad(current() + 1);
+      if (btns[0]) btns[0].disabled = track.scrollLeft <= 2;
+      if (btns[1]) btns[1].disabled = max() <= 2 || atEnd();
+      if (thumb && track.scrollWidth) {
+        thumb.style.width = (track.clientWidth / track.scrollWidth) * 100 + "%";
+        thumb.style.transform = "translateX(" + (track.scrollLeft / track.clientWidth) * 100 + "%)";
+      }
+    }
+    [].forEach.call(btns, function (b) {
+      // Next: the first card that starts right of where we are. Prev: the last one left of it.
+      b.addEventListener("click", function () {
+        var left = track.scrollLeft, i;
+        if (+b.getAttribute("data-dir") > 0) for (i = 0; i < items.length - 1 && at(i) <= left + 2; i++);
+        else for (i = items.length - 1; i > 0 && at(i) >= left - NEAR; i--);
+        go(i);
+      });
+    });
+    var raf;
+    track.addEventListener("scroll", function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
+    window.addEventListener("resize", update);
+    update();
+
+    // Mouse drag. Snapping is paused while dragging, then the reel settles on the next card.
+    var down = null, moved = false, settle;
+    track.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      down = { x: e.clientX, left: track.scrollLeft };
+      moved = false;
+    });
+    window.addEventListener("pointermove", function (e) {
+      if (!down) return;
+      var dx = e.clientX - down.x;
+      if (!moved && Math.abs(dx) > 6) {
+        moved = true;
+        clearTimeout(settle);
+        track.classList.add("is-drag");
+      }
+      if (moved) track.scrollLeft = down.left - dx;
+    });
+    window.addEventListener("pointerup", function (e) {
+      if (!down) return;
+      var dx = e.clientX - down.x;
+      down = null;
+      if (!moved) return;
+      setTimeout(function () { moved = false; }, 0); // after the click this release fires, if any
+      var pos = track.scrollLeft / step();
+      go(dx < -40 ? Math.ceil(pos) : dx > 40 ? Math.floor(pos) : Math.round(pos));
+      settle = setTimeout(function () { track.classList.remove("is-drag"); }, 700);
+    });
+    // A drag shouldn't also open the card it ended on.
+    track.addEventListener("click", function (e) {
+      if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+    }, true);
+    track.addEventListener("dragstart", function (e) { e.preventDefault(); });
+  }
+
+  // Smooth, weighty scrolling on desktops (Lenis). Phones and touch screens keep their
+  // native scrolling, and sideways swipes pass through to the work reel and style chips.
+  function initSmooth() {
+    if (reduceMotion || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    var s = document.createElement("script");
+    s.src = "https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js";
+    s.async = true;
+    s.onload = function () {
+      if (typeof window.Lenis !== "function") return;
+      lenis = new window.Lenis({
+        lerp: 0.12,
+        virtualScroll: function (e) { return Math.abs(e.deltaX) <= Math.abs(e.deltaY); },
+      });
+      (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(performance.now());
+    };
+    document.head.appendChild(s);
+  }
+
   /* ---------- boot ---------- */
   var pages = { home: home, work: work, project: project, services: services, about: about, resume: resume, contact: contact, "404": notFound };
   document.getElementById("site-header").innerHTML = header();
@@ -1249,6 +1478,7 @@
   jsonLd();
 
   initMenu();
+  initIntro();
   initReveal();
   initCounters();
   initLab();
@@ -1256,8 +1486,13 @@
   initFilters();
   initPlanner();
   initVideos();
+  initReel();
   initQuickBar();
   initCursor();
+  kernLetters();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(kernLetters);
   fitFooter();
   scrollToHash();
+  initAnchors();
+  initSmooth();
 })();

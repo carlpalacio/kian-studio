@@ -9,7 +9,7 @@ any design code.
 content/
   site.js       ← studio name, bio, contact details, socials, skills, the "we handle it all" list
   projects.js   ← every project (Work page, case studies, home page), with features and videos
-  services.js   ← every service, the pricing plans ("Starts as low as $500") and the FAQ
+  services.js   ← every service, the pricing plans (websites from $80, plus Custom) and the FAQ
   resume.js     ← resume summary + which PDF to download
 assets/
   img/projects/ ← project screenshots (one folder per project)
@@ -64,6 +64,15 @@ Everything on the home page comes from `content/site.js`:
 - **The crossing ribbons:** the black one lists `capabilities`, the red one lists `promises`.
 - **Why Kian Studio:** `reasons` are the tiles. The big price tile comes from `PRICING.startingAt` in
   `content/services.js`. Add `live: true` to a reason to give it links to the live projects.
+- **The ticker strip** across the top of every page is `ticker`. A ▲ shows in green and a ▼ in red,
+  so `"Hidden fees ▼ none"` reads like a falling stock. Write whatever you like.
+- **The stage** under the hero shows a project's screens on a laptop and a phone. The phone uses the
+  first phone screenshot (taller than wide) of the project marked `heroPhone: true` in
+  `content/projects.js` (now The One App).
+- **Selected work** is a sideways reel of every project with `featured: true`, in file order. Visitors
+  swipe it, drag it with the mouse, or use the arrows. Each card's color is the project's `accent`.
+- **Everything, under one roof** shows every service in `content/services.js` as a colored pill. A
+  service with a `price` gets a small price tag, and each pill links to that service on the Services page.
 - **Any design. Any style.:** the Style Lab shows one made-up café ("Mesa") in 20 styles. Visitors can
   type their own business name, and "Start in this style" opens the planner with that style and name
   already picked. To change the demo text or the styles, edit `LAB` and `STYLES` near the top of
@@ -77,9 +86,10 @@ email, by text, or by copying it and opening an Instagram DM. The checkboxes com
 `PRICING.timelines`.
 
 Links can pre-fill the planner, for example
-`contact.html?style=neon&name=Mesa%20Cafe&plan=Grow&need=Brand%20Identity#planner`.
+`contact.html?style=neon&name=Mesa%20Cafe&plan=Standard&need=Brand%20Identity#planner`.
 The site already does this from the Style Lab, the plan cards, each service's "Get a quote" link and
-each case study's "Want something like this?" box.
+each case study's "Want something like this?" box. A plan link ticks that plan's `need` service and
+adds a line like "I’m interested in the Standard plan ($160)." to the brief.
 
 On phones, a "Get a quote" / "Call" bar appears at the bottom of every page except Contact once a
 visitor scrolls past the top.
@@ -101,7 +111,8 @@ visitor scrolls past the top.
   client: "Kape Lokal Coffee",
   role: "Brand identity",
   accent: "#e2442a",                  // tint behind the screenshots on the case study
-  featured: true,                     // show on the home page
+  featured: true,                     // show in the home page's work reel
+  heroPhone: false,                   // true puts this project's phone screenshot on the home stage
   summary: "Two to four sentences about the project.",
   sections: [{ heading: "The brief", body: "..." }],
   tools: ["Figma", "Illustrator"],
@@ -137,16 +148,22 @@ The POS and Inventory case studies are OnTrack, captured from its made-up Demo B
 ## Add or edit a service
 
 Edit `content/services.js`. Each service has a `name`, `description`, `includes` list and an
-optional `price` such as `"From $500"`. Leave `price: ""` to show "Quoted per project".
+optional `price` such as `"From $80"`. Leave `price: ""` to show "Quoted per project" (Brand
+Identity and everything except websites are quoted this way now).
 
 ## Change prices, plans or the FAQ
 
 Also in `content/services.js`:
 
-- `PRICING.startingAt` is the headline price ("Starts as low as $500"). It also shows in the hero,
-  the call-to-action at the bottom of every page and the contact page.
-- `PRICING.plans` are the three plan cards. Set a plan's `price` to `""` to show "Custom quote", and
-  `featured: true` to make one dark.
+- `PRICING.startingAt` is the headline price ("Starts as low as $80"). It also shows in the hero
+  sticker, the price tile, the call-to-action at the bottom of every page and the phone quote bar.
+  `PRICING.note` is the line under the pricing heading.
+- `PRICING.plans` are the four plan cards: Basic $80 (1 page), Standard $160 (3 pages), Premium $275
+  (5 pages) and Custom. Set a plan's `price` to `""` to show "Custom quote", `featured: true` to make
+  one dark, and `need` to the service the planner should tick when someone picks that plan.
+- If you change the prices, also update the words "$80" in `promises` and `ticker` in
+  `content/site.js`, `seo.description`, the meta descriptions in `index.html`, `services.html` and
+  `contact.html`, the `<title>` of `services.html`, and the cost answer in `FAQ`.
 - `FAQ` is the list of questions on the Services page.
 
 ## Replace the resume
@@ -161,7 +178,8 @@ in the same file.
    `https://formspree.io/f/abcdwxyz`.
 2. Paste it into `contact.formEndpoint` in `content/site.js`.
 
-The form appears on the Contact page and sends messages to the email you set in Formspree.
+The form appears on the Contact page and sends messages to the email you set in Formspree
+(use the studio address, kianhuatstudio@gmail.com, which is `contact.email` in `content/site.js`).
 Until then, the page shows phone, Instagram and email links.
 
 ## Deploy
@@ -200,11 +218,18 @@ If you move to a custom domain or another host:
 - **Fonts:** Inter Tight, Instrument Serif and JetBrains Mono, loaded from Google Fonts.
 - **Style Lab fonts** (about 25 faces) only load when a visitor scrolls near the lab, and only the
   characters the lab uses are downloaded.
-- **Motion:** gentle fade-ups, a count-up, the rotating hero words, the scrolling ribbons (they pause
-  on hover), the Style Lab slideshow (it pauses on hover, while someone types a name, and once a
-  visitor picks a style), the scroll progress bar, the "View" cursor on project cards and the card
-  video clips. All of it turns off for visitors who set "reduce motion" on their device: the
-  ribbons show as still lists and the lab waits for a click.
+- **Motion:** a short intro curtain on the first home page visit of each session, letters that drop
+  in and squash (hero title, footer wordmark), prices that roll up digit by digit, the hero price
+  sticker slapping on, cards that swing in like tickets, service pills that pop in, headings that
+  wipe in, the ticker, a rubber stamp when the planner brief is sent or copied, springy buttons,
+  the rotating hero words, the scrolling ribbons (they pause on hover), the Style Lab slideshow (it
+  pauses on hover, while someone types a name, and once a visitor picks a style), the scroll
+  progress bar, the "View" cursor on project cards and the card video clips.
+- **Smooth scrolling** on desktops with a mouse or trackpad uses Lenis (loaded from jsDelivr). Phones
+  and touch screens keep their normal scrolling. If Lenis can't load, the site scrolls normally.
+- **Reduce motion:** all of the above turns off for visitors who set "reduce motion" on their
+  device. There's no intro, everything shows in place, the ribbons and ticker are still lists and
+  the lab waits for a click.
 - **Screenshots** of Inest and Onsite were captured from the live sites, and the OnTrack ones from
   its demo restaurant. Re-capture them whenever those products change.
 - **"First call free"** appears in the red ribbon (`promises` in `content/site.js`), the FAQ

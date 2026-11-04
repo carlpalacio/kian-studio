@@ -20,6 +20,7 @@
                show under "More to watch". Each video:
                  { src, poster, title, duration, w, h, frame: "browser" (optional) }
     loop       optional short muted clip that plays on the project's card
+    heroPhone  optional. true puts this project's phone screenshot on the home page stage
     link       live site address, or "" for none
     Text in [square brackets] shows as a placeholder on the site.
 */
@@ -144,6 +145,7 @@ window.PROJECTS = [
     role: "Product design & development",
     accent: "#2547e8",
     featured: true,
+    heroPhone: true,
     summary:
       "An all-in-one fitness app that brings training, food and recovery together. Every morning it scores your recovery, training load and sleep, then plans your day, logs your workouts and meals, and keeps you going with friends, challenges and streaks.",
     sections: [
@@ -184,6 +186,7 @@ window.PROJECTS = [
     ],
     images: [
       { src: "assets/img/projects/the-one-app/cover-1600.webp", small: "assets/img/projects/the-one-app/cover-800.webp", alt: "Dozens of The One App's screens laid out on a dark background", w: 1600, h: 900, art: true },
+      { src: "assets/img/projects/the-one-app/mobile-450.webp", alt: "The One App's Today screen with the day's workout and its recovery, load and sleep scores", w: 450, h: 1000 },
       { src: "assets/img/projects/the-one-app/today-1600.webp", small: "assets/img/projects/the-one-app/today-800.webp", alt: "The One App's Today screen with Recovery 74, Load 46 and Sleep 86", w: 1600, h: 900, art: true },
       { src: "assets/img/projects/the-one-app/plan-1600.webp", small: "assets/img/projects/the-one-app/plan-800.webp", alt: "Weekly planner screens for editing and adding routines", w: 1600, h: 900, art: true },
       { src: "assets/img/projects/the-one-app/new-pr-1600.webp", small: "assets/img/projects/the-one-app/new-pr-800.webp", alt: "A finished leg-day workout celebrating a new personal record of 82 kg for 6 reps", w: 1600, h: 900, art: true },
