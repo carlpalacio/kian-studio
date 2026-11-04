@@ -202,11 +202,16 @@ choose **Framework preset: Other**, leave the build command empty and the output
 minute or two. `PROMPT.md` and `.claude/` are left out by `.gitignore`. The `.nojekyll` file is
 already included.
 
+**After each update, bump the version.** Browsers keep the site's files for up to 10 minutes, so
+returning visitors could otherwise see old prices or text. Every `.html` file loads its CSS, scripts
+and share image with `?v=2` on the end. Change all of them to the next number (`?v=3`, `?v=4`, …)
+whenever you publish changes; a find-and-replace of `?v=2` across the `.html` files does it.
+
 If you move to a custom domain or another host:
 
 - Change `seo.siteUrl` in `content/site.js` to the new address.
 - Change the share image address in the `<head>` of each `.html` file
-  (`content="https://carlpalacio.github.io/kian-studio/og-image.png"`). Some apps, like Facebook and
+  (`content="https://carlpalacio.github.io/kian-studio/og-image.png?v=2"`). Some apps, like Facebook and
   LinkedIn, only read full addresses.
 - The custom 404 page works on Netlify, Vercel, a custom domain, and GitHub Pages project sites like
   this one (`username.github.io/repo/`). The one exception is a `username.github.io` user site with
