@@ -74,18 +74,26 @@ Replace them when you have a final name or logo.
 Everything on the home page comes from `content/site.js`:
 
 - **Hero:** `eyebrow` is the small line above the name, `heroLead` is the fixed start of the headline
-  and `rotating` is the list of words that cycle after it ("We design, build and scale *brands.*").
+  and `rotating` is the list of words that cycle after it ("Let’s build your *idea.*").
   They cycle three times, then rest on the first word. `taglineSub` is the line under it.
-  `contact.availability` is the green "Taking new projects" pill.
+  `contact.availability` is the green "Taking new projects" pill. The main button, "Tell us your idea",
+  glides down to "What do you want to build?" (it goes to the planner instead if `ideas` is empty).
 - **The crossing ribbons:** the black one lists `capabilities`, the red one lists `promises`.
-- **The blue brand scaling band** under the about strip uses `GROWTH.steps` in
+- **What do you want to build?** sits under the ribbons. Its tappable ideas are `ideas` in
+  `content/site.js`. Each has a `label` (the words visitors see), a `need` (the service the planner
+  ticks; it must match a service `name` in `content/services.js` exactly) and an optional `like` (a
+  project `title` from `content/projects.js`, shown as "We’ve built something like this"). A service
+  with a `price` adds a small price tag. On computers, "Latest project" shows the first project in
+  `content/projects.js`. "Start my project" opens the planner with those services ticked and the
+  visitor’s idea in the brief; nothing is sent until they send it.
+- **The blue brand scaling band** under "What do you want to build?" uses `GROWTH.steps` in
   `content/services.js` and links to the Brand scaling page. Its chart is a drawing, not real data.
 - **AI, used well:** `ai.points` in `content/site.js` are the four AI points, and `ai.chat` is the
   example conversation that plays in the chat window (for the made-up café Mesa; the page says so).
   Each message has `from: "them"` (the customer) or `from: "ai"`. The black "Responsive, both ways"
   box uses `contact.replyTime`.
 - **Reply time:** `contact.replyTime` ("within 24 hours") is also used in the call-to-action box on
-  every page, the Services FAQ intro and the Contact page. If you change it, also change "24 hours" in
+  every page, step 02 of "What do you want to build?", the Services FAQ intro and the Contact page. If you change it, also change "24 hours" in
   `contact.availability`, `promises`, `ticker`, `fullBio`, `reasons` and the "How fast do you reply?"
   answer in `FAQ`.
 - **Why Kian Studio:** `reasons` are the tiles. The big price tile comes from `PRICING.startingAt` in
@@ -94,11 +102,13 @@ Everything on the home page comes from `content/site.js`:
   so `"Hidden fees ▼ none"` reads like a falling stock. Write whatever you like.
 - **The stage** under the hero shows a project's screens on a laptop and a phone. The phone uses the
   first phone screenshot (taller than wide) of the project marked `heroPhone: true` in
-  `content/projects.js` (now The One App).
+  `content/projects.js` (now The One App). The main laptop shows the first featured project (now
+  Middleware). The caption under it names the projects whose screens are shown.
 - **Selected work** is a sideways reel of every project with `featured: true`, in file order. Visitors
   swipe it, drag it with the mouse, or use the arrows. Each card's color is the project's `accent`.
-- **Everything, under one roof** shows every service in `content/services.js` as a colored pill. A
-  service with a `price` gets a small price tag, and each pill links to that service on the Services page.
+  It ends with a "Your project" card that opens the planner. The paragraph above the reel (`home()`)
+  and the Work page intro (`work()`) name the kinds of projects by hand in `assets/js/main.js`, so
+  update them when you add a different kind of project.
 - **Any design. Any style.:** the Style Lab shows one made-up café ("Mesa") in 20 styles. Visitors can
   type their own business name, and "Start in this style" opens the planner with that style and name
   already picked. To change the demo text or the styles, edit `LAB` and `STYLES` near the top of
@@ -117,6 +127,11 @@ Links can pre-fill the planner, for example
 The site already does this from the Style Lab, the plan cards, each service's "Get a quote" link and
 each case study's "Want something like this?" box. A plan link ticks that plan's `need` service and
 adds a line like "I’m interested in the Standard plan ($160)." to the brief.
+
+The home page's "What do you want to build?" box links here too. It sends one `need` per service,
+one `like` per project and `from=idea`. The visitor's own words travel in the browser's session
+storage (or as `idea=` if storage is blocked), and the planner shows "Good start. Your idea is
+already in your brief." above the steps.
 
 On phones, the plan cards, the "Why work with us" tiles and the scaling steps become sideways swipe
 rows so the page stays short. A "Get a quote" / "Call" bar appears at the bottom of every page except Contact once a
@@ -147,6 +162,7 @@ visitor scrolls past the top.
   features: ["Online ordering", "Loyalty stamps"],  // the "What it does" list
   results: ["Opened with a full brand kit in 3 weeks"],
   link: "https://example.com",       // or "" for none
+  note: "",                          // optional small print under the screenshots, e.g. that they use demo data
   loop: "assets/video/loops/kape-lokal.mp4",        // optional muted clip on the card
   videos: [                                        // optional; the first one is the case study's cover
     { src: "assets/video/kape-lokal.mp4", poster: "assets/img/projects/kape-lokal/cover-1600.webp",
@@ -178,8 +194,7 @@ The POS and Inventory case studies are OnTrack, captured from its made-up Demo B
 Edit `content/services.js`. Each service has a `name`, `description`, `includes` list and an
 optional `price` such as `"From $80"`. Leave `price: ""` to show "Quoted per project" (Brand
 Identity and everything except websites are quoted this way now). Add `page: "brand-scaling.html"`
-(or any page) to give a service a "How it works" link on the Services page and make its home page
-pill link there.
+(or any page) to give a service a "How it works" link on the Services page.
 
 ## The brand scaling & ads page
 
@@ -231,7 +246,7 @@ profiles once they're set).
 The site is static files, so it deploys anywhere with **no build command**.
 Upload this whole folder. You can leave out `.claude/`, `listing-kit/`, `README.md` and `PROMPT.md`,
 which aren't part of the site (anything you upload can be opened by visitors). The videos make the folder
-about 75 MB, which is fine on all three hosts below.
+about 90 MB, which is fine on all three hosts below.
 
 **Netlify:** go to <https://app.netlify.com/drop> and drag this folder onto the page. Done.
 For updates, drag it again (or connect a GitHub repo: leave the build command empty and set the
@@ -248,15 +263,15 @@ already included.
 
 **After each update, bump the version.** Browsers keep the site's files for up to 10 minutes, so
 returning visitors could otherwise see old prices or text. Every `.html` file loads its CSS, scripts
-and share image with a version on the end (now `?v=3`). Change all of them to the next number
-(`?v=4`, `?v=5`, …) whenever you publish changes; a find-and-replace of `?v=3` across the `.html`
+and share image with a version on the end (now `?v=4`). Change all of them to the next number
+(`?v=5`, `?v=6`, …) whenever you publish changes; a find-and-replace of `?v=4` across the `.html`
 files does it.
 
 If you move to a custom domain or another host:
 
 - Change `seo.siteUrl` in `content/site.js` to the new address.
 - Change the share image address in the `<head>` of each `.html` file
-  (`content="https://carlpalacio.github.io/kian-studio/og-image.png?v=3"`). Some apps, like Facebook and
+  (`content="https://carlpalacio.github.io/kian-studio/og-image.png?v=4"`). Some apps, like Facebook and
   LinkedIn, only read full addresses.
 - Change the addresses in `sitemap.xml`.
 - The custom 404 page works on Netlify, Vercel, a custom domain, and GitHub Pages project sites like
@@ -275,7 +290,7 @@ If you move to a custom domain or another host:
   characters the lab uses are downloaded.
 - **Motion:** a short intro curtain on the first home page visit of each session, letters that drop
   in and squash (hero title, footer wordmark), prices that roll up digit by digit, the hero price
-  sticker slapping on, cards that swing in like tickets, service pills that pop in, headings that
+  sticker slapping on, cards that swing in like tickets, idea chips that slide in, headings that
   wipe in, the ticker, a rubber stamp when the planner brief is sent or copied, springy buttons,
   the rotating hero words, the scrolling ribbons (they pause on hover), the Style Lab slideshow (it
   pauses on hover, while someone types a name, and once a visitor picks a style), the scroll
@@ -287,7 +302,10 @@ If you move to a custom domain or another host:
   device. There's no intro, everything shows in place, the ribbons and ticker are still lists, the
   lab waits for a click, the charts are already drawn and the AI chat shows the whole conversation.
 - **Screenshots** of Inest and Onsite were captured from the live sites, and the OnTrack ones from
-  its demo restaurant. Re-capture them whenever those products change.
+  its demo restaurant. Middleware's were taken from a copy of its made-up demo data (never the real
+  data), and its showreel, poster and card clip come from the 90-second video in
+  `~/Middleware/middleware-video/final/`. Re-capture them whenever those products change.
 - **"First call free"** appears in the red ribbon (`promises` in `content/site.js`), the FAQ
-  (`content/services.js`), and, in `assets/js/main.js`, the call tile under "Why Kian Studio" and the
-  planner's "what happens next" list. Change all four if that ever changes.
+  (`content/services.js`), and, in `assets/js/main.js`, the call tile under "Why Kian Studio", the
+  planner's "what happens next" list, step 02 of "What do you want to build?" and the "Your project"
+  card at the end of the work reel. Change all six if that ever changes.

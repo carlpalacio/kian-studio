@@ -33,7 +33,7 @@ window.SERVICES = [
   },
   {
     name: "Web & Mobile Apps",
-    description: "Custom apps for bookings, operations and customers, like Inest, Onsite and The One App.",
+    description: "Custom apps for bookings, supplier payments, operations and customers, like Inest, Middleware, Onsite and The One App.",
     includes: ["User flows & UI design", "Web app or installable app (PWA)", "Logins & user roles", "Offline support when needed", "Launch & support"],
     price: "",
   },
@@ -141,6 +141,10 @@ window.FAQ = [
   {
     q: "Is the first call free?",
     a: "Yes. Tell us about your business on a call or in a message, and we’ll suggest what you need and send a clear quote. No pressure, no commitment.",
+  },
+  {
+    q: "I only have a rough idea. Is that enough?",
+    a: "Yes. Tell us what you want in your own words, even one line. We’ll ask questions, suggest what you need and send a clear quote before any work starts.",
   },
   {
     q: "What can you help with?",

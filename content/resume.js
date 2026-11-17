@@ -14,6 +14,7 @@ window.RESUME = {
       org: "Kian Studio",
       period: "[Start year] – Present",
       points: [
+        "Designed and built Middleware, a supplier payments system with receipts, approvals and live updates for a retail group.",
         "Designed and built Inest, a booking, billing and property management platform for a condominium in Cebu City.",
         "Designed and built Onsite, an offline-ready construction tracking app for Philippine contractors.",
         "Designed and built OnTrack, a restaurant POS and inventory system with recipes, counts and live profit.",

@@ -73,6 +73,12 @@
   };
 
   /* ---------- helpers ---------- */
+  // Shortens text to n characters without leaving half of an emoji (flags and skin tones included) at the end.
+  function cut(s, n) {
+    if (s.length <= n) return s;
+    if (window.Intl && Intl.Segmenter) { var g = new Intl.Segmenter().segment(s).containing(n); return s.slice(0, g ? g.index : n); }
+    return s.slice(0, n).replace(/[\uD800-\uDBFF]$/, "");
+  }
   function esc(s) {
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
@@ -299,10 +305,11 @@
     links.push('<a class="cta__link" href="contact.html#planner"><span><small>Two-minute planner</small>Plan your project</span>' + ICON.arrow + "</a>");
     return (
       '<section class="cta section" aria-labelledby="cta-title"><div class="wrap cta__inner">' +
-      '<div data-reveal><p class="eyebrow" style="margin-bottom:20px">Have a project in mind?</p>' +
+      '<div data-reveal><p class="eyebrow" style="margin-bottom:20px">Have an idea, big or small?</p>' +
       '<h2 class="display cta__title" id="cta-title">Let’s build<br>it <span class="serif">together.</span></h2>' +
-      (PRICING.startingAt ? '<p class="cta__price">Websites start as low as <strong>' + esc(PRICING.startingAt) + "</strong>. Tell us what you need, and we’ll handle the rest." +
-        (C.replyTime ? " We reply " + esc(C.replyTime) + "." : "") + "</p>" : "") +
+      '<p class="cta__price">Bring any idea, even a rough one, and we’ll shape it with you.' +
+      (PRICING.startingAt ? " Websites start as low as <strong>" + esc(PRICING.startingAt) + "</strong>." : "") +
+      (C.replyTime ? " We reply " + esc(C.replyTime) + "." : "") + "</p>" +
       "</div>" +
       '<div class="cta__links" data-reveal style="--d:.1s">' + links.join("") + "</div>" +
       "</div></section>"
@@ -429,8 +436,6 @@
       '<div class="why">' + price + '<div class="why__reasons">' + tiles + '</div><p class="swipe-hint" aria-hidden="true">Swipe for more reasons →</p>' + call + "</div></section>";
   }
 
-  // Where a service's links go: its own page if it has one, else its row on the Services page.
-  function serviceHref(s, i) { return s.page ? s.page : "services.html#service-" + (i + 1); }
   function scalingService() { return SERVICES.filter(function (s) { return s.page === "brand-scaling.html"; })[0]; }
   function quoteHref(need) { return "contact.html" + (need ? "?need=" + encodeURIComponent(need) : "") + "#planner"; }
 
@@ -508,6 +513,48 @@
       '<a class="btn btn--line" href="services.html">All services</a></div></div></div></section>';
   }
 
+  // Home: "What do you want to build?" Visitors tap ideas (SITE.ideas) or type their own, see the first
+  // steps, and open the planner with the matching services ticked and their idea in the brief.
+  function ideaStarter() {
+    var ideas = SITE.ideas || [];
+    if (!ideas.length) return "";
+    var p0 = PROJECTS[0];
+    var latest = "";
+    if (p0) {
+      var line = isPh(p0.summary) ? "" : String(p0.summary || "").split(". ")[0].replace(/\.$/, "") + ".";
+      if (!line || line.length > 80) line = p0.category || "";
+      latest = '<a class="idea__latest" href="' + projectUrl(p0) + '" data-reveal><span class="eyebrow">Latest project</span><b>' + esc(p0.title) + "</b>" +
+        (line ? '<span class="idea__latest-line">' + t(line) + "</span>" : "") + ICON.arrow + "</a>";
+    }
+    var chips = ideas.map(function (d, i) {
+      var svc = SERVICES.filter(function (s) { return s.name === d.need; })[0];
+      var price = svc && svc.price && !isPh(svc.price) ? svc.price : "";
+      return '<label class="pick" style="--i:' + Math.min(i, 11) + '"><input type="checkbox" name="pick" value="' + esc(d.label) + '" data-need="' + esc(d.need || "") + '" data-like="' + esc(d.like || "") + '">' +
+        "<span>" + esc(d.label) + (price ? ' <small class="idea__tag">' + esc(price) + "</small>" : "") + "</span></label>";
+    }).join("");
+    return '<section class="section--tight wrap idea" id="idea" aria-labelledby="idea-title"><div class="idea__grid">' +
+      '<div class="idea__head"><p class="eyebrow" data-reveal style="margin-bottom:16px">Start here · a rough idea is enough</p>' +
+      '<h2 class="h2" id="idea-title" data-reveal>What do you<br>want to <span class="serif">build?</span></h2>' +
+      '<p class="idea__intro" data-reveal>A website, an app, a system for your shop, or something nobody has built yet. You don’t need to know the tech side. That’s our job.</p>' +
+      '<a class="plus idea__all" href="services.html" data-reveal>See all ' + SERVICES.length + " services</a>" + latest + "</div>" +
+      '<form class="idea__card" data-idea action="contact.html#planner" method="get" novalidate data-reveal><div class="idea__body">' +
+      '<fieldset class="idea__step"><legend><span class="plan-step__num">01</span>Tap anything that sounds close</legend>' +
+      '<p class="plan-step__hint">Pick one or a few. You can change them later.</p>' +
+      '<div class="picks" data-reveal="chips">' + chips + "</div></fieldset>" +
+      '<div class="field idea__field"><label for="idea-text"><span class="plan-step__num">02</span>Or say it in your own words</label>' +
+      '<textarea id="idea-text" name="idea" rows="3" maxlength="500" aria-describedby="idea-eg" data-lenis-prevent></textarea>' +
+      '<p class="idea__eg" id="idea-eg">Example: “I bake cakes and want online orders.”</p></div></div>' +
+      '<div class="idea__ticket"><p class="eyebrow">Your project, step by step</p>' +
+      '<ol class="brief__next idea__steps"><li><span><b>Your idea:</b> <span class="idea__mine">Anything you like. A rough idea is enough.</span></span></li>' +
+      "<li>We reply " + esc(C.replyTime || "quickly") + ", with questions or a free first call.</li>" +
+      "<li>You get a clear quote before any work starts.</li></ol>" +
+      '<p class="idea__like" hidden></p><p class="sr-only" id="idea-status" aria-live="polite"></p>' +
+      '<div class="idea__go"><button class="btn btn--light" type="submit">Start my project ' + ICON.arrow + "</button>" +
+      (C.phoneDisplay ? '<a class="idea__call" href="' + telHref() + '">or call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div>" +
+      '<p class="idea__note">Nothing is sent yet. Next, you’ll see your brief and choose how to send it.</p></div>' +
+      "</form></div></section>";
+  }
+
   // Reviews, once there are real ones in content/site.js (about.testimonials).
   function quotes() {
     var Q = (SITE.about && SITE.about.testimonials) || [];
@@ -548,25 +595,18 @@
         '<div class="card__foot"><div><h3 class="card__title">' + esc(p.title) + '</h3><p class="card__meta">' + esc(p.category) + "</p></div>" +
         '<span class="card__num">' + pad(n) + "</span></div></a></li>";
     }).join("");
+    // The reel ends with an open invitation: a card for the visitor's own project.
+    reel += '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(featured.length, 3) * 0.08 + 's">' +
+      '<a class="card card--next" href="contact.html#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
+      '<span class="reel__plus" aria-hidden="true">+</span><p class="reel__ask">Your idea goes here.</p><p class="reel__hint">Tell us what you want to build, big or small.</p></div>' +
+      '<div class="card__foot"><div><h3 class="card__title">Your project</h3><p class="card__meta">The first call is free</p></div><span class="card__num">Next</span></div></a></li>';
 
-    // Every service as a colored pill that slides in from the left.
-    var tones = [["#e9dfcf", "#0f0f0e"], ["#f2c230", "#0f0f0e"], ["#c8341c", "#ffffff"], ["#b9d4f0", "#0f0f0e"], ["#0f0f0e", "#f7f2ea"], ["#c5e35a", "#0f0f0e"]];
-    var svc = SERVICES.map(function (s, i) {
-      var tone = tones[i % tones.length];
-      return '<li style="--i:' + Math.min(i, 11) + ";--pill-bg:" + tone[0] + ";--pill-fg:" + tone[1] + '"><a class="pills__pill" href="' + serviceHref(s, i) + '">' +
-        '<span class="pills__num" aria-hidden="true">' + pad(i + 1) + '</span><span class="pills__name">' + t(s.name) + "</span>" +
-        (s.price ? '<span class="pills__tag">' + t(s.price) + "</span>" : "") + "</a></li>";
-    }).join("");
+    // The stage caption names the projects whose screens are actually shown.
+    function ownerOf(im) { return im ? PROJECTS.filter(function (p) { return (p.images || []).indexOf(im) > -1; })[0] : null; }
+    var onStage = [land[0], phoneShot].map(ownerOf).filter(function (p, i, all) { return p && all.indexOf(p) === i; });
+    var sideOwner = land[1] ? ownerOf(land[1]) : null;
+    if (sideOwner && onStage.indexOf(sideOwner) > -1) sideOwner = null;
 
-    var thumb = land[3] || land[1] || land[0];
-    var stats = [
-      [PROJECTS.length, "Products designed & built"],
-      [SERVICES.length, "Services under one roof"],
-      [STYLES.length, "Design styles, and counting"],
-    ].map(function (s, i) {
-      return '<div class="stat" data-reveal style="--d:' + i * 0.1 + 's"><p class="stat__num"><span data-count="' + s[0] + '">' + s[0] + "</span><sup>+</sup></p>" +
-        '<p class="stat__label">' + s[1] + "</p></div>";
-    }).join("");
     var avail = (C.availability || "").split(". ")[0].replace(/\.$/, "");
     var hire = listed(SITE.marketplaces);
 
@@ -577,7 +617,7 @@
       '<div class="hero__copy" data-reveal style="--d:.25s">' +
       (avail ? '<p class="pill"><span class="pill__dot" aria-hidden="true"></span>' + t(avail) + "</p>" : "") +
       "<p>" + t(SITE.taglineSub) + "</p>" +
-      '<div class="hero__ctas"><a class="btn btn--dark" href="contact.html#planner">Get a quote ' + ICON.arrow + '</a><a class="btn btn--line" href="work.html">View work</a></div>' +
+      '<div class="hero__ctas"><a class="btn btn--dark" href="' + ((SITE.ideas || []).length ? "#idea" : "contact.html#planner") + '">' + ((SITE.ideas || []).length ? "Tell us your idea " : "Get a quote ") + ICON.arrow + '</a><a class="btn btn--line" href="work.html">View work</a></div>' +
       (hire.length ? '<p class="hero__hire">Also on ' + hire.map(function (m) { return outLink(m); }).join(" · ") + "</p>" : "") +
       (PRICING.startingAt ? '<p class="hero__price" data-reveal="slap" style="--d:.7s"><span>Websites from</span> <strong>' + roll(PRICING.startingAt) + "</strong></p>" : "") + "</div>" +
       '<div class="hero__visual" data-reveal style="--d:.35s"><div class="iso" aria-hidden="true"><div class="iso__stage"><div class="iso__base"></div>' + iso + "</div></div></div>" +
@@ -589,18 +629,13 @@
       (land[1] ? '<figure class="device device--side">' + browser(land[1], { sizes: "(min-width: 700px) 25vw, 1px" }) + "</figure>" : "") +
       (land[0] ? '<figure class="device device--main">' + browser(land[0], { high: true, sizes: "(min-width: 700px) 44vw, 66vw" }) + "</figure>" : "") +
       (phoneShot ? '<figure class="device device--phone">' + phone(phoneShot, { sizes: "(min-width: 700px) 10vw, 25vw" }) + "</figure>" : "") +
-      '<p class="stage__caption">Live work: ' + featured.filter(function (p) { return p.link; }).map(function (p) { return esc(p.title); }).join(" · ") + "</p>" +
+      (onStage.length ? '<p class="stage__caption">On screen: ' + onStage.map(function (p) { return esc(p.title); }).join(" · ") +
+        (sideOwner ? '<span class="stage__side-name"> · ' + esc(sideOwner.title) + "</span>" : "") + "</p>" : "") +
       "</section>" +
 
       tapes() +
 
-      '<section class="section wrap" aria-labelledby="about-title"><div class="about-strip">' +
-      '<div class="about-strip__side"><h2 class="eyebrow" id="about-title" data-reveal>About the studio</h2>' +
-      (thumb ? '<div class="about-strip__thumb" data-reveal>' + img(thumb, { sizes: "220px", decorative: true }) + '<a class="plus" href="work.html">Our work</a></div>' : "") +
-      "</div>" +
-      '<div class="about-strip__main"><p class="lead" data-reveal>Good design should be easy for everybody. At ' + esc(SITE.studioName) +
-      ", we design and build the brands, websites, apps and systems that run a business, then scale it with ads and AI. One team for all of it, in any style.</p>" +
-      '<div class="stats">' + stats + "</div></div></div></section>" +
+      ideaStarter() +
 
       growthBand() +
 
@@ -608,11 +643,11 @@
 
       '<section class="featured section" aria-labelledby="featured-title">' +
       '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Selected work · ' + pad(featured.length) + " projects</p>" +
-      '<h2 class="h2" id="featured-title" data-reveal>Where style<br>meets function.</h2></div>' +
-      '<div class="featured__side"><p data-reveal>Platforms, apps and business systems we designed and built, each around the people who use it every day. Swipe through, and open any project to watch it in action.</p>' +
+      '<h2 class="h2" id="featured-title" data-reveal>Yours could<br>be <span class="serif">next.</span></h2></div>' +
+      '<div class="featured__side"><p data-reveal>Supplier payments, condo bookings, building sites, fitness and restaurants, each built around the people who use it every day. Swipe to the end to start yours.</p>' +
       '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="work.html">View all work ' + ICON.arrow + "</a>" +
       '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="reel" aria-label="Previous project">' + ICON.left + "</button>" +
-      '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(featured.length) + "</span>" +
+      '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(featured.length + 1) + "</span>" +
       '<button class="reel__btn" type="button" data-dir="1" aria-controls="reel" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
       '<div class="reel"><ul class="reel__track" id="reel" aria-label="Featured projects">' + reel + "</ul></div>" +
       '<div class="wrap reel__foot"><div class="reel__bar" aria-hidden="true"><i></i></div>' +
@@ -623,12 +658,6 @@
 
       whyUs() +
 
-      '<section class="section wrap" aria-labelledby="svc-title" style="padding-top:0">' +
-      '<div class="section-head"><h2 class="h2" id="svc-title" data-reveal>Everything,<br>under one <span class="serif">roof.</span></h2>' +
-      '<p data-reveal>From the logo on the door to the system behind the counter, the AI that answers your customers and the ads that bring them in. If your business needs it, we’ll handle it.</p></div>' +
-      '<ul class="pills" data-reveal="pills">' + svc + "</ul>" +
-      '<div style="margin-top:32px" data-reveal><a class="btn btn--line" href="services.html">See what’s included ' + ICON.arrow + "</a></div>" +
-      "</section>" +
       quotes() +
       pricing("pricing-title") +
       cta()
@@ -655,7 +684,8 @@
         '<div class="card__foot"><div><h2 class="card__title">' + esc(p.title) + '</h2><p class="card__meta">' + esc(p.category) + " · " + t(p.year) + "</p></div>" +
         '<span class="card__num">' + pad(i + 1) + "</span></div></a>";
     }).join("");
-    return pageHead("Selected work", "Work", "Platforms, apps and business systems, each designed in the style that fits and built to be used every day. Pick a category or browse everything.") +
+    return pageHead("Selected work", "Work", "Supplier payments, condo bookings, building sites, fitness and restaurants. Each project is built around the people who use it every day. Yours could be next.",
+      '<a class="btn btn--dark" href="contact.html#planner">Tell us your idea ' + ICON.arrow + "</a>") +
       '<section class="wrap" style="padding-bottom:clamp(64px,10vw,140px)" aria-label="Projects">' +
       '<div class="filters" role="group" aria-label="Filter projects by category">' + filters + "</div>" +
       '<p class="sr-only" aria-live="polite" id="filter-status"></p>' +
@@ -758,9 +788,10 @@
       (secs ? '<div class="project-sections">' + secs + "</div>" : "") +
       features +
       (gallery ? '<div class="gallery">' + gallery + "</div>" : "") +
+      (p.note ? '<p class="gallery__note" data-reveal>' + t(p.note) + "</p>" : "") +
       (more ? '<section class="watch" aria-labelledby="watch-title"><h2 class="h3" id="watch-title" data-reveal>More to watch</h2><div class="watch__grid">' + more + "</div></section>" : "") +
       '<aside class="like" data-reveal aria-label="Start a similar project"><p class="like__title">Want something like <span class="serif">' + esc(p.title) + "</span>?</p>" +
-      '<p class="like__text">We can design and build one for your business, in your style, with a clear quote after a free call.</p>' +
+      '<p class="like__text">We can design and build one for your business, or something new from your own idea. You get a clear quote after a free call.</p>' +
       '<div class="like__btns"><a class="btn btn--dark" href="contact.html?like=' + encodeURIComponent(p.title) + '#planner">Plan your project ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div></aside>" +
       (next && next !== p ? '<a class="next-project" href="' + projectUrl(next) + '"><span class="eyebrow">Next project</span><span class="display next-project__title">' + esc(next.title) + ICON.arrow + "</span></a>" : "") +
@@ -900,13 +931,23 @@
     var params = new URLSearchParams(location.search);
     var styleId = params.get("style") || "";
     var needs = params.getAll("need");
+    // An idea sent from the home page's "What do you want to build?" box. The visitor's own words travel in
+    // session storage (or as ?idea= when storage is blocked), and only when the link says from=idea.
+    var fromIdea = params.get("from") === "idea";
+    var idea = params.get("idea") || "";
+    if (!idea && fromIdea) { try { idea = sessionStorage.getItem("ks-idea") || ""; } catch (e) {} }
+    idea = cut(idea.replace(/\s+/g, " ").trim(), 800);
+    if (idea && !/[.!?…”"]$/.test(idea)) idea += ".";
     var message = [];
     (PRICING.plans || []).forEach(function (pl) {
       if (pl.name !== params.get("plan")) return;
       message.push("I’m interested in the " + pl.name + " plan" + (pl.price ? " (" + pl.price + ")" : "") + ".");
       if (pl.need && needs.indexOf(pl.need) < 0) needs.push(pl.need);
     });
-    PROJECTS.forEach(function (p) { if (p.title === params.get("like")) message.push("I’d like something like " + p.title + "."); });
+    var likes = params.getAll("like");
+    var liked = PROJECTS.filter(function (p) { return likes.indexOf(p.title) > -1; }).map(function (p) { return p.title; });
+    if (liked.length) message.push("I’d like something like " + (liked.length > 1 ? liked.slice(0, -1).join(", ") + " and " + liked[liked.length - 1] : liked[0]) + ".");
+    if (idea) message.unshift("My idea: " + idea);
     var req = C.formEndpoint ? " required" : "";
 
     var links = [];
@@ -931,7 +972,7 @@
       return '<div class="field"><label for="' + id + '">' + label + '</label><input id="' + id + '" ' + attrs + (value ? ' value="' + esc(value) + '"' : "") + "></div>";
     };
     var steps =
-      step(1, "What do you need?", "Pick as many as you like.", picks(SERVICES.map(function (s) { return pick("checkbox", "need", s.name, needs.indexOf(s.name) > -1); }).join(""))) +
+      step(1, "What do you want to build?", "Pick as many as you like, or none. You can explain it in your own words below.", picks(SERVICES.map(function (s) { return pick("checkbox", "need", s.name, needs.indexOf(s.name) > -1); }).join(""))) +
       step(2, "Pick a style", 'Not sure? <a href="index.html#styles-title">Try them on in the Style Lab</a>.',
         picks(STYLES.map(function (s) { return pick("radio", "style", s.label, s.id === styleId, s.sw); }).join("") + pick("radio", "style", "Not sure yet", false))) +
       step(3, "Budget", PRICING.startingAt ? "Websites start at " + esc(PRICING.startingAt) + "." : "", picks((PRICING.budgets || []).map(function (b) { return pick("radio", "budget", b, false); }).join(""))) +
@@ -940,8 +981,8 @@
         field("p-name", "Your name", 'name="name" autocomplete="name"' + req) +
         field("p-business", "Business name", 'name="business" autocomplete="organization"', (params.get("name") || "").slice(0, 60)) +
         field("p-contact", "Email or phone", 'name="contact" autocomplete="email"' + req) +
-        '<div class="field plan-fields__wide"><label for="p-msg">Anything else?</label><textarea id="p-msg" data-lenis-prevent name="message" maxlength="1500" ' +
-        'placeholder="What your business does, sites you like, deadlines…">' + esc(message.join(" ")) + "</textarea></div></div>");
+        '<div class="field plan-fields__wide"><label for="p-msg">Your idea, in your own words</label><textarea id="p-msg" data-lenis-prevent name="message" maxlength="1500" ' +
+        'placeholder="What you want to build, what slows you down, sites you like, deadlines…">' + esc(message.join(" ")) + "</textarea></div></div>");
 
     var send = [];
     if (C.formEndpoint) send.push('<button class="btn btn--light" type="submit">Send now ' + ICON.arrow + "</button>");
@@ -957,12 +998,13 @@
     var quick = '<div class="page-head__btns"><a class="btn btn--dark" href="#planner">Start the planner ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div>";
 
-    return pageHead("Contact", "Let’s talk.", "Tell us about your business and what you need, whatever it is. Plan it below in two minutes, or just call, text or email." + (C.replyTime ? " We reply " + esc(C.replyTime) + "." : ""), quick) +
+    return pageHead("Contact", "Let’s talk.", "Bring any idea, big or small. One line is enough to start. Plan it below in two minutes, or just call, text or email." + (C.replyTime ? " We reply " + esc(C.replyTime) + "." : ""), quick) +
       '<section class="wrap planner-wrap" id="planner" aria-labelledby="planner-title">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Project planner · about 2 minutes</p>' +
       '<h2 class="h2" id="planner-title" data-reveal>Plan your<br><span class="serif">project.</span></h2></div>' +
       "<p data-reveal>Tap what you need and the look you like. We turn it into a brief you can email, text or copy into any chat, and you get a clear quote back." +
       (PRICING.startingAt ? " Websites start at " + esc(PRICING.startingAt) + "." : "") + "</p></div>" +
+      (idea ? '<p class="contact-note planner__hello">Good start. Your idea is already in your brief. Add anything else below, or send it as it is.</p>' : "") +
       '<form class="planner" data-planner novalidate' + (C.formEndpoint ? ' action="' + esc(C.formEndpoint) + '" method="POST"' : "") + ">" +
       '<div class="planner__steps">' + steps + "</div>" + brief + "</form></section>" +
       '<section class="wrap section" aria-labelledby="direct-title" style="padding-top:0"><div class="contact-grid">' +
@@ -1011,24 +1053,6 @@
     els.forEach(function (el) { io.observe(el); });
   }
 
-  function initCounters() {
-    var els = document.querySelectorAll("[data-count]");
-    if (!els.length || reduceMotion || !("IntersectionObserver" in window)) return;
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (!en.isIntersecting) return;
-        io.unobserve(en.target);
-        var el = en.target, end = +el.getAttribute("data-count"), start = performance.now(), dur = 1200;
-        el.textContent = "0";
-        (function tick(now) {
-          var k = Math.min(1, (now - start) / dur);
-          el.textContent = Math.round(end * (1 - Math.pow(1 - k, 3)));
-          if (k < 1) requestAnimationFrame(tick);
-        })(start);
-      });
-    }, { rootMargin: "100000px 0px -10% 0px", threshold: 0 });
-    els.forEach(function (el) { io.observe(el); });
-  }
 
   function initLab() {
     var root = document.querySelector(".lab");
@@ -1234,7 +1258,7 @@
       if (time) details.push("Timeline: " + time);
       if (val("contact")) details.push("Reach me at: " + val("contact"));
       var msg = val("message");
-      if (!details.length && !msg) return hi + " I’d like to talk about a project.";
+      if (!details.length && !msg) return hi + " I have an idea I’d like to talk about.";
       return hi + (details.length ? "\n\n" + details.join("\n") : "") + (msg ? "\n\n" + msg : "");
     }
     function update() {
@@ -1276,6 +1300,7 @@
     form.addEventListener("input", update);
     form.addEventListener("change", update);
     update();
+    window.addEventListener("pageshow", update);
     if (email) email.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your email app should open with the brief ready to send."; stamp("Ready!"); });
     if (sms) sms.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your messages app should open with the brief ready to send."; stamp("Ready!"); });
     // Copies the brief so it can be pasted into any chat or message.
@@ -1315,6 +1340,65 @@
         })
         .then(function () { btn.disabled = false; });
     });
+  }
+
+  // Home: "What do you want to build?" Shows the visitor's picks on the ticket as they go, then opens the
+  // planner with those services ticked and their idea in the brief. Visitor text never goes into innerHTML.
+  function initIdea() {
+    var form = document.querySelector("[data-idea]");
+    if (!form) return;
+    var text = form.querySelector("#idea-text");
+    var mine = form.querySelector(".idea__mine");
+    var likeEl = form.querySelector(".idea__like");
+    var status = form.querySelector("#idea-status");
+    var empty = mine.textContent;
+    function picks() { return [].slice.call(form.querySelectorAll('input[name="pick"]:checked')); }
+    function words() { return text.value.replace(/\s+/g, " ").trim(); }
+    function uniq(list, attr) {
+      var out = [];
+      list.forEach(function (el) { var v = el.getAttribute(attr); if (v && out.indexOf(v) < 0) out.push(v); });
+      return out;
+    }
+    function projects(list) { var ls = uniq(list, "data-like"); return PROJECTS.filter(function (p) { return ls.indexOf(p.title) > -1; }); }
+    function and(arr) { return arr.length > 1 ? arr.slice(0, -1).join(", ") + " and " + arr[arr.length - 1] : arr[0] || ""; }
+    function labels(list) { return list.map(function (el) { return el.value; }); }
+    function update() {
+      var list = picks(), w = words();
+      var said = labels(list).join(", ");
+      if (w) said += (said ? " · " : "") + "“" + (w.length > 90 ? cut(w, 88) + "…" : w) + "”";
+      mine.textContent = said || empty;
+      var ps = projects(list);
+      likeEl.hidden = !ps.length;
+      likeEl.innerHTML = ps.length
+        ? (ps.length > 1 ? "We’ve built things like this: " : "We’ve built something like this: ") +
+          and(ps.map(function (p) { return '<a href="' + projectUrl(p) + '">' + esc(p.title) + "</a>"; })) + "."
+        : "";
+    }
+    form.addEventListener("change", function (e) {
+      update();
+      var el = e.target;
+      if (el.name !== "pick") return;
+      var like = el.checked && el.getAttribute("data-like");
+      var p = like && PROJECTS.filter(function (x) { return x.title === like; })[0];
+      status.textContent = (el.checked ? "Added " : "Removed ") + el.value + "." + (p ? " We’ve built something like this: " + p.title + "." : "");
+    });
+    text.addEventListener("input", update);
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var list = picks(), w = words(), q = new URLSearchParams();
+      uniq(list, "data-need").forEach(function (n) { q.append("need", n); });
+      projects(list).forEach(function (p) { q.append("like", p.title); });
+      var idea = (list.length ? labels(list).join(", ") + "." : "") + (w ? (list.length ? " " : "") + w : "");
+      idea = cut(idea, 800);
+      if (idea) {
+        q.set("from", "idea");
+        try { sessionStorage.setItem("ks-idea", idea); } catch (err) { q.set("idea", idea); }
+      }
+      var qs = q.toString();
+      location.href = "contact.html" + (qs ? "?" + qs : "") + "#planner";
+    });
+    update();
+    window.addEventListener("pageshow", update);
   }
 
   // Card preview clips: load and play only while on screen, never with reduced motion or Save-Data.
@@ -1384,7 +1468,9 @@
     var on = false;
     document.addEventListener("pointermove", function (e) {
       dot.style.transform = "translate(" + e.clientX + "px," + e.clientY + "px)";
-      var over = !!(e.target.closest && e.target.closest(".card"));
+      var card = e.target.closest && e.target.closest(".card");
+      var over = !!card;
+      if (card) dot.textContent = card.getAttribute("data-cursor") || "View";
       if (over !== on) { on = over; dot.classList.toggle("is-on", on); }
     }, { passive: true });
     document.addEventListener("pointerleave", function () { on = false; dot.classList.remove("is-on"); });
@@ -1679,11 +1765,11 @@
   initMenu();
   initIntro();
   initReveal();
-  initCounters();
   initLab();
   initRotator();
   initFilters();
   initPlanner();
+  initIdea();
   initVideos();
   initReel();
   initAiChat();

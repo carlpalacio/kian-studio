@@ -15,19 +15,19 @@ window.SITE = {
   role: "Founder · designer & developer",
   location: "Anywhere — working remotely with clients worldwide",
 
-  // Hero. `rotating` words cycle after `heroLead` ("We design, build and scale websites.").
+  // Hero. `rotating` words cycle after `heroLead` ("Let’s build your website."), then rest on the first one.
   eyebrow: "Design, build & brand scaling studio",
   tagline: "We design, build and scale brands.",
-  heroLead: "We design, build and scale",
-  rotating: ["brands.", "online stores.", "ad campaigns.", "websites.", "apps.", "businesses."],
-  taglineSub: "Websites, apps, POS systems and AI assistants, plus the ads that grow them. Any style, made easy for everybody.",
+  heroLead: "Let’s build your",
+  rotating: ["idea.", "website.", "online store.", "booking system.", "app.", "POS system.", "brand."],
+  taglineSub: "Websites, apps, business systems and AI assistants, plus the ads that grow them. Bring any idea, even a rough one, and we’ll make it easy.",
 
   shortBio:
     "Kian Studio designs, builds and scales brands: websites, apps, POS and inventory systems, AI assistants, and the Facebook, Google and TikTok ads that bring in customers.",
 
   fullBio: [
     "I'm Carl Palacio, the founder of Kian Studio. We design, build and scale what businesses need to look professional, run smoothly and grow: brand identities, websites, custom apps, point-of-sale and inventory systems, AI assistants, and the ad campaigns that bring in customers.",
-    "Our work ranges from a booking and billing platform for a condominium in Cebu City to a construction tracker that works without signal, a restaurant POS with live inventory and an all-in-one fitness app. Every project is designed from scratch in whatever style fits the brand: minimal, bold, playful or premium.",
+    "Our work ranges from a booking and billing platform for a condominium in Cebu City to a construction tracker that works without signal, a supplier payments system for a retail group, a restaurant POS with live inventory and an all-in-one fitness app. Every project is designed from scratch in whatever style fits the brand: minimal, bold, playful or premium.",
     "We work remotely with clients anywhere and reply within 24 hours. You deal with the people designing and building your project from the first call to launch day, and we stay on afterwards to run your ads, grow your brand and keep everything up to date.",
   ],
 
@@ -72,6 +72,7 @@ window.SITE = {
     "Mobile apps",
     "POS systems",
     "Inventory tracking",
+    "Supplier payments",
     "AI chat assistants",
     "Automations",
     "Facebook & Instagram ads",
@@ -86,10 +87,27 @@ window.SITE = {
   ],
 
   // The stock-ticker strip across the top of every page. ▲ shows in green, ▼ in red.
-  ticker: ["Templates ▼ 0 used", "Websites ▲ from $80", "Your brand ▲ scaling", "Reply time ▼ under 24h", "Ad tests ▲ every week", "Design styles ▲ 20", "Hidden fees ▼ none", "Revisions ▲ until it’s right", "Your competitors ▼ nervous"],
+  ticker: ["Templates ▼ 0 used", "Websites ▲ from $80", "Your brand ▲ scaling", "Reply time ▼ under 24h", "Ad tests ▲ every week", "Design styles ▲ 20", "Hidden fees ▼ none", "Rough ideas ▲ welcome", "Your competitors ▼ nervous"],
 
   // The red ribbon on the home page: short reasons to pick the studio.
   promises: ["Websites from $80", "Brand scaling & ads", "Replies within 24 hours", "Any style, never a template", "First call free", "AI built in", "One team for everything", "Remote, worldwide"],
+
+  // "What do you want to build?" on the home page. `label` is what visitors tap. `need` is the service the
+  // planner ticks (it must match a service name in content/services.js exactly). `like` is optional: a
+  // project title from content/projects.js, shown as "We’ve built something like this".
+  ideas: [
+    { label: "A website", need: "Websites & Landing Pages" },
+    { label: "An online store", need: "E-commerce & Online Ordering" },
+    { label: "Online bookings", need: "Web & Mobile Apps", like: "Inest" },
+    { label: "Supplier payments", need: "Web & Mobile Apps", like: "Middleware" },
+    { label: "POS & stock tracking", need: "POS & Inventory Systems", like: "OnTrack POS" },
+    { label: "An app for my team", need: "Web & Mobile Apps", like: "Onsite" },
+    { label: "An app for my customers", need: "Web & Mobile Apps", like: "The One App" },
+    { label: "An AI that answers chats", need: "AI Assistants & Automation" },
+    { label: "A logo & brand", need: "Brand Identity" },
+    { label: "More customers from ads", need: "Brand Scaling & Ads" },
+    { label: "Something nobody’s built yet", need: "Anything Else" },
+  ],
 
   // "AI, used well" on the home page. `chat` plays as an example conversation for a made-up café
   // (it says so on the page). `from` is "them" (the customer) or "ai".

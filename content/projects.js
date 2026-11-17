@@ -26,6 +26,66 @@
 */
 window.PROJECTS = [
   {
+    slug: "middleware",
+    title: "Middleware",
+    category: "Business System",
+    year: "2026",
+    client: "Retail group",
+    role: "Product design & development",
+    accent: "#9aeb83",
+    featured: true,
+    summary:
+      "Supplier payments, kept in order. Middleware tracks what a retail group owes every supplier, from the purchase to the bank payment and its receipt. Each person sees their part: the office records suppliers and bills, the bank pays and uploads receipts, a checker confirms every payment, and the CEO sees where the money goes.",
+    sections: [
+      {
+        heading: "Every peso owed, in one place",
+        body: "Every supplier shows its priority, what is owed, what has been paid, and when and how it was paid. Purchases and orders get 30, 60 or 90 days to pay, or a custom term, and the bank sees high-priority suppliers first.",
+      },
+      {
+        heading: "Pay, upload, confirm",
+        body: "The bank sees what is overdue, due in the next 7 days and due later, pays, and uploads all the receipts at once. The checker opens each receipt right on the page, then confirms the payment or sends it back with a reason. Nothing is confirmed without a receipt, and no receipt is ever deleted.",
+      },
+      {
+        heading: "Live for everyone",
+        body: "Every open tab updates the moment someone changes something, with no refresh, and the right people get a notification. The CEO's charts show what is owed by priority, who is owed the most, spending against payments over time, and how suppliers get paid.",
+      },
+    ],
+    features: [
+      "Suppliers with priority, contact and payment details",
+      "Purchases and orders with 30, 60 or 90-day terms, or a custom term",
+      "The bank sees high priority first",
+      "Overdue, due within 7 days and due later at a glance",
+      "Sort by priority, due date or amount",
+      "Upload several receipts at once, PDFs or photos",
+      "Receipts open right on the page, with a download button",
+      "No confirmation without a receipt",
+      "Receipts can never be deleted",
+      "Undo a confirmation, with a reason",
+      "Notifications and pop-ups inside the app",
+      "Live updates in every open tab, no refresh",
+      "Nobody can pay or confirm from old details",
+      "CEO charts: owed by priority, top suppliers, spending over time",
+      "Amounts kept exact to the centavo",
+      "A sign-in for each person, paused for a minute after five wrong tries",
+    ],
+    tools: ["Python", "SQLite", "JavaScript", "Phones, tablets & laptops"],
+    results: [],
+    link: "",
+    note: "All screens use made-up demo data. The suppliers, amounts and receipts are not the client’s.",
+    loop: "assets/video/loops/middleware.mp4",
+    videos: [
+      { src: "assets/video/middleware-showreel.mp4", poster: "assets/img/projects/middleware/poster-1600.webp", title: "Product showreel", duration: "1:30", w: 1280, h: 720 },
+    ],
+    images: [
+      { src: "assets/img/projects/middleware/insights-1600.webp", small: "assets/img/projects/middleware/insights-800.webp", alt: "Middleware's Insights page for the CEO: what is still owed by priority and the suppliers owed the most, with overdue amounts in red", w: 1600, h: 1000 },
+      { src: "assets/img/projects/middleware/mobile-780.webp", alt: "Middleware's To pay screen on a phone, with overdue, due in the next 7 days and due later totals", w: 780, h: 1688 },
+      { src: "assets/img/projects/middleware/to-pay-1600.webp", small: "assets/img/projects/middleware/to-pay-800.webp", alt: "The bank's To pay page: overdue, due in the next 7 days and due later, sorted by priority", w: 1600, h: 1000 },
+      { src: "assets/img/projects/middleware/receipt-1600.webp", small: "assets/img/projects/middleware/receipt-800.webp", alt: "A sample bank transfer receipt opened right on the page, with arrows to the next receipt and a Download button", w: 1600, h: 1000 },
+      { src: "assets/img/projects/middleware/payables-1600.webp", small: "assets/img/projects/middleware/payables-800.webp", alt: "Payables list with each supplier's priority, amount, due date and status", w: 1600, h: 1000 },
+      { src: "assets/img/projects/middleware/confirm-1600.webp", small: "assets/img/projects/middleware/confirm-800.webp", alt: "Payments waiting to be confirmed, with Confirm paid greyed out until a receipt is added", w: 1600, h: 1000 },
+    ],
+  },
+  {
     slug: "inest",
     title: "Inest",
     category: "Web Platform",
