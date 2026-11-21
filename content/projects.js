@@ -70,7 +70,7 @@ window.PROJECTS = [
     ],
     tools: ["Python", "SQLite", "JavaScript", "Phones, tablets & laptops"],
     results: [],
-    link: "",
+    link: "https://middleware.getonsiteapp.com",
     note: "All screens use made-up demo data. The suppliers, amounts and receipts are not the client’s.",
     images: [
       { src: "assets/img/projects/middleware/insights-1600.webp", small: "assets/img/projects/middleware/insights-800.webp", alt: "Middleware's Insights page for the CEO: what is still owed by priority and the suppliers owed the most, with overdue amounts in red", w: 1600, h: 1000 },
