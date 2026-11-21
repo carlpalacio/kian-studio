@@ -164,7 +164,7 @@ window.SITE = {
 
   seo: {
     // Your live address once deployed, e.g. "https://kianstudio.com" (used for share links).
-    siteUrl: "https://carlpalacio.github.io/kian-studio",
+    siteUrl: "https://getonsiteapp.com",
     description:
       "Kian Studio designs, builds and scales brands: websites, apps, POS and inventory systems, AI assistants, and Facebook, Instagram, Google and TikTok ads. Websites start at $80.",
   },

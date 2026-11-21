@@ -181,7 +181,7 @@ window.PROJECTS = [
     ],
     tools: ["Progressive Web App", "Offline-first"],
     results: [],
-    link: "https://getonsiteapp.com",
+    link: "https://construction.getonsiteapp.com",
     loop: "assets/video/loops/onsite.mp4",
     videos: [
       { src: "assets/video/onsite-reel.mp4", poster: "assets/img/projects/onsite/reel-sites-1600.webp", title: "Product reel", duration: "0:24", w: 1280, h: 720 },
@@ -298,7 +298,7 @@ window.PROJECTS = [
     ],
     tools: ["Python", "SQLite", "JavaScript", "Tablets, phones & laptops"],
     results: [],
-    link: "",
+    link: "https://pos.getonsiteapp.com",
     loop: "assets/video/loops/pos-system.mp4",
     videos: [
       { src: "assets/video/pos-system-tour.mp4", poster: "assets/img/projects/pos-system/tables-1600.webp", title: "Taking an order, start to bill", duration: "0:22", w: 1440, h: 900, frame: "browser" },
@@ -353,7 +353,7 @@ window.PROJECTS = [
     ],
     tools: ["Python", "SQLite", "JavaScript", "Tablets, phones & laptops"],
     results: [],
-    link: "",
+    link: "https://pos.getonsiteapp.com",
     loop: "assets/video/loops/inventory-tracker.mp4",
     videos: [
       { src: "assets/video/inventory-tracker-tour.mp4", poster: "assets/img/projects/inventory-tracker/inventory-1600.webp", title: "Stock, counts, suppliers and profit", duration: "0:19", w: 1440, h: 900, frame: "browser" },
