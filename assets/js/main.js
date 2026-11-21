@@ -373,6 +373,7 @@
       }).join("") + "</span></span></p>";
   }
 
+  function longest(list) { return list.reduce(function (a, b) { return String(b).length > String(a).length ? b : a; }, ""); }
   function labLabel(name, s) {
     return "Example website for " + (name || "a made-up coffee shop called " + LAB.brand) + ", designed in the " + s.label + " style";
   }
@@ -401,9 +402,9 @@
     var panel = '<div class="lab__panel">' +
       '<div class="lab__meta"><span class="lab__count"><b>01</b> / ' + pad(STYLES.length) + '</span><span class="lab__progress" aria-hidden="true"><i></i></span>' +
       '<button class="lab__play" type="button" hidden>Pause</button></div>' +
-      '<p class="lab__name">' + esc(s.label) + "</p>" +
-      '<p class="lab__note">' + esc(s.note) + "</p>" +
-      '<div class="lab__specs"><ul class="lab__swatches" aria-hidden="true"><li></li><li></li><li></li><li></li></ul><p class="lab__font">Type · <span>' + esc(s.font) + "</span></p></div>" +
+      '<div class="sized"><p class="lab__name">' + esc(s.label) + '</p><p class="lab__name sizer" aria-hidden="true">' + esc(longest(STYLES.map(function (x) { return x.label; }))) + "</p></div>" +
+      '<div class="sized"><p class="lab__note">' + esc(s.note) + '</p><p class="lab__note sizer" aria-hidden="true">' + esc(longest(STYLES.map(function (x) { return x.note; }))) + "</p></div>" +
+      '<div class="lab__specs"><ul class="lab__swatches" aria-hidden="true"><li></li><li></li><li></li><li></li></ul><div class="sized"><p class="lab__font">Type · <span>' + esc(s.font) + '</span></p><p class="lab__font sizer" aria-hidden="true">Type · ' + esc(longest(STYLES.map(function (x) { return x.font; }))) + "</p></div></div>" +
       '<div class="lab__field"><label for="lab-name">Try it with your business name</label>' +
       '<input id="lab-name" type="text" maxlength="18" autocomplete="organization" spellcheck="false" placeholder="' + esc(LAB.brand) + '"></div>' +
       '<div class="lab__actions"><a class="btn btn--dark lab__cta" href="/contact?style=' + s.id + '#planner">Start in this style ' + ICON.arrow + "</a>" +
@@ -615,10 +616,17 @@
       own: { eyebrow: "Our own products · " + pad(ownWork.length) + " and counting", title: 'Yours could<br>be <span class="serif">next.</span>',
         side: "Building sites, restaurants, fitness and coffee, each built around the people who use it every day. Swipe to the end to start yours." },
     };
-    var reels = '<section class="featured section" aria-labelledby="featured-title" data-groups=\'' + JSON.stringify(groups).replace(/'/g, "&#39;") + "'>" +
-      '<div class="wrap featured__head"><div><p class="eyebrow featured__eyebrow" data-reveal style="margin-bottom:16px">' + groups.clients.eyebrow + "</p>" +
-      '<h2 class="h2 featured__title" id="featured-title" data-reveal>' + groups.clients.title + "</h2></div>" +
-      '<div class="featured__side"><p class="featured__text" data-reveal>' + groups.clients.side + "</p>" +
+    // Each line of the heading holds both versions in one grid cell, the inactive one invisible, so the block is
+    // always as tall as the taller version and nothing below it ever moves when the words change.
+    var stack = function (tag, cls, key, extra) {
+      return "<" + tag + ' class="' + cls + ' swap"' + (extra || "") + ">" + ["clients", "own"].map(function (g) {
+        return '<span class="swap__v' + (g === "clients" ? " is-on" : "") + '" data-group="' + g + '">' + groups[g][key] + "</span>";
+      }).join("") + "</" + tag + ">";
+    };
+    var reels = '<section class="featured section" aria-labelledby="featured-title">' +
+      '<div class="wrap featured__head"><div>' + stack("p", "eyebrow featured__eyebrow", "eyebrow", ' data-reveal style="margin-bottom:16px"') +
+      stack("h2", "h2 featured__title", "title", ' id="featured-title" data-reveal') + "</div>" +
+      '<div class="featured__side">' + stack("p", "featured__text", "side", " data-reveal") +
       '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="/work">View all work ' + ICON.arrow + "</a>" +
       '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="reel" aria-label="Previous project">' + ICON.left + "</button>" +
       '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(reelList.length + 1) + "</span>" +
@@ -1695,19 +1703,11 @@
       i = Math.max(0, Math.min(items.length - 1, i));
       track.scrollTo({ left: at(i), behavior: reduceMotion ? "auto" : "smooth" });
     }
-    var groups = null;
-    try { groups = JSON.parse(section.getAttribute("data-groups") || "null"); } catch (e) { groups = null; }
     var shownGroup = null;
     function showGroup(key) {
-      if (!groups || !groups[key] || key === shownGroup) return;
+      if (key === shownGroup || !section.querySelector(".swap")) return;
       shownGroup = key;
-      var els = { eyebrow: section.querySelector(".featured__eyebrow"), title: section.querySelector(".featured__title"), side: section.querySelector(".featured__text") };
-      Object.keys(els).forEach(function (k) {
-        var el = els[k];
-        if (!el) return;
-        el.classList.add("is-swapping");
-        setTimeout(function () { el.innerHTML = groups[key][k]; el.classList.remove("is-swapping"); }, reduceMotion ? 0 : 230);
-      });
+      section.querySelectorAll(".swap__v").forEach(function (v) { v.classList.toggle("is-on", v.getAttribute("data-group") === key); });
     }
     function update() {
       if (count) count.textContent = pad(current() + 1);
@@ -1731,7 +1731,7 @@
     var raf;
     track.addEventListener("scroll", function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
     window.addEventListener("resize", update);
-    shownGroup = items[0] ? items[0].getAttribute("data-group") : null;   // the first group is already in the page
+    shownGroup = items[0] ? items[0].getAttribute("data-group") : null;   // the first version is already showing
     update();
 
     // Mouse drag. Snapping is paused while dragging, then the reel settles on the next card.
