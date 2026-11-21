@@ -1553,7 +1553,7 @@
         if (!el.hasAttribute("tabindex") && !/^(A|BUTTON|INPUT|SELECT|TEXTAREA)$/.test(el.tagName)) el.setAttribute("tabindex", "-1");
         el.focus({ preventScroll: true });
       }
-      if (history.replaceState) history.replaceState(null, "", a.hash);
+      if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);   // the address stays clean
     });
   }
 

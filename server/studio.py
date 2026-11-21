@@ -108,7 +108,7 @@ def set_password():
     conn.execute("DELETE FROM sessions")
     conn.commit()
     conn.close()
-    print("  Done. Every signed-in admin page is signed out; sign in again at {}/admin".format(SITE_URL))
+    print("  Done. Every logged-in admin page is logged out; log in again at {}/admin".format(SITE_URL))
 
 
 # ---------------------------------------------------------------- what the server holds
@@ -173,11 +173,11 @@ def esc(s):
 
 
 def login_page(error=""):
-    return page("Sign in", (
+    return page("Log in", (
         "<div class=\"login\"><a class=\"mark\" href=\"/\"><i>On</i>Onsite</a><h1 style=\"margin-top:28px\">Carl's page</h1>"
         "<p class=\"muted\">Messages from the contact page, and what each website takes up on the server.</p>"
         "<form method=\"post\" action=\"/admin/login\"><p><input type=\"password\" name=\"password\" placeholder=\"Password\" autocomplete=\"current-password\" autofocus required></p>"
-        "<p><button class=\"btn\" type=\"submit\">Sign in</button></p>{}</form></div>"
+        "<p><button class=\"btn\" type=\"submit\">Log in</button></p>{}</form></div>"
     ).format("<p class=\"err\">" + esc(error) + "</p>" if error else ""))
 
 
@@ -246,7 +246,7 @@ def dashboard(conn, token):
         cards or "<p class=\"muted\">None yet. When someone sends the project planner, it shows up here.</p>")
 
     top = ("<div class=\"top\"><a class=\"mark\" href=\"/\"><i>On</i>Onsite</a>"
-           "<form class=\"inline\" method=\"post\" action=\"/admin/logout\"><input type=\"hidden\" name=\"token\" value=\"{}\"><button class=\"btn line\" type=\"submit\">Sign out</button></form></div>"
+           "<form class=\"inline\" method=\"post\" action=\"/admin/logout\"><input type=\"hidden\" name=\"token\" value=\"{}\"><button class=\"btn line\" type=\"submit\">Log out</button></form></div>"
            "<h1>Carl's page</h1><p class=\"muted\" style=\"margin:0 0 24px\">Only you can see this.</p>").format(esc(token))
     return page("Carl's page", top + "<div class=\"grid\">" + tiles + "</div>" + messages + server_section)
 
