@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Kian Studio: styles
+   Onsite: styles
    Mobile-first. Tokens at the top; sections follow page order.
    ========================================================================== */
 
@@ -380,7 +380,6 @@ body.menu-open { overflow: hidden; }
 }
 .tape__track { display: flex; width: max-content; animation: ticker 70s linear infinite; }
 .tape--red .tape__track { animation-duration: 48s; animation-direction: reverse; }
-.tapes:hover .tape__track { animation-play-state: paused; }
 .tape ul { display: flex; flex: none; }
 .tape li {
   display: inline-flex; align-items: center; gap: clamp(18px, 2.4vw, 32px);

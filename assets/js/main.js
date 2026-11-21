@@ -265,9 +265,9 @@
   }
 
   function monogram() {
-    return (SITE.studioName || "")
-      .split(/\s+/).filter(Boolean).slice(0, 2)
-      .map(function (w) { return w[0].toUpperCase(); }).join("");
+    var words = (SITE.studioName || "").split(/\s+/).filter(Boolean);
+    if (words.length === 1) return words[0].slice(0, 2);   // "Onsite" shows as "On"
+    return words.slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join("");
   }
 
   function footer() {
@@ -339,13 +339,13 @@
         '<p class="plan__num">' + pad(i + 1) + "</p>" +
         '<h3 class="plan__name">' + t(pl.name) + "</h3>" +
         '<p class="plan__for">' + t(pl.for) + "</p>" +
-        '<p class="plan__price">' + (pl.price ? roll(pl.price) : "Custom quote") + "</p>" +
+        '<p class="plan__price">' + (pl.price ? roll(pl.price) : "For quotation") + "</p>" +
         '<ul class="plan__list">' + (pl.includes || []).map(function (x) { return "<li>" + t(x) + "</li>"; }).join("") + "</ul>" +
         '<a class="btn ' + (pl.featured ? "btn--light" : "btn--line") + '" href="contact.html?plan=' + encodeURIComponent(pl.name) + '#planner">' + (pl.price ? "Choose " + esc(pl.name) : "Get a quote") + " " + ICON.arrow + "</a></div>";
     }).join("");
     return '<section class="section wrap" id="pricing" aria-labelledby="' + id + '">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Pricing</p>' +
-      '<h2 class="h2" id="' + id + '" data-reveal>Starts as low<br>as <span class="serif">' + esc(PRICING.startingAt || "") + ".</span></h2></div>" +
+      '<h2 class="h2" id="' + id + '" data-reveal>' + (PRICING.startingAt ? 'Starts as low<br>as <span class="serif">' + esc(PRICING.startingAt) + ".</span>" : 'Every project,<br><span class="serif">quoted for you.</span>') + "</h2></div>" +
       "<p data-reveal>" + t(PRICING.note || "") + " Not sure what you need? Tell us about your business and we’ll suggest the right mix.</p></div>" +
       '<div class="plans">' + cards + '</div><p class="swipe-hint" aria-hidden="true">Swipe to see all ' + plans.length + " plans →</p></section>";
   }
@@ -799,7 +799,7 @@
   }
 
   function services() {
-    setMeta("Services & pricing", "Brand identity, websites, online stores, apps, POS and inventory systems, AI assistants, ads and more, in any style. Websites start at " + (PRICING.startingAt || "$80") + ".");
+    setMeta("Services", "Brand identity, websites, online stores, apps, POS and inventory systems, AI assistants, ads and more, in any style. Websites start at " + (PRICING.startingAt || "$80") + ".");
     var list = SERVICES.map(function (s, i) {
       return '<li class="svc" id="service-' + (i + 1) + '" data-reveal><span class="svc__num">' + pad(i + 1) + "</span>" +
         '<h2 class="svc__name">' + t(s.name) + "</h2>" +

@@ -2,7 +2,7 @@
   SERVICES
   ────────
   One block per service, shown in this order.
-    price   optional starting price, e.g. "From $80". Leave "" to show "Quoted per project".
+    price   optional starting price. Leave "" to show "Quoted per project" (prices are off for now).
     page    optional page with more about the service, e.g. "brand-scaling.html".
 */
 window.SERVICES = [
@@ -23,7 +23,7 @@ window.SERVICES = [
     name: "Websites & Landing Pages",
     description: "Fast, mobile-first websites that explain what you do and turn visitors into customers.",
     includes: ["Custom design in any style", "Responsive build", "Contact & booking forms", "Basic SEO & analytics", "Hosting setup & launch"],
-    price: "From $80",
+    price: "",
   },
   {
     name: "E-commerce & Online Ordering",
@@ -85,24 +85,24 @@ window.SERVICES = [
   PRICING
   ───────
   Shown on the home page and the Services page. `startingAt` is the headline price.
-  Each plan's `price` is shown as written, like "$80", or "" to show "Custom quote".
+  Each plan's `price` is shown as written, or "" to show "For quotation" (prices are off for now).
   `need` (optional) ticks that service in the Contact page planner when someone picks the plan.
   `budgets` and `timelines` are the choices in the project planner on the Contact page.
 */
 window.PRICING = {
-  startingAt: "$80",
-  note: "Websites have fixed prices. Apps, systems, stores, branding, AI and ads get a custom quote after a free call.",
+  startingAt: "",
+  note: "Every project is quoted for you after a free call, so you only pay for what you need.",
   plans: [
     {
       name: "Basic",
-      price: "$80",
+      price: "",
       for: "A one-page website or landing page.",
       includes: ["1 page, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
       need: "Websites & Landing Pages",
     },
     {
       name: "Standard",
-      price: "$160",
+      price: "",
       for: "A three-page website for a small business.",
       includes: ["3 pages, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
       need: "Websites & Landing Pages",
@@ -110,7 +110,7 @@ window.PRICING = {
     },
     {
       name: "Premium",
-      price: "$275",
+      price: "",
       for: "A five-page website with room to grow.",
       includes: ["5 pages, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
       need: "Websites & Landing Pages",
@@ -132,7 +132,7 @@ window.PRICING = {
 window.FAQ = [
   {
     q: "How much does a project cost?",
-    a: "Websites have fixed prices: $80 for one page, $160 for three pages and $275 for five. Brand identities, brand scaling and ads, online stores, apps, POS and inventory systems and AI assistants depend on what you need, so we quote them after a quick call.",
+    a: "Every project is quoted for you. Tell us what you need on a quick call or in a message, and we send a clear quote with no hidden fees. Websites, brand identities, brand scaling and ads, online stores, apps, POS and inventory systems and AI assistants all work this way.",
   },
   {
     q: "How fast do you reply?",
@@ -225,7 +225,7 @@ window.GROWTH = {
     },
     {
       q: "Do I need a website first?",
-      a: "Not always. Ads can send people to a chat, a lead form or your Google profile. If a landing page will help, we can build one, from $80.",
+      a: "Not always. Ads can send people to a chat, a lead form or your Google profile. If a landing page will help, we can build one and quote it with the ads.",
     },
   ],
 };

@@ -72,10 +72,6 @@ window.PROJECTS = [
     results: [],
     link: "",
     note: "All screens use made-up demo data. The suppliers, amounts and receipts are not the client’s.",
-    loop: "assets/video/loops/middleware.mp4",
-    videos: [
-      { src: "assets/video/middleware-showreel.mp4", poster: "assets/img/projects/middleware/poster-1600.webp", title: "Product showreel", duration: "1:30", w: 1280, h: 720 },
-    ],
     images: [
       { src: "assets/img/projects/middleware/insights-1600.webp", small: "assets/img/projects/middleware/insights-800.webp", alt: "Middleware's Insights page for the CEO: what is still owed by priority and the suppliers owed the most, with overdue amounts in red", w: 1600, h: 1000 },
       { src: "assets/img/projects/middleware/mobile-780.webp", alt: "Middleware's To pay screen on a phone, with overdue, due in the next 7 days and due later totals", w: 780, h: 1688 },
@@ -129,11 +125,6 @@ window.PROJECTS = [
     tools: ["Next.js", "React"],
     results: [],
     link: "https://inest.property",
-    loop: "assets/video/loops/inest.mp4",
-    videos: [
-      { src: "assets/video/inest-demo.mp4", poster: "assets/img/projects/inest/poster-demo-1600.webp", title: "Product demo", duration: "1:30", w: 1280, h: 720 },
-      { src: "assets/video/inest-features.mp4", poster: "assets/img/projects/inest/poster-features-1600.webp", title: "Feature walkthrough", duration: "2:31", w: 1280, h: 720 },
-    ],
     images: [
       { src: "assets/img/projects/inest/stays-1600.webp", small: "assets/img/projects/inest/stays-800.webp", alt: "Inest booking page listing vacant condo units with sizes, floors and daily rates", w: 1600, h: 1000 },
       { src: "assets/img/projects/inest/multi-use-1600.webp", small: "assets/img/projects/inest/multi-use-800.webp", alt: "Inest multi-use area page with an hourly availability timeline", w: 1600, h: 1000 },
@@ -143,8 +134,8 @@ window.PROJECTS = [
     ],
   },
   {
-    slug: "onsite",
-    title: "Onsite",
+    slug: "oncon",
+    title: "OnCon",
     category: "Mobile App",
     year: "2026",
     client: "Own product",
@@ -152,7 +143,7 @@ window.PROJECTS = [
     accent: "#f0b429",
     featured: true,
     summary:
-      "Construction project tracking for contractors in the Philippines. Engineers post daily reports and photos from their phones, materials move from request to delivery with receipts at every step, and owners see real progress and spending every day, even when the site has no signal.",
+      "OnCon is construction project tracking for contractors in the Philippines. Engineers post daily reports and photos from their phones, materials move from request to delivery with receipts at every step, and owners see real progress and spending every day, even when the site has no signal.",
     sections: [
       {
         heading: "Daily reports with photos",
@@ -164,7 +155,7 @@ window.PROJECTS = [
       },
       {
         heading: "Built for the field",
-        body: "Onsite installs on any phone and keeps working with no signal. Anything posted offline waits and sends when the phone is back online. Each person, from the CEO to procurement to the office TV board, sees only their part, and money stays with the CEO.",
+        body: "OnCon installs on any phone and keeps working with no signal. Anything posted offline waits and sends when the phone is back online. Each person, from the CEO to procurement to the office TV board, sees only their part, and money stays with the CEO.",
       },
     ],
     features: [
@@ -181,19 +172,15 @@ window.PROJECTS = [
     ],
     tools: ["Progressive Web App", "Offline-first"],
     results: [],
-    link: "https://construction.getonsiteapp.com",
-    loop: "assets/video/loops/onsite.mp4",
-    videos: [
-      { src: "assets/video/onsite-reel.mp4", poster: "assets/img/projects/onsite/reel-sites-1600.webp", title: "Product reel", duration: "0:24", w: 1280, h: 720 },
-    ],
+    link: "https://oncon.getonsiteapp.com",
     images: [
-      { src: "assets/img/projects/onsite/home-1600.webp", small: "assets/img/projects/onsite/home-800.webp", alt: "Onsite landing and sign-in screen with feature highlights for contractors", w: 1600, h: 1000 },
-      { src: "assets/img/projects/onsite/mobile-780.webp", alt: "Onsite sign-in screen on a phone", w: 780, h: 1688 },
-      { src: "assets/img/projects/onsite/reel-sites-1600.webp", small: "assets/img/projects/onsite/reel-sites-800.webp", alt: "Every site, every day, one place: Onsite's promise", w: 1600, h: 900, art: true },
-      { src: "assets/img/projects/onsite/reel-reports-1600.webp", small: "assets/img/projects/onsite/reel-reports-800.webp", alt: "Onsite daily report on a phone, with site photos and progress by stage", w: 1600, h: 900, art: true },
+      { src: "assets/img/projects/onsite/home-1600.webp", small: "assets/img/projects/onsite/home-800.webp", alt: "OnCon landing and sign-in screen with feature highlights for contractors", w: 1600, h: 1000 },
+      { src: "assets/img/projects/onsite/mobile-780.webp", alt: "OnCon sign-in screen on a phone", w: 780, h: 1688 },
+      { src: "assets/img/projects/onsite/reel-sites-1600.webp", small: "assets/img/projects/onsite/reel-sites-800.webp", alt: "Every site, every day, one place: OnCon's promise", w: 1600, h: 900, art: true },
+      { src: "assets/img/projects/onsite/reel-reports-1600.webp", small: "assets/img/projects/onsite/reel-reports-800.webp", alt: "OnCon daily report on a phone, with site photos and progress by stage", w: 1600, h: 900, art: true },
       { src: "assets/img/projects/onsite/reel-requests-1600.webp", small: "assets/img/projects/onsite/reel-requests-800.webp", alt: "A material request moving from requested to approved, with the supplier's price quote", w: 1600, h: 900, art: true },
       { src: "assets/img/projects/onsite/reel-costs-1600.webp", small: "assets/img/projects/onsite/reel-costs-800.webp", alt: "Project budget with spending to date and an over-budget warning", w: 1600, h: 900, art: true },
-      { src: "assets/img/projects/onsite/reel-roles-1600.webp", small: "assets/img/projects/onsite/reel-roles-800.webp", alt: "Onsite roles: CEO, secretary, HR, engineer, procurement and office viewer", w: 1600, h: 900, art: true },
+      { src: "assets/img/projects/onsite/reel-roles-1600.webp", small: "assets/img/projects/onsite/reel-roles-800.webp", alt: "OnCon roles: CEO, secretary, HR, engineer, procurement and office viewer", w: 1600, h: 900, art: true },
     ],
   },
   {
@@ -240,10 +227,6 @@ window.PROJECTS = [
     tools: [],
     results: [],
     link: "",
-    loop: "assets/video/loops/the-one-app.mp4",
-    videos: [
-      { src: "assets/video/the-one-app-demo.mp4", poster: "assets/img/projects/the-one-app/cover-1600.webp", title: "Launch film", duration: "2:00", w: 1280, h: 720 },
-    ],
     images: [
       { src: "assets/img/projects/the-one-app/cover-1600.webp", small: "assets/img/projects/the-one-app/cover-800.webp", alt: "Dozens of The One App's screens laid out on a dark background", w: 1600, h: 900, art: true },
       { src: "assets/img/projects/the-one-app/mobile-450.webp", alt: "The One App's Today screen with the day's workout and its recovery, load and sleep scores", w: 450, h: 1000 },
@@ -258,7 +241,7 @@ window.PROJECTS = [
   },
   {
     slug: "pos-system",
-    title: "OnTrack POS",
+    title: "OnTrack",
     category: "Business System",
     year: "2026",
     client: "Restaurants & cafés",
@@ -266,7 +249,7 @@ window.PROJECTS = [
     accent: "#a6d61f",
     featured: true,
     summary:
-      "The register side of OnTrack, a point-of-sale system for restaurants and cafés. Staff open a table or takeout, tap dishes and send the order to the kitchen. Bills settle in cash or QR with Senior citizen and PWD discounts, and the owner sees sales, open tables and profit live.",
+      "A point-of-sale and inventory system for restaurants and cafés. Staff open a table or takeout, tap dishes and send the order to the kitchen; every dish has a recipe, so its ingredients leave stock as the order goes out. Bills settle in cash or QR with Senior citizen and PWD discounts, and the owner sees sales, stock and real profit live.",
     sections: [
       {
         heading: "The floor at a glance",
@@ -277,8 +260,12 @@ window.PROJECTS = [
         body: "Tap dishes from the menu, send them to the kitchen and track what's been served. Settle in cash or QR with the change worked out. Voids and Senior or PWD discounts need the manager key, so every peso is accounted for.",
       },
       {
+        heading: "Stock that keeps itself",
+        body: "Recipes link every dish to its ingredients, so stock goes down as orders go out. Deliveries come in with prices and a photo of the receipt, the kitchen and bar count at opening and close, and any difference shows up in the daily report.",
+      },
+      {
         heading: "Live numbers for the owner",
-        body: "The Today screen shows sales, cost of goods and net profit as they happen, who is on the register and which tables are open. Daily reports export to CSV, and every login sees only what its role needs.",
+        body: "The Today screen shows sales, cost of goods and net profit as they happen, who is on the register and which tables are open. Profit & costs adds rent, wages and supplier spend for the real net profit by day and month.",
       },
     ],
     features: [
@@ -292,6 +279,11 @@ window.PROJECTS = [
       "Print bills and move orders between tables",
       "Shared cashier login that asks who's on shift",
       "Live sales, cost of goods and net profit",
+      "Recipes that deduct ingredients with every order",
+      "Deliveries with prices and receipt photos",
+      "Opening, closing and spot-check counts",
+      "Low and out-of-stock alerts",
+      "Net profit by day: cost of goods, rent and wages",
       "Daily reports with CSV export",
       "Logins for CEO, manager, cashier and purchasing",
       "One system for many restaurants",
@@ -299,10 +291,6 @@ window.PROJECTS = [
     tools: ["Python", "SQLite", "JavaScript", "Tablets, phones & laptops"],
     results: [],
     link: "https://pos.getonsiteapp.com",
-    loop: "assets/video/loops/pos-system.mp4",
-    videos: [
-      { src: "assets/video/pos-system-tour.mp4", poster: "assets/img/projects/pos-system/tables-1600.webp", title: "Taking an order, start to bill", duration: "0:22", w: 1440, h: 900, frame: "browser" },
-    ],
     images: [
       { src: "assets/img/projects/pos-system/tables-1600.webp", small: "assets/img/projects/pos-system/tables-800.webp", alt: "OnTrack's tables screen with the day's takings, open bills and a colour-coded table map", w: 1600, h: 1000 },
       { src: "assets/img/projects/pos-system/order-1600.webp", small: "assets/img/projects/pos-system/order-800.webp", alt: "An open order for Table 3 next to the menu, with each dish marked as served", w: 1600, h: 1000 },
@@ -310,61 +298,8 @@ window.PROJECTS = [
       { src: "assets/img/projects/pos-system/mobile-780.webp", alt: "OnTrack's tables screen on a phone", w: 780, h: 1688 },
       { src: "assets/img/projects/pos-system/today-1600.webp", small: "assets/img/projects/pos-system/today-800.webp", alt: "The owner's Today screen with live sales, net profit, the floor and who is on the register", w: 1600, h: 1000 },
       { src: "assets/img/projects/pos-system/reports-1600.webp", small: "assets/img/projects/pos-system/reports-800.webp", alt: "Daily report with net profit, sales, gross profit, voids and ingredient usage", w: 1600, h: 1000 },
-    ],
-  },
-  {
-    slug: "inventory-tracker",
-    title: "OnTrack Inventory",
-    category: "Business System",
-    year: "2026",
-    client: "Restaurants & cafés",
-    role: "Product design & development",
-    accent: "#2f8f5b",
-    featured: true,
-    summary:
-      "The stock side of OnTrack. Every dish has a recipe, so each order takes its ingredients out of stock automatically. Deliveries come in with prices and a photo of the receipt, the kitchen and bar count at opening and close, and any difference shows up in the daily report.",
-    sections: [
-      {
-        heading: "Stock that keeps itself",
-        body: "Recipes link every dish to its ingredients, so stock goes down as orders go out. Par levels and low and out-of-stock alerts tell the team what to buy before it runs out, for the kitchen and the bar.",
-      },
-      {
-        heading: "Counts, deliveries and waste",
-        body: "The kitchen and bar do opening, closing and spot counts, and any variance against what the orders used shows up in the daily report. Deliveries are received with prices and a receipt photo, waste needs the CEO key, and prep batches track what's made in-house.",
-      },
-      {
-        heading: "What the restaurant really made",
-        body: "Profit & costs turns delivery prices into the cost of every dish sold, adds rent, wages and other costs, and shows the real net profit by day and month. Every supplier shows what was bought this month and all time, so the owner knows where the money goes.",
-      },
-    ],
-    features: [
-      "Recipes that deduct ingredients with every order",
-      "Stock levels with par levels",
-      "Low and out-of-stock alerts",
-      "Separate kitchen and bar stock",
-      "Opening, closing and spot-check counts",
-      "Variance between used and counted",
-      "Deliveries with prices and receipt photos",
-      "Supplier spend, this month and all time",
-      "Waste logging approved with the CEO key",
-      "Prep batches for items made in-house",
-      "Net profit by day: cost of goods, rent and wages",
-      "Unit conversions for kg, g, ml and pieces",
-    ],
-    tools: ["Python", "SQLite", "JavaScript", "Tablets, phones & laptops"],
-    results: [],
-    link: "https://pos.getonsiteapp.com",
-    loop: "assets/video/loops/inventory-tracker.mp4",
-    videos: [
-      { src: "assets/video/inventory-tracker-tour.mp4", poster: "assets/img/projects/inventory-tracker/inventory-1600.webp", title: "Stock, counts, suppliers and profit", duration: "0:19", w: 1440, h: 900, frame: "browser" },
-    ],
-    images: [
       { src: "assets/img/projects/inventory-tracker/inventory-1600.webp", small: "assets/img/projects/inventory-tracker/inventory-800.webp", alt: "OnTrack's stock list by category, with on-hand amounts, par levels, status and value", w: 1600, h: 1000 },
-      { src: "assets/img/projects/inventory-tracker/count-1600.webp", small: "assets/img/projects/inventory-tracker/count-800.webp", alt: "Closing count in progress, with expected amounts for each ingredient", w: 1600, h: 1000 },
-      { src: "assets/img/projects/inventory-tracker/mobile-780.webp", alt: "OnTrack's stock screen on a phone", w: 780, h: 1688 },
-      { src: "assets/img/projects/inventory-tracker/suppliers-1600.webp", small: "assets/img/projects/inventory-tracker/suppliers-800.webp", alt: "Suppliers page with spend this month and all time for each supplier", w: 1600, h: 1000 },
       { src: "assets/img/projects/inventory-tracker/costs-1600.webp", small: "assets/img/projects/inventory-tracker/costs-800.webp", alt: "Profit and costs for the month: sales, cost of goods, gross profit and net profit by day", w: 1600, h: 1000 },
-      { src: "assets/img/projects/inventory-tracker/menu-1600.webp", small: "assets/img/projects/inventory-tracker/menu-800.webp", alt: "Menu and recipes, with each dish's ingredients, price and cost", w: 1600, h: 1000 },
     ],
   },
 ];

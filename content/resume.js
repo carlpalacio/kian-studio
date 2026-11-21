@@ -7,11 +7,11 @@
 window.RESUME = {
   pdf: "assets/files/Carl-Palacio-Resume.pdf",
   summary:
-    "Founder of Kian Studio. Designer and developer building brands, websites, apps, POS and inventory systems and AI assistants, from first sketch to launch.",
+    "Founder of Onsite. Designer and developer building brands, websites, apps, POS and inventory systems and AI assistants, from first sketch to launch.",
   experience: [
     {
       title: "Founder, Designer & Developer",
-      org: "Kian Studio",
+      org: "Onsite",
       period: "[Start year] – Present",
       points: [
         "Designed and built Middleware, a supplier payments system with receipts, approvals and live updates for a retail group.",

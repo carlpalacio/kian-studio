@@ -1,8 +1,8 @@
-/* Onsite, the construction app, used to live at getonsiteapp.com and now lives at
-   construction.getonsiteapp.com. Phones that installed it here still hold its old service worker,
+/* OnCon (Onsite for construction) used to live at getonsiteapp.com and now lives at
+   oncon.getonsiteapp.com. Phones that installed it here still hold its old service worker,
    which checks this address for updates. This replaces it: it clears what the old one saved,
-   removes itself, and sends any open Onsite page to the new address. Kian Studio itself has no
-   service worker. */
+   removes itself, and sends any open OnCon page to the new address. The Onsite studio page itself
+   has no service worker. */
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", event => event.waitUntil((async () => {
   const keys = await caches.keys();
@@ -11,6 +11,6 @@ self.addEventListener("activate", event => event.waitUntil((async () => {
   const pages = await self.clients.matchAll({ type: "window", includeUncontrolled: true });
   for (const page of pages) {
     const here = new URL(page.url);
-    if (page.navigate) page.navigate("https://construction.getonsiteapp.com" + here.pathname + here.search + here.hash);
+    if (page.navigate) page.navigate("https://oncon.getonsiteapp.com" + here.pathname + here.search + here.hash);
   }
 })()));
