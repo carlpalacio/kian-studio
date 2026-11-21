@@ -592,20 +592,43 @@
       return '<div class="iso__layer" style="--i:' + (i + 1) + '">' + img(im, { decorative: true, eager: true, sizes: "320px" }) + "</div>";
     }).join("");
 
-    // Featured work runs sideways in one row, each project on a panel in its own color.
-    var featured = PROJECTS.filter(function (p) { return p.featured; });
-    var reel = featured.map(function (p, i) {
-      var n = PROJECTS.indexOf(p) + 1;
-      return '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(i, 3) * 0.08 + "s;--accent:" + esc(p.accent || "#e9dfcf") + ";--tilt:" + (i % 2 ? 2.5 : -2.5) + 'deg">' +
-        '<a class="card" href="' + projectUrl(p) + '" draggable="false"><div class="reel__panel">' + cardMedia(p, { sizes: "(min-width: 760px) 34vw, 80vw" }) + "</div>" +
-        '<div class="card__foot"><div><h3 class="card__title">' + esc(p.title) + '</h3><p class="card__meta">' + esc(p.category) + "</p></div>" +
-        '<span class="card__num">' + pad(n) + "</span></div></a></li>";
-    }).join("");
-    // The reel ends with an open invitation: a card for the visitor's own project.
-    reel += '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(featured.length, 3) * 0.08 + 's">' +
-      '<a class="card card--next" href="/contact#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
-      '<span class="reel__plus" aria-hidden="true">+</span><p class="reel__ask">Your idea goes here.</p><p class="reel__hint">Tell us what you want to build, big or small.</p></div>' +
-      '<div class="card__foot"><div><h3 class="card__title">Your project</h3><p class="card__meta">The first call is free</p></div><span class="card__num">Next</span></div></a></li>';
+    // Featured work runs sideways, each project on a panel in its own color: first what we built for clients
+    // (systems in daily use), then our own products. The second reel ends with a card for the visitor's own project.
+    function reelCards(list, withNext) {
+      var html = list.map(function (p, i) {
+        var n = PROJECTS.indexOf(p) + 1;
+        return '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(i, 3) * 0.08 + "s;--accent:" + esc(p.accent || "#e9dfcf") + ";--tilt:" + (i % 2 ? 2.5 : -2.5) + 'deg">' +
+          '<a class="card" href="' + projectUrl(p) + '" draggable="false"><div class="reel__panel">' + cardMedia(p, { sizes: "(min-width: 760px) 34vw, 80vw" }) + "</div>" +
+          '<div class="card__foot"><div><h3 class="card__title">' + esc(p.title) + '</h3><p class="card__meta">' + esc(p.forClient ? "For " + (p.client || "a client") : p.category) + "</p></div>" +
+          '<span class="card__num">' + pad(n) + "</span></div></a></li>";
+      }).join("");
+      if (withNext) html += '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(list.length, 3) * 0.08 + 's">' +
+        '<a class="card card--next" href="/contact#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
+        '<span class="reel__plus" aria-hidden="true">+</span><p class="reel__ask">Your idea goes here.</p><p class="reel__hint">Tell us what you want to build, big or small.</p></div>' +
+        '<div class="card__foot"><div><h3 class="card__title">Your project</h3><p class="card__meta">The first call is free</p></div><span class="card__num">Next</span></div></a></li>';
+      return html;
+    }
+    function reelSection(id, eyebrow, titleHtml, side, list, withNext, foot) {
+      var total = list.length + (withNext ? 1 : 0);
+      return '<section class="featured section" aria-labelledby="' + id + '-title">' +
+        '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">' + eyebrow + "</p>" +
+        '<h2 class="h2" id="' + id + '-title" data-reveal>' + titleHtml + "</h2></div>" +
+        '<div class="featured__side"><p data-reveal>' + side + "</p>" +
+        '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="/work">View all work ' + ICON.arrow + "</a>" +
+        '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="' + id + '" aria-label="Previous project">' + ICON.left + "</button>" +
+        '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(total) + "</span>" +
+        '<button class="reel__btn" type="button" data-dir="1" aria-controls="' + id + '" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
+        '<div class="reel"><ul class="reel__track" id="' + id + '" aria-label="' + esc(eyebrow) + '">' + reelCards(list, withNext) + "</ul></div>" +
+        '<div class="wrap reel__foot"><div class="reel__bar" aria-hidden="true"><i></i></div>' + (foot || "") + "</div>" +
+        "</section>";
+    }
+    var clientWork = PROJECTS.filter(function (p) { return p.featured && p.forClient; });
+    var ownWork = PROJECTS.filter(function (p) { return p.featured && !p.forClient; });
+    var reels = reelSection("reel-clients", "Built for clients · " + pad(clientWork.length) + " systems in daily use", 'Companies already<br>run on <span class="serif">our work.</span>',
+        "Real businesses use these every day: a retail group's supplier payments, a condominium's bookings and billing. Built for them, kept running by us.", clientWork, false) +
+      reelSection("reel-products", "Our own products · " + pad(ownWork.length) + " and counting", 'Yours could<br>be <span class="serif">next.</span>',
+        "Building sites, restaurants, fitness and coffee, each built around the people who use it every day. Swipe to the end to start yours.", ownWork, true,
+        '<ul class="featured__cats">' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul>");
 
     // The stage caption names the projects whose screens are actually shown.
     function ownerOf(im) { return im ? PROJECTS.filter(function (p) { return (p.images || []).indexOf(im) > -1; })[0] : null; }
@@ -635,18 +658,7 @@
 
       growthBand() +
 
-      '<section class="featured section" aria-labelledby="featured-title">' +
-      '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Selected work · ' + pad(featured.length) + " projects</p>" +
-      '<h2 class="h2" id="featured-title" data-reveal>Yours could<br>be <span class="serif">next.</span></h2></div>' +
-      '<div class="featured__side"><p data-reveal>Supplier payments, condo bookings, building sites, fitness and restaurants, each built around the people who use it every day. Swipe to the end to start yours.</p>' +
-      '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="/work">View all work ' + ICON.arrow + "</a>" +
-      '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="reel" aria-label="Previous project">' + ICON.left + "</button>" +
-      '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(featured.length + 1) + "</span>" +
-      '<button class="reel__btn" type="button" data-dir="1" aria-controls="reel" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
-      '<div class="reel"><ul class="reel__track" id="reel" aria-label="Featured projects">' + reel + "</ul></div>" +
-      '<div class="wrap reel__foot"><div class="reel__bar" aria-hidden="true"><i></i></div>' +
-      '<ul class="featured__cats">' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul></div>" +
-      "</section>" +
+      reels +
 
       aiSection() +
 
@@ -676,18 +688,27 @@
     var filters = [{ name: "All", count: PROJECTS.length }].concat(cats).map(function (c) {
       return '<button class="filter" type="button" data-filter="' + esc(c.name) + '" aria-pressed="' + (c.name === initial) + '">' + esc(c.name) + "<span>" + c.count + "</span></button>";
     }).join("");
-    var cards = PROJECTS.map(function (p, i) {
+    var card = function (p) {
+      var i = PROJECTS.indexOf(p);
       return '<a class="card" href="' + projectUrl(p) + '" data-cat="' + esc(p.category) + '" data-reveal>' +
         cardMedia(p, { sizes: "(min-width: 760px) 50vw, 100vw", eager: i < 2 }) +
-        '<div class="card__foot"><div><h2 class="card__title">' + esc(p.title) + '</h2><p class="card__meta">' + esc(p.category) + " · " + t(p.year) + "</p></div>" +
+        '<div class="card__foot"><div><h2 class="card__title">' + esc(p.title) + '</h2><p class="card__meta">' + esc(p.forClient ? "For " + (p.client || "a client") + " · " : p.category + " · ") + t(p.year) + "</p></div>" +
         '<span class="card__num">' + pad(i + 1) + "</span></div></a>";
-    }).join("");
-    return pageHead("Selected work", "Work", "Supplier payments, condo bookings, building sites, fitness and restaurants. Each project is built around the people who use it every day. Yours could be next.",
+    };
+    var clients = PROJECTS.filter(function (p) { return p.forClient; }), own = PROJECTS.filter(function (p) { return !p.forClient; });
+    var group = function (id, eyebrow, titleHtml, list) {
+      return '<div class="work-group" id="' + id + '"><div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">' + eyebrow + "</p>" +
+        '<h2 class="h2" data-reveal>' + titleHtml + "</h2></div></div>" +
+        '<div class="work-grid">' + list.map(card).join("") + "</div></div>";
+    };
+    return pageHead("Selected work", "Work", "Systems companies already run on, and products of our own: supplier payments, condo bookings, building sites, restaurants, fitness and coffee. Each is built around the people who use it every day. Yours could be next.",
       '<a class="btn btn--dark" href="/contact#planner">Tell us your idea ' + ICON.arrow + "</a>") +
       '<section class="wrap" style="padding-bottom:clamp(64px,10vw,140px)" aria-label="Projects">' +
       '<div class="filters" role="group" aria-label="Filter projects by category">' + filters + "</div>" +
       '<p class="sr-only" aria-live="polite" id="filter-status"></p>' +
-      '<div class="work-grid">' + cards + "</div></section>" + cta();
+      group("for-clients", "Built for clients · " + pad(clients.length) + " in daily use", 'Companies already run on <span class="serif">our work.</span>', clients) +
+      group("our-products", "Our own products · " + pad(own.length), 'And products of <span class="serif">our own.</span>', own) +
+      "</section>" + cta();
   }
 
   function project() {
@@ -1655,12 +1676,15 @@
 
   // The sideways work reel: swipe it, drag it with the mouse, or use the arrows.
   function initReel() {
-    var track = document.querySelector(".reel__track");
+    document.querySelectorAll(".featured").forEach(initOneReel);
+  }
+  function initOneReel(section) {
+    var track = section.querySelector(".reel__track");
     if (!track) return;
     var items = [].slice.call(track.children);
-    var btns = document.querySelectorAll(".reel__btn");
-    var count = document.querySelector(".reel__count b");
-    var thumb = document.querySelector(".reel__bar i");
+    var btns = section.querySelectorAll(".reel__btn");
+    var count = section.querySelector(".reel__count b");
+    var thumb = section.querySelector(".reel__bar i");
     if (!items.length) return;
     function step() { return items.length > 1 ? items[1].offsetLeft - items[0].offsetLeft : track.clientWidth; }
     function max() { return track.scrollWidth - track.clientWidth; }

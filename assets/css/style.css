@@ -1837,3 +1837,8 @@ noscript p { padding: 24px var(--gutter); }
   .js .report__bars i { scale: none !important; animation: none !important; }
   .msg--typing i { animation: none; }
 }
+
+/* The work page in two groups: built for clients, then our own products */
+.work-group + .work-group { margin-top: clamp(56px, 8vw, 110px); }
+.work-group .section-head { margin-bottom: 28px; }
+.featured + .featured { padding-top: 0; }

@@ -27,6 +27,7 @@
 window.PROJECTS = [
   {
     slug: "middleware",
+    forClient: true,   // built for a client, in daily use
     title: "Middleware",
     category: "Business System",
     year: "2026",
@@ -84,6 +85,7 @@ window.PROJECTS = [
   },
   {
     slug: "inest",
+    forClient: true,   // built for a client, in daily use
     title: "Inest",
     category: "Web Platform",
     year: "2026",
@@ -297,6 +299,52 @@ window.PROJECTS = [
       { src: "assets/img/projects/pos-system/inventory-1600.jpg", small: "assets/img/projects/pos-system/inventory-800.jpg", alt: "Stock by category with on-hand amounts, par levels and status", w: 1600, h: 1000 },
       { src: "assets/img/projects/pos-system/costs-1600.jpg", small: "assets/img/projects/pos-system/costs-800.jpg", alt: "Profit and costs: cost of goods, rent and wages against sales, by day and month", w: 1600, h: 1000 },
       { src: "assets/img/projects/pos-system/menu-1600.jpg", small: "assets/img/projects/pos-system/menu-800.jpg", alt: "Menu and recipes: each dish's ingredients, price and cost", w: 1600, h: 1000 },
+    ],
+  },
+  {
+    slug: "kape",
+    title: "Kape",
+    category: "Website",
+    year: "2026",
+    client: "Own project",
+    role: "Design & development",
+    accent: "#8a5a3c",
+    featured: true,
+    summary:
+      "A working coffee recipe book for a café: the house menu, the new drinks to try, and the classics, every amount in grams, every espresso drink starting from the same 18 g to 36 g double shot. Recipes scale from one drink to twelve, with timers built into the timed steps.",
+    sections: [
+      {
+        heading: "Every drink, one tap away",
+        body: "A grid of every drink, filtered by menu, must-try or classic, hot or iced, and style, with search across names and ingredients. Each recipe has its own link, so staff can share one straight to a phone.",
+      },
+      {
+        heading: "Recipes that scale and time themselves",
+        body: "Ingredients scale from 1 to 12 drinks, the method ticks off step by step, and timed steps have their own timer. Where a drink came from a video, the original is one tap away.",
+      },
+      {
+        heading: "Testing plan and basics",
+        body: "A must-try plan in rounds with a progress bar, a shot timer with dose and ratio sliders, the dialing-in steps, cold foam rules and the batch syrups: everything a new barista needs on one page.",
+      },
+    ],
+    features: [
+      "Index of every drink with filters and search",
+      "Recipes in grams, from one shared double shot",
+      "Scales from 1 to 12 drinks",
+      "Step-by-step method with built-in timers",
+      "A link for every recipe",
+      "Must-try plan in rounds, with progress saved on the phone",
+      "Shot timer with dose and ratio sliders",
+      "Dialing-in steps, cold foam rules, batch syrups",
+      "Works on any phone, nothing to install",
+    ],
+    tools: ["HTML", "CSS", "JavaScript"],
+    results: [],
+    link: "https://coffee.getonsiteapp.com",
+    images: [
+      { src: "assets/img/projects/kape/home-1600.jpg", small: "assets/img/projects/kape/home-800.jpg", alt: "Kape's index of drinks with filters for menu, must-try and classics", w: 1600, h: 1000 },
+      { src: "assets/img/projects/kape/mobile-780.jpg", alt: "A recipe on a phone, scaled and with its timers", w: 780, h: 1688 },
+      { src: "assets/img/projects/kape/recipe-1600.jpg", small: "assets/img/projects/kape/recipe-800.jpg", alt: "A recipe with ingredients in grams and a step-by-step method", w: 1600, h: 1000 },
+      { src: "assets/img/projects/kape/basics-1600.jpg", small: "assets/img/projects/kape/basics-800.jpg", alt: "The basics: shot timer, dialing in, cold foam and syrups", w: 1600, h: 1000 },
     ],
   },
 ];
