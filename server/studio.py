@@ -35,6 +35,7 @@ MAX_PER_HOUR = 5            # messages from one address
 CONFIG = {"data": "data"}
 _lock = threading.Lock()
 _recent = {}                # ip -> [timestamps] for the contact form
+_failed = {}                # ip -> [timestamps] of wrong admin passwords
 
 
 def path_of(name):
@@ -60,6 +61,11 @@ def init_db():
     """)
     conn.commit()
     conn.close()
+
+
+def csrf(token):
+    """The code hidden in each admin form. It isn't the cookie itself, so the page never shows the login token."""
+    return hmac.new(token.encode(), b"studio-csrf", hashlib.sha256).hexdigest()
 
 
 def now():
@@ -182,6 +188,7 @@ def login_page(error=""):
 
 
 def dashboard(conn, token):
+    token = csrf(token)
     u = usage() or {}
     disk = u.get("disk") or {}
     mem = u.get("memory") or {}
@@ -214,7 +221,7 @@ def dashboard(conn, token):
         rows += ("<tr><td><b>{}</b><br><a class=\"muted\" href=\"{}\">{}</a></td><td class=\"hide\">{}</td>"
                  "<td class=\"num hide\">{}</td><td class=\"num hide\">{}</td><td class=\"num hide\">{}</td>"
                  "<td class=\"num\"><b>{}</b><div class=\"bar\" style=\"width:90px;margin-left:auto\"><i style=\"width:{:.0f}%\"></i></div></td></tr>").format(
-            esc(s.get("name")), esc(s.get("url")), esc((s.get("url") or "").replace("https://", "")), status,
+            esc(s.get("name")), esc(s.get("url") if str(s.get("url") or "").startswith("https://") else "#"), esc((s.get("url") or "").replace("https://", "")), status,
             human(s.get("code")), human(s.get("data")), human(s.get("backups")), human(tot), 100.0 * tot / biggest)
     server_section = (
         "<section class=\"section\"><h2>What each website takes up</h2>"
@@ -255,6 +262,7 @@ def dashboard(conn, token):
 
 class Handler(BaseHTTPRequestHandler):
     server_version = "studio"
+    timeout = 20   # a connection that goes quiet is dropped, so slow clients can't hold threads
 
     def log_message(self, fmt, *args):
         pass
@@ -271,6 +279,11 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Robots-Tag", "noindex")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Referrer-Policy", "no-referrer")
+        if ctype.startswith("text/html"):
+            self.send_header("X-Frame-Options", "DENY")
+            self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
         for k, v in (extra or {}).items():
             self.send_header(k, v)
         self.end_headers()
@@ -293,7 +306,10 @@ class Handler(BaseHTTPRequestHandler):
         return self.rfile.read(length)
 
     def form(self):
-        return {k: v[0] for k, v in parse_qs(self.body().decode("utf-8", "replace"), keep_blank_values=True).items()}
+        # The request body can only be read once, so keep the answer for the rest of this request.
+        if not hasattr(self, "_form"):
+            self._form = {k: v[0] for k, v in parse_qs(self.body().decode("utf-8", "replace"), keep_blank_values=True).items()}
+        return self._form
 
     def session_token(self):
         for part in (self.headers.get("Cookie") or "").split(";"):
@@ -335,7 +351,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/admin/login":
                 return self.login(conn)
             token = self.admin(conn)
-            if not token or self.form().get("token") != token:
+            if not token or not hmac.compare_digest(self.form().get("token", ""), csrf(token)):
                 return self.redirect("/admin")
             if path == "/admin/logout":
                 conn.execute("DELETE FROM sessions WHERE token = ?", (hashlib.sha256(token.encode()).hexdigest(),))
@@ -356,12 +372,20 @@ class Handler(BaseHTTPRequestHandler):
             conn.close()
 
     def login(self, conn):
+        ip = self.ip()
+        with _lock:   # no more than 10 wrong passwords an hour from one address
+            tries = [t for t in _failed.get(ip, []) if t > time.time() - 3600]
+            _failed[ip] = tries
+            if len(tries) >= 10:
+                return self.send(429, login_page("Too many wrong passwords. Try again in an hour."))
         time.sleep(0.4)   # slows guessing
         pw = self.form().get("password") or ""
         stored = conn.execute("SELECT value FROM settings WHERE key = 'admin_password'").fetchone()
         if not stored:
             return self.send(200, login_page("No password is set yet. On the server: python3 studio.py --set-password"))
         if not check_password(stored["value"], pw):
+            with _lock:
+                _failed.setdefault(ip, []).append(time.time())
             return self.send(200, login_page("That's not the password."))
         token = secrets.token_urlsafe(32)
         expires = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=SESSION_SECONDS)).replace(microsecond=0).isoformat()
@@ -397,6 +421,9 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send_json(429, {"error": "That's a few messages in a row. Please try again in an hour, or call us."})
             stamps.append(time.time())
             _recent[ip] = stamps
+            if len(_recent) > 5000:   # forget addresses that haven't written for an hour
+                for k in [k for k, v in _recent.items() if not v or v[-1] < time.time() - 3600]:
+                    del _recent[k]
         conn = connect()
         try:
             conn.execute("INSERT INTO enquiries (created_at, name, business, contact, needs, style, budget, timeline, message, brief, ip) VALUES (?,?,?,?,?,?,?,?,?,?,?)",

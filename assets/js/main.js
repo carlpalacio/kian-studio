@@ -191,6 +191,16 @@
     setTag('meta[property="og:title"]', "content", document.title);
     setTag('meta[property="og:description"]', "content", desc);
     setTag('meta[property="og:site_name"]', "content", name);
+    // One clean address per page, so /work.html and /work don't count as two pages.
+    var site = ((SITE.seo && SITE.seo.siteUrl) || "").replace(/\/$/, "");
+    if (site && page !== "404") {
+      var path = location.pathname.replace(/(^|\/)(index)?\.html$/, "$1").replace(/\.html$/, "");
+      var slug = new URLSearchParams(location.search).get("p");
+      if (page === "project" && slug) path = "/work/" + encodeURIComponent(slug);
+      var link = document.head.querySelector('link[rel="canonical"]');
+      if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.appendChild(link); }
+      link.href = site + (path || "/");
+    }
   }
   function setTag(sel, attr, val) {
     var el = document.head.querySelector(sel);
@@ -1220,15 +1230,13 @@
     apply(pressed ? pressed.getAttribute("data-filter") : "All");
   }
 
-  // The project planner: builds a brief from the picks and sends it by email or text, copies it
-  // for any chat (WhatsApp, Fiverr, Upwork…), or posts it to Formspree when contact.formEndpoint is set.
+  // The project planner: builds a brief from the picks, saves it with us when it's sent (POST /api/contact),
+  // and copies it for any chat (WhatsApp, Fiverr, Upwork…).
   function initPlanner() {
     var form = document.querySelector("[data-planner]");
     if (!form) return;
     var out = form.querySelector(".brief__text");
     var status = form.querySelector(".brief__status");
-    var email = form.querySelector('[data-send="email"]');
-    var sms = form.querySelector('[data-send="sms"]');
     var copyBtn = form.querySelector('[data-send="copy"]');
     function val(n) { var el = form.elements[n]; return el ? String(el.value || "").trim() : ""; }
     function picked(n) {
@@ -1251,9 +1259,6 @@
     function update() {
       var text = brief();
       out.textContent = text;
-      var who = val("business") || val("name");
-      if (email) email.href = "mailto:" + C.email + "?subject=" + encodeURIComponent("New project" + (who ? ": " + who : "")) + "&body=" + encodeURIComponent(text.replace(/\n/g, "\r\n"));
-      if (sms) sms.href = "sms:" + C.phoneLink + "?&body=" + encodeURIComponent(text);
     }
     function copy(text) {
       function fallback() {
@@ -1288,8 +1293,6 @@
     form.addEventListener("change", update);
     update();
     window.addEventListener("pageshow", update);
-    if (email) email.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your email app should open with the brief ready to send."; stamp("Ready!"); });
-    if (sms) sms.addEventListener("click", function () { status.className = "brief__status"; status.textContent = "Your messages app should open with the brief ready to send."; stamp("Ready!"); });
     // Copies the brief so it can be pasted into any chat or message.
     if (copyBtn) copyBtn.addEventListener("click", function () {
       copy(brief()).then(function (ok) {
@@ -1304,7 +1307,7 @@
       if (!form.checkValidity()) {
         status.className = "brief__status is-error";
         status.textContent = "Please add your name and an email or phone number.";
-        var bad = form.querySelector(":invalid");
+        var bad = form.querySelector("input:invalid, textarea:invalid, select:invalid");
         if (bad) bad.focus();
         return;
       }
@@ -1317,7 +1320,7 @@
       fetch("/api/contact", { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "application/json", Accept: "application/json" } })
         .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (res) {
-          if (!res.ok) throw new Error(res.j && res.j.error);
+          if (!res.ok) { var fail = new Error((res.j && res.j.error) || ""); fail.fromServer = true; throw fail; }
           status.textContent = "Thanks! Your brief is with us. We reply " + (C.replyTime || "soon") + ".";
           stamp("Sent!");
           form.querySelectorAll("input, textarea").forEach(function (el) { if (el.type === "checkbox" || el.type === "radio") el.checked = false; else el.value = ""; });
@@ -1325,7 +1328,7 @@
         })
         .catch(function (err) {
           status.className = "brief__status is-error";
-          status.textContent = (err && err.message) || "Something went wrong. Please call or text us instead.";
+          status.textContent = (err && err.fromServer && err.message) || "Something went wrong. Please try again, or use Copy brief and send it to us.";
         })
         .then(function () { btn.disabled = false; });
     });
@@ -1525,7 +1528,8 @@
 
   function scrollToHash() {
     var id = location.hash.slice(1);
-    var el = id && document.getElementById(decodeURIComponent(id));
+    try { id = decodeURIComponent(id); } catch (err) { return; }
+    var el = id && document.getElementById(id);
     if (!el) return;
     var html = document.documentElement;
     html.style.scrollBehavior = "auto";
@@ -1541,7 +1545,8 @@
       var a = e.target.closest && e.target.closest('a[href*="#"]');
       if (!a || a.classList.contains("skip-link") || a.target) return;
       if (a.origin !== location.origin || a.pathname !== location.pathname || a.search !== location.search) return;
-      var id = decodeURIComponent(a.hash.slice(1));
+      var id = a.hash.slice(1);
+      try { id = decodeURIComponent(id); } catch (err) { return; }
       if (!id) return;
       var el = id === "top" ? null : document.getElementById(id);
       if (id !== "top" && !el) return;

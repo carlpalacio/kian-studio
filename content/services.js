@@ -3,7 +3,7 @@
   ────────
   One block per service, shown in this order.
     price   optional starting price. Leave "" to show "Quoted per project" (prices are off for now).
-    page    optional page with more about the service, e.g. "brand-scaling.html".
+    page    optional page with more about the service, e.g. "/brand-scaling".
 */
 window.SERVICES = [
   {
@@ -17,7 +17,7 @@ window.SERVICES = [
     description: "We plan, make and run the ads that bring in customers on Facebook, Instagram, Google and TikTok, then test every week and put more behind what works.",
     includes: ["Facebook & Instagram ads", "Google Search & Maps ads", "TikTok ads", "Ad images, video & copy", "AI-made variations to test", "Landing pages & tracking", "Weekly tuning & monthly reports"],
     price: "",
-    page: "brand-scaling.html",
+    page: "/brand-scaling",
   },
   {
     name: "Websites & Landing Pages",
@@ -169,7 +169,7 @@ window.FAQ = [
 ];
 
 /*
-  BRAND SCALING & ADS (brand-scaling.html, and the dark band on the home page)
+  BRAND SCALING & ADS (/brand-scaling, and the dark band on the home page)
   ────────────────────────────────────────────────────────────────────────────
   channels      where the ads run
   steps         the scaling loop, in order
