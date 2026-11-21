@@ -248,6 +248,17 @@ Upload this whole folder. You can leave out `.claude/`, `listing-kit/`, `README.
 which aren't part of the site (anything you upload can be opened by visitors). The videos make the folder
 about 90 MB, which is fine on all three hosts below.
 
+**Live now at <https://getonsiteapp.com>** (since 2026-11-21), served by Caddy from `/opt/kian-studio` on the
+same server as Onsite (143.198.207.20, SSH key `~/.ssh/sitetracker`). GitHub Pages still publishes a copy too.
+To put a change live, bump the `?v=` number, commit, push, then from this folder:
+
+```bash
+rsync -az --delete -e "ssh -i ~/.ssh/sitetracker" --exclude .git --exclude .claude --exclude listing-kit --exclude README.md --exclude PROMPT.md --exclude .DS_Store ./ root@143.198.207.20:/opt/kian-studio/
+```
+
+Keep `sw.js`: it retires Onsite's old service worker on phones that installed Onsite at this address. Any address
+here that isn't one of these files forwards to construction.getonsiteapp.com (Onsite), which Caddy does.
+
 **Netlify:** go to <https://app.netlify.com/drop> and drag this folder onto the page. Done.
 For updates, drag it again (or connect a GitHub repo: leave the build command empty and set the
 publish directory to `/`).
