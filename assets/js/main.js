@@ -206,6 +206,7 @@
     { key: "work", label: "Work", href: "work.html" },
     { key: "services", label: "Services", href: "services.html" },
     { key: "scaling", label: "Brand scaling", href: "brand-scaling.html" },
+    { key: "styles", label: "Styles", href: "styles.html" },
     { key: "about", label: "About", href: "about.html" },
     { key: "resume", label: "Resume", href: "resume.html" },
   ];
@@ -238,17 +239,16 @@
 
   function header() {
     var cur = function (k) { return k === activeKey ? ' aria-current="page"' : ""; };
-    var links = NAV.slice(0, 3).map(function (n, i) {
+    var links = NAV.slice(0, 4).map(function (n, i) {
       return '<a class="nav__link nav__link--' + (i + 1) + ' plus" href="' + n.href + '"' + cur(n.key) + "><span>" + n.label + "</span></a>";
     }).join("");
     return (
-      ticker() +
       '<header class="site-header" id="top"><nav class="nav wrap" aria-label="Main">' +
       '<a class="nav__logo" href="index.html" aria-label="' + esc(SITE.studioName) + ', home">' +
       '<span class="mark" aria-hidden="true">' + esc(monogram()) + '</span><span class="nav__wordmark" aria-hidden="true">' + esc(SITE.studioName) + "</span></a>" +
       '<div class="nav__links">' + links + "</div>" +
       '<div class="nav__end">' +
-      '<a class="nav__link plus" href="' + NAV[3].href + '"' + cur(NAV[3].key) + "><span>" + NAV[3].label + "</span></a>" +
+      '<a class="nav__link plus" href="' + NAV[4].href + '"' + cur(NAV[4].key) + "><span>" + NAV[4].label + "</span></a>" +
       '<a class="btn btn--dark btn--sm nav__contact" href="contact.html#planner"' + cur("contact") + ">Get a quote</a>" +
       '<button class="btn btn--line btn--sm menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>' +
       "</div></nav></header>" +
@@ -283,7 +283,7 @@
       "</ul></div>" +
       '<div class="footer__col"><h2 class="eyebrow">Contact</h2><ul>' +
       (C.phoneDisplay ? '<li><a href="' + telHref() + '">' + esc(C.phoneDisplay) + "</a></li>" : "") +
-      (C.email ? '<li><a href="mailto:' + esc(C.email) + '">' + esc(C.email) + "</a></li>" : "") +
+      (C.email ? "<li>" + esc(C.email) + "</li>" : "") +
       chatApps().map(function (m) { return "<li>" + outLink(m) + "</li>"; }).join("") +
       "</ul></div>" +
       (findUs ? '<div class="footer__col"><h2 class="eyebrow">Find us on</h2><ul>' + findUs + "</ul></div>" : "") +
@@ -299,7 +299,6 @@
   function cta() {
     var links = [];
     if (C.phoneDisplay) links.push('<a class="cta__link" href="' + telHref() + '"><span><small>Call or text</small>' + esc(C.phoneDisplay) + "</span>" + ICON.arrow + "</a>");
-    if (C.email) links.push('<a class="cta__link" href="mailto:' + esc(C.email) + '"><span><small>Email</small>' + esc(C.email) + "</span>" + ICON.arrow + "</a>");
     chatApps().forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Chat</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
     listed(SITE.marketplaces).forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Hire us on</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
     links.push('<a class="cta__link" href="contact.html#planner"><span><small>Two-minute planner</small>Plan your project</span>' + ICON.arrow + "</a>");
@@ -399,11 +398,7 @@
       '<div class="lab__actions"><a class="btn btn--dark lab__cta" href="contact.html?style=' + s.id + '#planner">Start in this style ' + ICON.arrow + "</a>" +
       '<button class="btn btn--line lab__shuffle" type="button">Surprise me</button></div>' +
       '<p class="sr-only" id="lab-status" aria-live="polite"></p></div>';
-    return '<section class="lab" data-lab="' + s.id + '" aria-labelledby="styles-title"><div class="wrap">' +
-      '<div class="lab__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Style lab · ' + STYLES.length + " looks, one brand</p>" +
-      '<h2 class="h2 lab__title" id="styles-title" data-reveal>Any design. <span class="lab__line">Any <span class="lab__word">style.</span></span></h2></div>' +
-      "<p data-reveal>Minimal or loud, playful or premium: tell us the feeling you want and we’ll design it from scratch, never from a template. " +
-      "Here’s one made-up coffee shop in " + STYLES.length + " styles. Pick one, or type your business name and try them on.</p></div>" +
+    return '<section class="lab" data-lab="' + s.id + '" aria-label="Style lab"><div class="wrap">' +
       '<div class="lab__grid"><div class="lab__stage" data-reveal>' + mock + "</div>" +
       '<div class="lab__chips" role="group" aria-label="Choose a design style">' + chips + "</div>" + panel + "</div>" +
       "</div></section>";
@@ -639,8 +634,6 @@
 
       growthBand() +
 
-      lab() +
-
       '<section class="featured section" aria-labelledby="featured-title">' +
       '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Selected work · ' + pad(featured.length) + " projects</p>" +
       '<h2 class="h2" id="featured-title" data-reveal>Yours could<br>be <span class="serif">next.</span></h2></div>' +
@@ -659,9 +652,13 @@
       whyUs() +
 
       quotes() +
-      pricing("pricing-title") +
       cta()
     );
+  }
+
+  function styles() {
+    setMeta("Style lab", "One made-up coffee shop in " + STYLES.length + " design styles. Pick the feeling you want, or type your business name and try them on.");
+    return pageHead("Style lab", "Any design. Any style.", "Minimal or loud, playful or premium: tell us the feeling you want and we design it from scratch, never from a template. Here is one made-up coffee shop in " + STYLES.length + " styles. Pick one, or type your business name and try them on.") + lab();
   }
 
   function pageHead(eyebrow, title, text, aside) {
@@ -828,7 +825,6 @@
       "Everything a business needs to look professional, run smoothly and grow, from the brand and website to the apps, AI and ads behind it. Designed in any style.",
       '<a class="btn btn--dark" href="contact.html#planner">Get a quote ' + ICON.arrow + "</a>") +
       '<section class="wrap" aria-label="All services"><ul class="svc-list">' + list + "</ul></section>" +
-      pricing("pricing-title") +
       '<section class="section wrap" aria-labelledby="process-title" style="padding-top:0"><div class="section-head"><h2 class="h2" id="process-title" data-reveal>How it works</h2>' +
       "<p data-reveal>Simple from start to finish. You always talk to the people designing and building your project.</p></div>" +
       '<div class="steps">' + steps + "</div></section>" + faq + cta();
@@ -927,7 +923,7 @@
   }
 
   function contact() {
-    setMeta("Contact", "Plan your project in two minutes and send it to " + SITE.studioName + " by email or text. We reply " + (C.replyTime || "quickly") + ". Websites start at " + (PRICING.startingAt || "$80") + ".");
+    setMeta("Contact", "Plan your project in two minutes and send it to " + SITE.studioName + ". We reply " + (C.replyTime || "quickly") + ", and every project is quoted for you.");
     var params = new URLSearchParams(location.search);
     var styleId = params.get("style") || "";
     var needs = params.getAll("need");
@@ -948,11 +944,10 @@
     var liked = PROJECTS.filter(function (p) { return likes.indexOf(p.title) > -1; }).map(function (p) { return p.title; });
     if (liked.length) message.push("I’d like something like " + (liked.length > 1 ? liked.slice(0, -1).join(", ") + " and " + liked[liked.length - 1] : liked[0]) + ".");
     if (idea) message.unshift("My idea: " + idea);
-    var req = C.formEndpoint ? " required" : "";
+    var req = " required";
 
     var links = [];
     if (C.phoneDisplay) links.push('<a class="cta__link" href="' + telHref() + '"><span><small>Call or text</small>' + esc(C.phoneDisplay) + "</span>" + ICON.arrow + "</a>");
-    if (C.email) links.push('<a class="cta__link" href="mailto:' + esc(C.email) + '"><span><small>Email</small>' + esc(C.email) + "</span>" + ICON.arrow + "</a>");
     chatApps().forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Chat</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
     listed(SITE.marketplaces).forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Hire us on</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
     listed(SITE.socials).forEach(function (s) {
@@ -973,7 +968,7 @@
     };
     var steps =
       step(1, "What do you want to build?", "Pick as many as you like, or none. You can explain it in your own words below.", picks(SERVICES.map(function (s) { return pick("checkbox", "need", s.name, needs.indexOf(s.name) > -1); }).join(""))) +
-      step(2, "Pick a style", 'Not sure? <a href="index.html#styles-title">Try them on in the Style Lab</a>.',
+      step(2, "Pick a style", 'Not sure? <a href="styles.html">Try them on in the Style lab</a>.',
         picks(STYLES.map(function (s) { return pick("radio", "style", s.label, s.id === styleId, s.sw); }).join("") + pick("radio", "style", "Not sure yet", false))) +
       step(3, "Budget", PRICING.startingAt ? "Websites start at " + esc(PRICING.startingAt) + "." : "", picks((PRICING.budgets || []).map(function (b) { return pick("radio", "budget", b, false); }).join(""))) +
       step(4, "Timeline", "", picks((PRICING.timelines || []).map(function (x) { return pick("radio", "timeline", x, false); }).join(""))) +
@@ -984,32 +979,29 @@
         '<div class="field plan-fields__wide"><label for="p-msg">Your idea, in your own words</label><textarea id="p-msg" data-lenis-prevent name="message" maxlength="1500" ' +
         'placeholder="What you want to build, what slows you down, sites you like, deadlines…">' + esc(message.join(" ")) + "</textarea></div></div>");
 
-    var send = [];
-    if (C.formEndpoint) send.push('<button class="btn btn--light" type="submit">Send now ' + ICON.arrow + "</button>");
-    if (C.email) send.push('<a class="btn ' + (C.formEndpoint ? "btn--ghost-light" : "btn--light") + '" data-send="email" href="mailto:' + esc(C.email) + '">Email it ' + ICON.arrow + "</a>");
-    if (C.phoneLink) send.push('<a class="btn btn--ghost-light" data-send="sms" href="sms:' + esc(C.phoneLink) + '">Text it ' + ICON.arrow + "</a>");
-    send.push('<button class="btn btn--ghost-light" type="button" data-send="copy">Copy brief</button>');
+    var send = ['<button class="btn btn--light" type="submit">Send it to us ' + ICON.arrow + "</button>",
+      '<button class="btn btn--ghost-light" type="button" data-send="copy">Copy brief</button>'];
     var brief = '<aside class="brief" aria-labelledby="brief-title"><div class="brief__head"><h3 class="h3" id="brief-title">Your brief</h3><span class="eyebrow">Updates as you go</span></div>' +
       '<div class="brief__text" tabindex="0" role="region" aria-label="Your project brief" data-lenis-prevent></div>' +
       '<div class="brief__send">' + send.join("") + "</div>" +
       '<p class="brief__status" role="status" aria-live="polite"></p>' +
-      '<ol class="brief__next"><li>Send your brief, any way you like.</li><li>We reply ' + esc(C.replyTime || "quickly") + ' with questions, or set up a free first call.</li><li>You get a clear quote before any work starts.</li></ol></aside>';
+      '<ol class="brief__next"><li>Send your brief: it reaches us straight away.</li><li>We reply ' + esc(C.replyTime || "quickly") + ' with questions, or set up a free first call.</li><li>You get a clear quote before any work starts.</li></ol></aside>';
 
     var quick = '<div class="page-head__btns"><a class="btn btn--dark" href="#planner">Start the planner ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div>";
 
-    return pageHead("Contact", "Let’s talk.", "Bring any idea, big or small. One line is enough to start. Plan it below in two minutes, or just call, text or email." + (C.replyTime ? " We reply " + esc(C.replyTime) + "." : ""), quick) +
+    return pageHead("Contact", "Let’s talk.", "Bring any idea, big or small. One line is enough to start. Plan it below in two minutes, or just call or text." + (C.replyTime ? " We reply " + esc(C.replyTime) + "." : ""), quick) +
       '<section class="wrap planner-wrap" id="planner" aria-labelledby="planner-title">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Project planner · about 2 minutes</p>' +
       '<h2 class="h2" id="planner-title" data-reveal>Plan your<br><span class="serif">project.</span></h2></div>' +
-      "<p data-reveal>Tap what you need and the look you like. We turn it into a brief you can email, text or copy into any chat, and you get a clear quote back." +
-      (PRICING.startingAt ? " Websites start at " + esc(PRICING.startingAt) + "." : "") + "</p></div>" +
+      "<p data-reveal>Tap what you need and the look you like. It becomes a short brief that comes straight to us, and you get a clear quote back.</p></div>" +
       (idea ? '<p class="contact-note planner__hello">Good start. Your idea is already in your brief. Add anything else below, or send it as it is.</p>' : "") +
-      '<form class="planner" data-planner novalidate' + (C.formEndpoint ? ' action="' + esc(C.formEndpoint) + '" method="POST"' : "") + ">" +
+      '<form class="planner" data-planner novalidate action="/api/contact" method="POST">' +
+      '<p class="sr-only" aria-hidden="true"><label>Leave this empty <input type="text" name="website" tabindex="-1" autocomplete="off"></label></p>' +
       '<div class="planner__steps">' + steps + "</div>" + brief + "</form></section>" +
       '<section class="wrap section" aria-labelledby="direct-title" style="padding-top:0"><div class="contact-grid">' +
       '<div data-reveal><h2 class="h2" id="direct-title">Rather<br>just <span class="serif">talk?</span></h2>' +
-      '<p class="muted" style="margin-top:20px;max-width:420px">Call, text or email us, whatever is easiest for you.</p>' +
+      '<p class="muted" style="margin-top:20px;max-width:420px">Call or text us, whatever is easiest for you.</p>' +
       (C.availability ? '<p class="contact-note">' + t(C.availability) + "</p>" : "") + "</div>" +
       '<div class="cta__links" data-reveal>' + links.join("") + "</div></div></section>";
   }
@@ -1314,7 +1306,6 @@
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      if (!C.formEndpoint) return;
       if (!form.checkValidity()) {
         status.className = "brief__status is-error";
         status.textContent = "Please add your name and an email or phone number.";
@@ -1326,17 +1317,20 @@
       btn.disabled = true;
       status.className = "brief__status";
       status.textContent = "Sending…";
-      var data = new FormData(form);
-      data.append("brief", brief());
-      data.append("_subject", "New project from the website");
-      fetch(form.action, { method: "POST", body: data, headers: { Accept: "application/json" } })
-        .then(function (r) {
-          if (!r.ok) throw new Error();
-          status.textContent = "Thanks! Your brief was sent. We’ll get back to you soon.";
+      var data = { name: val("name"), business: val("business"), contact: val("contact"), message: val("message"), website: val("website"),
+        need: picked("need"), style: picked("style")[0] || "", budget: picked("budget")[0] || "", timeline: picked("timeline")[0] || "", brief: brief() };
+      fetch("/api/contact", { method: "POST", body: JSON.stringify(data), headers: { "Content-Type": "application/json", Accept: "application/json" } })
+        .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (res) {
+          if (!res.ok) throw new Error(res.j && res.j.error);
+          status.textContent = "Thanks! Your brief is with us. We reply " + (C.replyTime || "soon") + ".";
+          stamp("Sent!");
+          form.querySelectorAll("input, textarea").forEach(function (el) { if (el.type === "checkbox" || el.type === "radio") el.checked = false; else el.value = ""; });
+          update();
         })
-        .catch(function () {
+        .catch(function (err) {
           status.className = "brief__status is-error";
-          status.textContent = "Something went wrong. Please email or text us instead.";
+          status.textContent = (err && err.message) || "Something went wrong. Please call or text us instead.";
         })
         .then(function () { btn.disabled = false; });
     });
@@ -1755,7 +1749,7 @@
   }
 
   /* ---------- boot ---------- */
-  var pages = { home: home, work: work, project: project, services: services, scaling: scaling, about: about, resume: resume, contact: contact, "404": notFound };
+  var pages = { home: home, styles: styles, work: work, project: project, services: services, scaling: scaling, about: about, resume: resume, contact: contact, "404": notFound };
   document.getElementById("site-header").innerHTML = header();
   document.getElementById("main").innerHTML = (pages[page] || notFound)();
   document.getElementById("site-footer").innerHTML = footer();
@@ -1763,7 +1757,6 @@
   jsonLd();
 
   initMenu();
-  initIntro();
   initReveal();
   initLab();
   initRotator();

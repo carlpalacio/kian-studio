@@ -174,13 +174,10 @@ window.PROJECTS = [
     results: [],
     link: "https://oncon.getonsiteapp.com",
     images: [
-      { src: "assets/img/projects/onsite/home-1600.webp", small: "assets/img/projects/onsite/home-800.webp", alt: "OnCon landing and sign-in screen with feature highlights for contractors", w: 1600, h: 1000 },
-      { src: "assets/img/projects/onsite/mobile-780.webp", alt: "OnCon sign-in screen on a phone", w: 780, h: 1688 },
-      { src: "assets/img/projects/onsite/reel-sites-1600.webp", small: "assets/img/projects/onsite/reel-sites-800.webp", alt: "Every site, every day, one place: OnCon's promise", w: 1600, h: 900, art: true },
-      { src: "assets/img/projects/onsite/reel-reports-1600.webp", small: "assets/img/projects/onsite/reel-reports-800.webp", alt: "OnCon daily report on a phone, with site photos and progress by stage", w: 1600, h: 900, art: true },
-      { src: "assets/img/projects/onsite/reel-requests-1600.webp", small: "assets/img/projects/onsite/reel-requests-800.webp", alt: "A material request moving from requested to approved, with the supplier's price quote", w: 1600, h: 900, art: true },
-      { src: "assets/img/projects/onsite/reel-costs-1600.webp", small: "assets/img/projects/onsite/reel-costs-800.webp", alt: "Project budget with spending to date and an over-budget warning", w: 1600, h: 900, art: true },
-      { src: "assets/img/projects/onsite/reel-roles-1600.webp", small: "assets/img/projects/onsite/reel-roles-800.webp", alt: "OnCon roles: CEO, secretary, HR, engineer, procurement and office viewer", w: 1600, h: 900, art: true },
+      { src: "assets/img/projects/oncon/home-1600.jpg", small: "assets/img/projects/oncon/home-800.jpg", alt: "OnCon's website: construction project tracking for contractors in the Philippines", w: 1600, h: 1000 },
+      { src: "assets/img/projects/oncon/mobile-780.jpg", alt: "OnCon on an engineer's phone: today's sites and reports", w: 780, h: 1688 },
+      { src: "assets/img/projects/oncon/app-1600.jpg", small: "assets/img/projects/oncon/app-800.jpg", alt: "The CEO's overview in OnCon: every project, its progress and spending", w: 1600, h: 1000 },
+      { src: "assets/img/projects/oncon/login-1600.jpg", small: "assets/img/projects/oncon/login-800.jpg", alt: "OnCon's log-in page, where each company has its own page", w: 1600, h: 1000 },
     ],
   },
   {
