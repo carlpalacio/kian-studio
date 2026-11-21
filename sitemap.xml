@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://getonsiteapp.com/</loc></url>
-  <url><loc>https://getonsiteapp.com/work.html</loc></url>
-  <url><loc>https://getonsiteapp.com/services.html</loc></url>
-  <url><loc>https://getonsiteapp.com/brand-scaling.html</loc></url>
-  <url><loc>https://getonsiteapp.com/styles.html</loc></url>
-  <url><loc>https://getonsiteapp.com/about.html</loc></url>
-  <url><loc>https://getonsiteapp.com/contact.html</loc></url>
-  <url><loc>https://getonsiteapp.com/resume.html</loc></url>
-  <url><loc>https://getonsiteapp.com/project.html?p=middleware</loc></url>
-  <url><loc>https://getonsiteapp.com/project.html?p=inest</loc></url>
-  <url><loc>https://getonsiteapp.com/project.html?p=oncon</loc></url>
-  <url><loc>https://getonsiteapp.com/project.html?p=pos-system</loc></url>
-  <url><loc>https://getonsiteapp.com/project.html?p=the-one-app</loc></url>
+  <url><loc>https://getonsiteapp.com/work</loc></url>
+  <url><loc>https://getonsiteapp.com/services</loc></url>
+  <url><loc>https://getonsiteapp.com/brand-scaling</loc></url>
+  <url><loc>https://getonsiteapp.com/styles</loc></url>
+  <url><loc>https://getonsiteapp.com/about</loc></url>
+  <url><loc>https://getonsiteapp.com/contact</loc></url>
+  <url><loc>https://getonsiteapp.com/resume</loc></url>
+  <url><loc>https://getonsiteapp.com/work/middleware</loc></url>
+  <url><loc>https://getonsiteapp.com/work/inest</loc></url>
+  <url><loc>https://getonsiteapp.com/work/oncon</loc></url>
+  <url><loc>https://getonsiteapp.com/work/pos-system</loc></url>
+  <url><loc>https://getonsiteapp.com/work/the-one-app</loc></url>
 </urlset>

@@ -91,7 +91,7 @@
     return esc(s);
   }
   function pad(n) { return (n < 10 ? "0" : "") + n; }
-  function projectUrl(p) { return "project.html?p=" + encodeURIComponent(p.slug); }
+  function projectUrl(p) { return "/work/" + encodeURIComponent(p.slug); }
   function isPortrait(im) { return im && im.h > im.w; }
   function isPlaceholderImg(im) { return /placeholders\//.test(im.src); }
   function telHref() { return "tel:" + (C.phoneLink || C.phoneDisplay || "").replace(/[^+\d]/g, ""); }
@@ -104,11 +104,13 @@
     play: '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.2v9.6L12.6 8z" fill="currentColor"/></svg>',
   };
 
+  // Pictures are listed as assets/…; pages live at clean addresses like /work/oncon, so the path is made absolute.
+  function abs(src) { return /^(\/|https?:)/.test(src || "") ? src : "/" + (src || ""); }
   function img(im, opts) {
     opts = opts || {};
     if (!im) return "";
     var attrs = [
-      'src="' + esc(im.small || im.src) + '"',
+      'src="' + esc(abs(im.small || im.src)) + '"',
       'alt="' + esc(opts.decorative ? "" : im.alt || "") + '"',
       im.w ? 'width="' + im.w + '"' : "",
       im.h ? 'height="' + im.h + '"' : "",
@@ -116,7 +118,7 @@
       'decoding="async"',
     ];
     if (im.small) {
-      attrs.push('srcset="' + esc(im.small) + " 800w, " + esc(im.src) + " " + (im.w || 1600) + 'w"');
+      attrs.push('srcset="' + esc(abs(im.small)) + " 800w, " + esc(abs(im.src)) + " " + (im.w || 1600) + 'w"');
       attrs.push('sizes="' + (opts.sizes || "100vw") + '"');
     }
     if (opts.high) attrs.push('fetchpriority="high"');
@@ -203,12 +205,12 @@
 
   /* ---------- shared layout ---------- */
   var NAV = [
-    { key: "work", label: "Work", href: "work.html" },
-    { key: "services", label: "Services", href: "services.html" },
-    { key: "scaling", label: "Brand scaling", href: "brand-scaling.html" },
-    { key: "styles", label: "Styles", href: "styles.html" },
-    { key: "about", label: "About", href: "about.html" },
-    { key: "resume", label: "Resume", href: "resume.html" },
+    { key: "work", label: "Work", href: "/work" },
+    { key: "services", label: "Services", href: "/services" },
+    { key: "scaling", label: "Brand scaling", href: "/brand-scaling" },
+    { key: "styles", label: "Styles", href: "/styles" },
+    { key: "about", label: "About", href: "/about" },
+    { key: "resume", label: "Resume", href: "/resume" },
   ];
 
   // Profiles and chat apps that have a link set in content/site.js.
@@ -239,22 +241,21 @@
 
   function header() {
     var cur = function (k) { return k === activeKey ? ' aria-current="page"' : ""; };
-    var links = NAV.slice(0, 4).map(function (n, i) {
-      return '<a class="nav__link nav__link--' + (i + 1) + ' plus" href="' + n.href + '"' + cur(n.key) + "><span>" + n.label + "</span></a>";
-    }).join("");
+    var link = function (n) { return '<a class="nav__link plus" href="' + n.href + '"' + cur(n.key) + "><span>" + n.label + "</span></a>"; };
+    var links = NAV.slice(0, 3).map(link).join("");
     return (
       '<header class="site-header" id="top"><nav class="nav wrap" aria-label="Main">' +
-      '<a class="nav__logo" href="index.html" aria-label="' + esc(SITE.studioName) + ', home">' +
+      '<a class="nav__logo" href="/" aria-label="' + esc(SITE.studioName) + ', home">' +
       '<span class="mark" aria-hidden="true">' + esc(monogram()) + '</span><span class="nav__wordmark" aria-hidden="true">' + esc(SITE.studioName) + "</span></a>" +
       '<div class="nav__links">' + links + "</div>" +
       '<div class="nav__end">' +
-      '<a class="nav__link plus" href="' + NAV[4].href + '"' + cur(NAV[4].key) + "><span>" + NAV[4].label + "</span></a>" +
-      '<a class="btn btn--dark btn--sm nav__contact" href="contact.html#planner"' + cur("contact") + ">Get a quote</a>" +
+      link(NAV[3]) + link(NAV[4]) +
+      '<a class="btn btn--dark btn--sm nav__contact" href="/contact#planner"' + cur("contact") + ">Get a quote</a>" +
       '<button class="btn btn--line btn--sm menu-btn" type="button" aria-expanded="false" aria-controls="menu">Menu</button>' +
       "</div></nav></header>" +
       '<div class="menu" id="menu" aria-label="Menu" role="dialog" aria-modal="true" data-lenis-prevent>' +
       '<nav class="menu__links" aria-label="Mobile">' +
-      [{ label: "Home", href: "index.html", key: "home" }].concat(NAV).concat([{ label: "Contact", href: "contact.html", key: "contact" }])
+      [{ label: "Home", href: "/", key: "home" }].concat(NAV).concat([{ label: "Contact", href: "/contact", key: "contact" }])
         .map(function (n, i) { return '<a href="' + n.href + '"' + cur(n.key) + ">" + n.label + "<span>" + pad(i + 1) + "</span></a>"; }).join("") +
       "</nav>" +
       '<div class="menu__foot">' +
@@ -278,7 +279,7 @@
       '<div class="footer__top">' +
       '<div class="footer__col"><h2 class="eyebrow">' + esc(SITE.studioName) + '</h2><p class="muted" style="max-width:380px">' + t(SITE.shortBio) + "</p></div>" +
       '<div class="footer__col"><h2 class="eyebrow">Pages</h2><ul>' +
-      [{ label: "Home", href: "index.html" }].concat(NAV).concat([{ label: "Contact", href: "contact.html" }])
+      [{ label: "Home", href: "/" }].concat(NAV).concat([{ label: "Contact", href: "/contact" }])
         .map(function (n) { return '<li><a href="' + n.href + '">' + n.label + "</a></li>"; }).join("") +
       "</ul></div>" +
       '<div class="footer__col"><h2 class="eyebrow">Contact</h2><ul>' +
@@ -301,7 +302,7 @@
     if (C.phoneDisplay) links.push('<a class="cta__link" href="' + telHref() + '"><span><small>Call or text</small>' + esc(C.phoneDisplay) + "</span>" + ICON.arrow + "</a>");
     chatApps().forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Chat</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
     listed(SITE.marketplaces).forEach(function (m) { links.push(outLink(m, "cta__link", "<span><small>Hire us on</small>" + esc(m.label) + "</span>" + ICON.arrow)); });
-    links.push('<a class="cta__link" href="contact.html#planner"><span><small>Two-minute planner</small>Plan your project</span>' + ICON.arrow + "</a>");
+    links.push('<a class="cta__link" href="/contact#planner"><span><small>Two-minute planner</small>Plan your project</span>' + ICON.arrow + "</a>");
     return (
       '<section class="cta section" aria-labelledby="cta-title"><div class="wrap cta__inner">' +
       '<div data-reveal><p class="eyebrow" style="margin-bottom:20px">Have an idea, big or small?</p>' +
@@ -340,7 +341,7 @@
         '<p class="plan__for">' + t(pl.for) + "</p>" +
         '<p class="plan__price">' + (pl.price ? roll(pl.price) : "For quotation") + "</p>" +
         '<ul class="plan__list">' + (pl.includes || []).map(function (x) { return "<li>" + t(x) + "</li>"; }).join("") + "</ul>" +
-        '<a class="btn ' + (pl.featured ? "btn--light" : "btn--line") + '" href="contact.html?plan=' + encodeURIComponent(pl.name) + '#planner">' + (pl.price ? "Choose " + esc(pl.name) : "Get a quote") + " " + ICON.arrow + "</a></div>";
+        '<a class="btn ' + (pl.featured ? "btn--light" : "btn--line") + '" href="/contact?plan=' + encodeURIComponent(pl.name) + '#planner">' + (pl.price ? "Choose " + esc(pl.name) : "Get a quote") + " " + ICON.arrow + "</a></div>";
     }).join("");
     return '<section class="section wrap" id="pricing" aria-labelledby="' + id + '">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Pricing</p>' +
@@ -395,7 +396,7 @@
       '<div class="lab__specs"><ul class="lab__swatches" aria-hidden="true"><li></li><li></li><li></li><li></li></ul><p class="lab__font">Type · <span>' + esc(s.font) + "</span></p></div>" +
       '<div class="lab__field"><label for="lab-name">Try it with your business name</label>' +
       '<input id="lab-name" type="text" maxlength="18" autocomplete="organization" spellcheck="false" placeholder="' + esc(LAB.brand) + '"></div>' +
-      '<div class="lab__actions"><a class="btn btn--dark lab__cta" href="contact.html?style=' + s.id + '#planner">Start in this style ' + ICON.arrow + "</a>" +
+      '<div class="lab__actions"><a class="btn btn--dark lab__cta" href="/contact?style=' + s.id + '#planner">Start in this style ' + ICON.arrow + "</a>" +
       '<button class="btn btn--line lab__shuffle" type="button">Surprise me</button></div>' +
       '<p class="sr-only" id="lab-status" aria-live="polite"></p></div>';
     return '<section class="lab" data-lab="' + s.id + '" aria-label="Style lab"><div class="wrap">' +
@@ -419,7 +420,7 @@
     }).join("");
     var price = PRICING.startingAt
       ? '<div class="why__tile why__tile--price" data-reveal="ticket"><p class="eyebrow">Websites from</p><p class="why__price">' + roll(PRICING.startingAt) + "</p>" +
-        "<p>" + t(PRICING.note || "") + '</p><a class="btn btn--light" href="contact.html#planner">Plan your project ' + ICON.arrow + "</a></div>"
+        "<p>" + t(PRICING.note || "") + '</p><a class="btn btn--light" href="/contact#planner">Plan your project ' + ICON.arrow + "</a></div>"
       : "";
     var call = C.phoneDisplay
       ? '<a class="why__tile why__tile--call" href="' + telHref() + '" data-reveal="ticket"><span class="eyebrow">The first call is free</span>' +
@@ -431,8 +432,8 @@
       '<div class="why">' + price + '<div class="why__reasons">' + tiles + '</div><p class="swipe-hint" aria-hidden="true">Swipe for more reasons →</p>' + call + "</div></section>";
   }
 
-  function scalingService() { return SERVICES.filter(function (s) { return s.page === "brand-scaling.html"; })[0]; }
-  function quoteHref(need) { return "contact.html" + (need ? "?need=" + encodeURIComponent(need) : "") + "#planner"; }
+  function scalingService() { return SERVICES.filter(function (s) { return s.page === "/brand-scaling"; })[0]; }
+  function quoteHref(need) { return "/contact" + (need ? "?need=" + encodeURIComponent(need) : "") + "#planner"; }
 
   // A rising line that draws itself in (decorative).
   function growthChart() {
@@ -466,7 +467,7 @@
       '<h2 class="h2" id="growth-title" data-reveal>Don’t just launch.<br><span class="serif">Scale.</span></h2></div>' +
       '<div class="growth-band__side"><p data-reveal>We plan, make and run the ads that bring in customers, then test every week and put more behind what works. Your brand, content and landing pages, built to back them up.</p>' +
       '<ul class="growth-band__chans" data-reveal>' + chans + "</ul>" +
-      '<div class="growth-band__btns" data-reveal><a class="btn btn--light" href="brand-scaling.html">How we scale brands ' + ICON.arrow + "</a>" +
+      '<div class="growth-band__btns" data-reveal><a class="btn btn--light" href="/brand-scaling">How we scale brands ' + ICON.arrow + "</a>" +
       '<a class="btn btn--ghost-light" href="' + quoteHref(svc && svc.name) + '">Get an ads quote</a></div></div>' +
       '<div class="growth-band__chart" data-reveal>' + growthChart() + "</div></div>" +
       loopSteps("loop loop--band") +
@@ -505,7 +506,7 @@
       "<p data-reveal>We build AI into your business where it actually helps, and we use it ourselves to work faster. You still get real people who reply quickly and care how it turns out.</p></div>" +
       window_ + '<div class="ai__rest"><ol class="ai__points">' + points + "</ol>" + fast +
       '<div class="ai__btns" data-reveal><a class="btn btn--dark" href="' + quoteHref("AI Assistants & Automation") + '">Get an AI assistant ' + ICON.arrow + "</a>" +
-      '<a class="btn btn--line" href="services.html">All services</a></div></div></div></section>';
+      '<a class="btn btn--line" href="/services">All services</a></div></div></div></section>';
   }
 
   // Home: "What do you want to build?" Visitors tap ideas (SITE.ideas) or type their own, see the first
@@ -531,8 +532,8 @@
       '<div class="idea__head"><p class="eyebrow" data-reveal style="margin-bottom:16px">Start here · a rough idea is enough</p>' +
       '<h2 class="h2" id="idea-title" data-reveal>What do you<br>want to <span class="serif">build?</span></h2>' +
       '<p class="idea__intro" data-reveal>A website, an app, a system for your shop, or something nobody has built yet. You don’t need to know the tech side. That’s our job.</p>' +
-      '<a class="plus idea__all" href="services.html" data-reveal>See all ' + SERVICES.length + " services</a>" + latest + "</div>" +
-      '<form class="idea__card" data-idea action="contact.html#planner" method="get" novalidate data-reveal><div class="idea__body">' +
+      '<a class="plus idea__all" href="/services" data-reveal>See all ' + SERVICES.length + " services</a>" + latest + "</div>" +
+      '<form class="idea__card" data-idea action="/contact#planner" method="get" novalidate data-reveal><div class="idea__body">' +
       '<fieldset class="idea__step"><legend><span class="plan-step__num">01</span>Tap anything that sounds close</legend>' +
       '<p class="plan-step__hint">Pick one or a few. You can change them later.</p>' +
       '<div class="picks" data-reveal="chips">' + chips + "</div></fieldset>" +
@@ -592,7 +593,7 @@
     }).join("");
     // The reel ends with an open invitation: a card for the visitor's own project.
     reel += '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(featured.length, 3) * 0.08 + 's">' +
-      '<a class="card card--next" href="contact.html#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
+      '<a class="card card--next" href="/contact#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
       '<span class="reel__plus" aria-hidden="true">+</span><p class="reel__ask">Your idea goes here.</p><p class="reel__hint">Tell us what you want to build, big or small.</p></div>' +
       '<div class="card__foot"><div><h3 class="card__title">Your project</h3><p class="card__meta">The first call is free</p></div><span class="card__num">Next</span></div></a></li>';
 
@@ -612,21 +613,11 @@
       '<div class="hero__copy" data-reveal style="--d:.25s">' +
       (avail ? '<p class="pill"><span class="pill__dot" aria-hidden="true"></span>' + t(avail) + "</p>" : "") +
       "<p>" + t(SITE.taglineSub) + "</p>" +
-      '<div class="hero__ctas"><a class="btn btn--dark" href="' + ((SITE.ideas || []).length ? "#idea" : "contact.html#planner") + '">' + ((SITE.ideas || []).length ? "Tell us your idea " : "Get a quote ") + ICON.arrow + '</a><a class="btn btn--line" href="work.html">View work</a></div>' +
+      '<div class="hero__ctas"><a class="btn btn--dark" href="' + ((SITE.ideas || []).length ? "#idea" : "/contact#planner") + '">' + ((SITE.ideas || []).length ? "Tell us your idea " : "Get a quote ") + ICON.arrow + '</a><a class="btn btn--line" href="/work">View work</a></div>' +
       (hire.length ? '<p class="hero__hire">Also on ' + hire.map(function (m) { return outLink(m); }).join(" · ") + "</p>" : "") +
       (PRICING.startingAt ? '<p class="hero__price" data-reveal="slap" style="--d:.7s"><span>Websites from</span> <strong>' + roll(PRICING.startingAt) + "</strong></p>" : "") + "</div>" +
       '<div class="hero__visual" data-reveal style="--d:.35s"><div class="iso" aria-hidden="true"><div class="iso__stage"><div class="iso__base"></div>' + iso + "</div></div></div>" +
       "</div></section>" +
-
-      '<section class="stage" aria-label="Screens from recent projects">' +
-      '<div class="curtain curtain--l"></div><div class="curtain curtain--c"></div><div class="curtain curtain--r"></div>' +
-      '<div class="lamp" aria-hidden="true"></div><div class="platform" aria-hidden="true"></div><div class="pedestal" aria-hidden="true"></div>' +
-      (land[1] ? '<figure class="device device--side">' + browser(land[1], { sizes: "(min-width: 700px) 25vw, 1px" }) + "</figure>" : "") +
-      (land[0] ? '<figure class="device device--main">' + browser(land[0], { high: true, sizes: "(min-width: 700px) 44vw, 66vw" }) + "</figure>" : "") +
-      (phoneShot ? '<figure class="device device--phone">' + phone(phoneShot, { sizes: "(min-width: 700px) 10vw, 25vw" }) + "</figure>" : "") +
-      (onStage.length ? '<p class="stage__caption">On screen: ' + onStage.map(function (p) { return esc(p.title); }).join(" · ") +
-        (sideOwner ? '<span class="stage__side-name"> · ' + esc(sideOwner.title) + "</span>" : "") + "</p>" : "") +
-      "</section>" +
 
       tapes() +
 
@@ -638,7 +629,7 @@
       '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Selected work · ' + pad(featured.length) + " projects</p>" +
       '<h2 class="h2" id="featured-title" data-reveal>Yours could<br>be <span class="serif">next.</span></h2></div>' +
       '<div class="featured__side"><p data-reveal>Supplier payments, condo bookings, building sites, fitness and restaurants, each built around the people who use it every day. Swipe to the end to start yours.</p>' +
-      '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="work.html">View all work ' + ICON.arrow + "</a>" +
+      '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="/work">View all work ' + ICON.arrow + "</a>" +
       '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="reel" aria-label="Previous project">' + ICON.left + "</button>" +
       '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(featured.length + 1) + "</span>" +
       '<button class="reel__btn" type="button" data-dir="1" aria-controls="reel" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
@@ -682,7 +673,7 @@
         '<span class="card__num">' + pad(i + 1) + "</span></div></a>";
     }).join("");
     return pageHead("Selected work", "Work", "Supplier payments, condo bookings, building sites, fitness and restaurants. Each project is built around the people who use it every day. Yours could be next.",
-      '<a class="btn btn--dark" href="contact.html#planner">Tell us your idea ' + ICON.arrow + "</a>") +
+      '<a class="btn btn--dark" href="/contact#planner">Tell us your idea ' + ICON.arrow + "</a>") +
       '<section class="wrap" style="padding-bottom:clamp(64px,10vw,140px)" aria-label="Projects">' +
       '<div class="filters" role="group" aria-label="Filter projects by category">' + filters + "</div>" +
       '<p class="sr-only" aria-live="polite" id="filter-status"></p>' +
@@ -690,13 +681,13 @@
   }
 
   function project() {
-    var slug = new URLSearchParams(location.search).get("p");
+    var slug = new URLSearchParams(location.search).get("p") || (location.pathname.match(/^\/work\/([^\/]+)/) || [])[1] || "";
     var idx = -1;
     PROJECTS.forEach(function (p, i) { if (p.slug === slug) idx = i; });
     if (idx < 0) {
       setMeta("Project not found");
       return '<section class="wrap notfound"><p class="eyebrow">404</p><h1 class="display page-head__title">Not found.</h1>' +
-        '<p>That project doesn’t exist, or its link changed.</p><div><a class="btn btn--dark" href="work.html">See all work</a></div></section>';
+        '<p>That project doesn’t exist, or its link changed.</p><div><a class="btn btn--dark" href="/work">See all work</a></div></section>';
     }
     var p = PROJECTS[idx];
     var next = PROJECTS[(idx + 1) % PROJECTS.length];
@@ -773,7 +764,7 @@
       : "";
 
     return '<article style="--accent:' + esc(accent) + '"><div class="wrap project-head">' +
-      '<a class="back-link" href="work.html">' + ICON.left + " All work</a>" +
+      '<a class="back-link" href="/work">' + ICON.left + " All work</a>" +
       '<p class="eyebrow" data-reveal>' + pad(idx + 1) + " / " + pad(PROJECTS.length) + " · " + esc(p.category) + "</p>" +
       '<h1 class="display project-title" data-reveal>' + esc(p.title) + "</h1>" +
       '<div class="project-intro"><p class="lead" data-reveal>' + t(p.summary) + "</p>" +
@@ -789,7 +780,7 @@
       (more ? '<section class="watch" aria-labelledby="watch-title"><h2 class="h3" id="watch-title" data-reveal>More to watch</h2><div class="watch__grid">' + more + "</div></section>" : "") +
       '<aside class="like" data-reveal aria-label="Start a similar project"><p class="like__title">Want something like <span class="serif">' + esc(p.title) + "</span>?</p>" +
       '<p class="like__text">We can design and build one for your business, or something new from your own idea. You get a clear quote after a free call.</p>' +
-      '<div class="like__btns"><a class="btn btn--dark" href="contact.html?like=' + encodeURIComponent(p.title) + '#planner">Plan your project ' + ICON.arrow + "</a>" +
+      '<div class="like__btns"><a class="btn btn--dark" href="/contact?like=' + encodeURIComponent(p.title) + '#planner">Plan your project ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div></aside>" +
       (next && next !== p ? '<a class="next-project" href="' + projectUrl(next) + '"><span class="eyebrow">Next project</span><span class="display next-project__title">' + esc(next.title) + ICON.arrow + "</span></a>" : "") +
       "</div></article>" + cta();
@@ -803,7 +794,7 @@
         '<p class="svc__desc">' + t(s.description) + "</p>" +
         '<ul class="svc__includes" aria-label="Included">' + (s.includes || []).map(function (x) { return "<li>" + t(x) + "</li>"; }).join("") + "</ul>" +
         '<span class="svc__price">' + (s.price ? t(s.price) : '<span class="muted">Quoted per project</span>') +
-        '<a class="svc__ask" href="contact.html?need=' + encodeURIComponent(s.name) + '#planner">Get a quote<span class="sr-only"> for ' + esc(s.name) + "</span> " + ICON.arrow + "</a>" +
+        '<a class="svc__ask" href="/contact?need=' + encodeURIComponent(s.name) + '#planner">Get a quote<span class="sr-only"> for ' + esc(s.name) + "</span> " + ICON.arrow + "</a>" +
         (s.page ? '<a class="svc__ask" href="' + esc(s.page) + '">How it works<span class="sr-only"> for ' + esc(s.name) + "</span> " + ICON.arrow + "</a>" : "") + "</span></li>";
     }).join("");
     var steps = [
@@ -823,7 +814,7 @@
       : "";
     return pageHead("What we do", "Services",
       "Everything a business needs to look professional, run smoothly and grow, from the brand and website to the apps, AI and ads behind it. Designed in any style.",
-      '<a class="btn btn--dark" href="contact.html#planner">Get a quote ' + ICON.arrow + "</a>") +
+      '<a class="btn btn--dark" href="/contact#planner">Get a quote ' + ICON.arrow + "</a>") +
       '<section class="wrap" aria-label="All services"><ul class="svc-list">' + list + "</ul></section>" +
       '<section class="section wrap" aria-labelledby="process-title" style="padding-top:0"><div class="section-head"><h2 class="h2" id="process-title" data-reveal>How it works</h2>' +
       "<p data-reveal>Simple from start to finish. You always talk to the people designing and building your project.</p></div>" +
@@ -898,7 +889,7 @@
       '<div class="kv" style="margin-top:48px"><div data-reveal><h2 class="eyebrow">Skills</h2>' + list(A.skills) + "</div>" +
       '<div data-reveal><h2 class="eyebrow">Tools</h2>' + list(A.tools) + "</div></div>" +
       clients + quotes +
-      '<div style="margin-top:40px;display:flex;gap:10px;flex-wrap:wrap" data-reveal><a class="btn btn--dark" href="resume.html">View resume ' + ICON.arrow + '</a><a class="btn btn--line" href="contact.html">Get in touch</a></div>' +
+      '<div style="margin-top:40px;display:flex;gap:10px;flex-wrap:wrap" data-reveal><a class="btn btn--dark" href="/resume">View resume ' + ICON.arrow + '</a><a class="btn btn--line" href="/contact">Get in touch</a></div>' +
       "</div></div></section>" + cta();
   }
 
@@ -930,6 +921,9 @@
     // An idea sent from the home page's "What do you want to build?" box. The visitor's own words travel in
     // session storage (or as ?idea= when storage is blocked), and only when the link says from=idea.
     var fromIdea = params.get("from") === "idea";
+    var FOR = { middleware: ["Web & Mobile Apps", "Middleware"], pos: ["POS & Inventory Systems", "OnTrack"], oncon: ["Web & Mobile Apps", "OnCon"], inest: ["Web & Mobile Apps", "Inest"] };
+    var about = FOR[(params.get("for") || "").toLowerCase()];
+    if (about) { if (needs.indexOf(about[0]) < 0) needs.push(about[0]); }
     var idea = params.get("idea") || "";
     if (!idea && fromIdea) { try { idea = sessionStorage.getItem("ks-idea") || ""; } catch (e) {} }
     idea = cut(idea.replace(/\s+/g, " ").trim(), 800);
@@ -940,7 +934,7 @@
       message.push("I’m interested in the " + pl.name + " plan" + (pl.price ? " (" + pl.price + ")" : "") + ".");
       if (pl.need && needs.indexOf(pl.need) < 0) needs.push(pl.need);
     });
-    var likes = params.getAll("like");
+    var likes = params.getAll("like").concat(about ? [about[1]] : []);
     var liked = PROJECTS.filter(function (p) { return likes.indexOf(p.title) > -1; }).map(function (p) { return p.title; });
     if (liked.length) message.push("I’d like something like " + (liked.length > 1 ? liked.slice(0, -1).join(", ") + " and " + liked[liked.length - 1] : liked[0]) + ".");
     if (idea) message.unshift("My idea: " + idea);
@@ -968,7 +962,7 @@
     };
     var steps =
       step(1, "What do you want to build?", "Pick as many as you like, or none. You can explain it in your own words below.", picks(SERVICES.map(function (s) { return pick("checkbox", "need", s.name, needs.indexOf(s.name) > -1); }).join(""))) +
-      step(2, "Pick a style", 'Not sure? <a href="styles.html">Try them on in the Style lab</a>.',
+      step(2, "Pick a style", 'Not sure? <a href="/styles">Try them on in the Style lab</a>.',
         picks(STYLES.map(function (s) { return pick("radio", "style", s.label, s.id === styleId, s.sw); }).join("") + pick("radio", "style", "Not sure yet", false))) +
       step(3, "Budget", PRICING.startingAt ? "Websites start at " + esc(PRICING.startingAt) + "." : "", picks((PRICING.budgets || []).map(function (b) { return pick("radio", "budget", b, false); }).join(""))) +
       step(4, "Timeline", "", picks((PRICING.timelines || []).map(function (x) { return pick("radio", "timeline", x, false); }).join(""))) +
@@ -990,6 +984,7 @@
     var quick = '<div class="page-head__btns"><a class="btn btn--dark" href="#planner">Start the planner ' + ICON.arrow + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call ' + esc(C.phoneDisplay) + "</a>" : "") + "</div>";
 
+    if (about) setTimeout(function () { var el = document.getElementById("planner"); if (el) el.scrollIntoView({ block: "start" }); }, 500);
     return pageHead("Contact", "Let’s talk.", "Bring any idea, big or small. One line is enough to start. Plan it below in two minutes, or just call or text." + (C.replyTime ? " We reply " + esc(C.replyTime) + "." : ""), quick) +
       '<section class="wrap planner-wrap" id="planner" aria-labelledby="planner-title">' +
       '<div class="section-head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">Project planner · about 2 minutes</p>' +
@@ -1009,7 +1004,7 @@
   function notFound() {
     setMeta("Page not found");
     return '<section class="wrap notfound"><p class="eyebrow">404</p><h1 class="display page-head__title">Lost?</h1>' +
-      '<p>This page doesn’t exist. Let’s get you back.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn--dark" href="index.html">Home</a><a class="btn btn--line" href="work.html">See work</a></div></section>';
+      '<p>This page doesn’t exist. Let’s get you back.</p><div style="display:flex;gap:10px;flex-wrap:wrap"><a class="btn btn--dark" href="/">Home</a><a class="btn btn--line" href="/work">See work</a></div></section>';
   }
 
   /* ---------- behaviour ---------- */
@@ -1091,7 +1086,7 @@
     function sync() {
       var s = STYLES[current], name = brand();
       mock.setAttribute("aria-label", labLabel(name, s));
-      cta.href = "contact.html?style=" + s.id + (name ? "&name=" + encodeURIComponent(name) : "") + "#planner";
+      cta.href = "/contact?style=" + s.id + (name ? "&name=" + encodeURIComponent(name) : "") + "#planner";
     }
     function restartBar() {
       if (!auto) return;
@@ -1389,7 +1384,7 @@
         try { sessionStorage.setItem("ks-idea", idea); } catch (err) { q.set("idea", idea); }
       }
       var qs = q.toString();
-      location.href = "contact.html" + (qs ? "?" + qs : "") + "#planner";
+      location.href = "/contact" + (qs ? "?" + qs : "") + "#planner";
     });
     update();
     window.addEventListener("pageshow", update);
@@ -1427,7 +1422,7 @@
   // Phone-sized "Get a quote / Call" bar, shown once the top of the page has scrolled away.
   function quickBar() {
     if (page === "contact") return "";
-    return '<div class="quickbar" role="region" aria-label="Quick contact"><a class="btn btn--dark" href="contact.html#planner">Get a quote' +
+    return '<div class="quickbar" role="region" aria-label="Quick contact"><a class="btn btn--dark" href="/contact#planner">Get a quote' +
       (PRICING.startingAt ? "<small>from " + esc(PRICING.startingAt) + "</small>" : "") + "</a>" +
       (C.phoneDisplay ? '<a class="btn btn--line" href="' + telHref() + '">Call</a>' : "") + "</div>";
   }
