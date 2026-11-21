@@ -592,43 +592,41 @@
       return '<div class="iso__layer" style="--i:' + (i + 1) + '">' + img(im, { decorative: true, eager: true, sizes: "320px" }) + "</div>";
     }).join("");
 
-    // Featured work runs sideways, each project on a panel in its own color: first what we built for clients
-    // (systems in daily use), then our own products. The second reel ends with a card for the visitor's own project.
-    function reelCards(list, withNext) {
-      var html = list.map(function (p, i) {
-        var n = PROJECTS.indexOf(p) + 1;
-        return '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(i, 3) * 0.08 + "s;--accent:" + esc(p.accent || "#e9dfcf") + ";--tilt:" + (i % 2 ? 2.5 : -2.5) + 'deg">' +
-          '<a class="card" href="' + projectUrl(p) + '" draggable="false"><div class="reel__panel">' + cardMedia(p, { sizes: "(min-width: 760px) 34vw, 80vw" }) + "</div>" +
-          '<div class="card__foot"><div><h3 class="card__title">' + esc(p.title) + '</h3><p class="card__meta">' + esc(p.forClient ? "For " + (p.client || "a client") : p.category) + "</p></div>" +
-          '<span class="card__num">' + pad(n) + "</span></div></a></li>";
-      }).join("");
-      if (withNext) html += '<li class="reel__item" data-reveal="ticket" style="--d:' + Math.min(list.length, 3) * 0.08 + 's">' +
-        '<a class="card card--next" href="/contact#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
-        '<span class="reel__plus" aria-hidden="true">+</span><p class="reel__ask">Your idea goes here.</p><p class="reel__hint">Tell us what you want to build, big or small.</p></div>' +
-        '<div class="card__foot"><div><h3 class="card__title">Your project</h3><p class="card__meta">The first call is free</p></div><span class="card__num">Next</span></div></a></li>';
-      return html;
-    }
-    function reelSection(id, eyebrow, titleHtml, side, list, withNext, foot) {
-      var total = list.length + (withNext ? 1 : 0);
-      return '<section class="featured section" aria-labelledby="' + id + '-title">' +
-        '<div class="wrap featured__head"><div><p class="eyebrow" data-reveal style="margin-bottom:16px">' + eyebrow + "</p>" +
-        '<h2 class="h2" id="' + id + '-title" data-reveal>' + titleHtml + "</h2></div>" +
-        '<div class="featured__side"><p data-reveal>' + side + "</p>" +
-        '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="/work">View all work ' + ICON.arrow + "</a>" +
-        '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="' + id + '" aria-label="Previous project">' + ICON.left + "</button>" +
-        '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(total) + "</span>" +
-        '<button class="reel__btn" type="button" data-dir="1" aria-controls="' + id + '" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
-        '<div class="reel"><ul class="reel__track" id="' + id + '" aria-label="' + esc(eyebrow) + '">' + reelCards(list, withNext) + "</ul></div>" +
-        '<div class="wrap reel__foot"><div class="reel__bar" aria-hidden="true"><i></i></div>' + (foot || "") + "</div>" +
-        "</section>";
-    }
+    // Featured work runs sideways in one row, each project on a panel in its own color: first what we built for
+    // clients (systems in daily use), then our own products, then a card for the visitor's own project. The heading
+    // above the row changes as it moves from one group to the other (see initOneReel).
     var clientWork = PROJECTS.filter(function (p) { return p.featured && p.forClient; });
     var ownWork = PROJECTS.filter(function (p) { return p.featured && !p.forClient; });
-    var reels = reelSection("reel-clients", "Built for clients · " + pad(clientWork.length) + " systems in daily use", 'Companies already<br>run on <span class="serif">our work.</span>',
-        "Real businesses use these every day: a retail group's supplier payments, a condominium's bookings and billing. Built for them, kept running by us.", clientWork, false) +
-      reelSection("reel-products", "Our own products · " + pad(ownWork.length) + " and counting", 'Yours could<br>be <span class="serif">next.</span>',
-        "Building sites, restaurants, fitness and coffee, each built around the people who use it every day. Swipe to the end to start yours.", ownWork, true,
-        '<ul class="featured__cats">' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul>");
+    var reelList = clientWork.concat(ownWork);
+    var reel = reelList.map(function (p, i) {
+      var n = PROJECTS.indexOf(p) + 1;
+      return '<li class="reel__item" data-group="' + (p.forClient ? "clients" : "own") + '" data-reveal="ticket" style="--d:' + Math.min(i, 3) * 0.08 + "s;--accent:" + esc(p.accent || "#e9dfcf") + ";--tilt:" + (i % 2 ? 2.5 : -2.5) + 'deg">' +
+        '<a class="card" href="' + projectUrl(p) + '" draggable="false"><div class="reel__panel">' + cardMedia(p, { sizes: "(min-width: 760px) 34vw, 80vw" }) + "</div>" +
+        '<div class="card__foot"><div><h3 class="card__title">' + esc(p.title) + '</h3><p class="card__meta">' + esc(p.forClient ? "For " + (p.client || "a client") : p.category) + "</p></div>" +
+        '<span class="card__num">' + pad(n) + "</span></div></a></li>";
+    }).join("");
+    reel += '<li class="reel__item" data-group="own" data-reveal="ticket" style="--d:' + Math.min(reelList.length, 3) * 0.08 + 's">' +
+      '<a class="card card--next" href="/contact#planner" draggable="false" data-cursor="Plan"><div class="reel__panel reel__panel--next">' +
+      '<span class="reel__plus" aria-hidden="true">+</span><p class="reel__ask">Your idea goes here.</p><p class="reel__hint">Tell us what you want to build, big or small.</p></div>' +
+      '<div class="card__foot"><div><h3 class="card__title">Your project</h3><p class="card__meta">The first call is free</p></div><span class="card__num">Next</span></div></a></li>';
+    var groups = {
+      clients: { eyebrow: "Built for clients · " + pad(clientWork.length) + " systems in daily use", title: 'Companies already<br>run on <span class="serif">our work.</span>',
+        side: "Real businesses use these every day: a retail group's supplier payments, a condominium's bookings and billing. Built for them, kept running by us. Keep going for our own products." },
+      own: { eyebrow: "Our own products · " + pad(ownWork.length) + " and counting", title: 'Yours could<br>be <span class="serif">next.</span>',
+        side: "Building sites, restaurants, fitness and coffee, each built around the people who use it every day. Swipe to the end to start yours." },
+    };
+    var reels = '<section class="featured section" aria-labelledby="featured-title" data-groups=\'' + JSON.stringify(groups).replace(/'/g, "&#39;") + "'>" +
+      '<div class="wrap featured__head"><div><p class="eyebrow featured__eyebrow" data-reveal style="margin-bottom:16px">' + groups.clients.eyebrow + "</p>" +
+      '<h2 class="h2 featured__title" id="featured-title" data-reveal>' + groups.clients.title + "</h2></div>" +
+      '<div class="featured__side"><p class="featured__text" data-reveal>' + groups.clients.side + "</p>" +
+      '<div class="featured__ctrl" data-reveal><a class="btn btn--light" href="/work">View all work ' + ICON.arrow + "</a>" +
+      '<div class="reel__nav"><button class="reel__btn" type="button" data-dir="-1" aria-controls="reel" aria-label="Previous project">' + ICON.left + "</button>" +
+      '<span class="reel__count" aria-hidden="true"><b>01</b> / ' + pad(reelList.length + 1) + "</span>" +
+      '<button class="reel__btn" type="button" data-dir="1" aria-controls="reel" aria-label="Next project">' + ICON.right + "</button></div></div></div></div>" +
+      '<div class="reel"><ul class="reel__track" id="reel" aria-label="Featured projects">' + reel + "</ul></div>" +
+      '<div class="wrap reel__foot"><div class="reel__bar" aria-hidden="true"><i></i></div>' +
+      '<ul class="featured__cats">' + categories().map(function (c) { return '<li class="plus">' + esc(c.name) + "</li>"; }).join("") + "</ul></div>" +
+      "</section>";
 
     // The stage caption names the projects whose screens are actually shown.
     function ownerOf(im) { return im ? PROJECTS.filter(function (p) { return (p.images || []).indexOf(im) > -1; })[0] : null; }
@@ -1697,8 +1695,23 @@
       i = Math.max(0, Math.min(items.length - 1, i));
       track.scrollTo({ left: at(i), behavior: reduceMotion ? "auto" : "smooth" });
     }
+    var groups = null;
+    try { groups = JSON.parse(section.getAttribute("data-groups") || "null"); } catch (e) { groups = null; }
+    var shownGroup = null;
+    function showGroup(key) {
+      if (!groups || !groups[key] || key === shownGroup) return;
+      shownGroup = key;
+      var els = { eyebrow: section.querySelector(".featured__eyebrow"), title: section.querySelector(".featured__title"), side: section.querySelector(".featured__text") };
+      Object.keys(els).forEach(function (k) {
+        var el = els[k];
+        if (!el) return;
+        el.classList.add("is-swapping");
+        setTimeout(function () { el.innerHTML = groups[key][k]; el.classList.remove("is-swapping"); }, reduceMotion ? 0 : 180);
+      });
+    }
     function update() {
       if (count) count.textContent = pad(current() + 1);
+      showGroup(items[current()].getAttribute("data-group") || "own");
       if (btns[0]) btns[0].disabled = track.scrollLeft <= 2;
       if (btns[1]) btns[1].disabled = max() <= 2 || atEnd();
       if (thumb && track.scrollWidth) {
@@ -1718,6 +1731,7 @@
     var raf;
     track.addEventListener("scroll", function () { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); }, { passive: true });
     window.addEventListener("resize", update);
+    shownGroup = items[0] ? items[0].getAttribute("data-group") : null;   // the first group is already in the page
     update();
 
     // Mouse drag. Snapping is paused while dragging, then the reel settles on the next card.
