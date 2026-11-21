@@ -1841,6 +1841,12 @@ noscript p { padding: 24px var(--gutter); }
 /* The work page in two groups: built for clients, then our own products */
 .work-group + .work-group { margin-top: clamp(56px, 8vw, 110px); }
 .work-group .section-head { margin-bottom: 28px; }
-/* The home reel's heading changes as the row moves from client work to our own products */
-.featured__eyebrow, .featured__title, .featured__text { transition: opacity 0.18s ease, transform 0.18s ease; }
-.featured__eyebrow.is-swapping, .featured__title.is-swapping, .featured__text.is-swapping { opacity: 0; transform: translateY(6px); }
+/* The home reel's heading changes as the row moves from client work to our own products: a soft crossfade, the
+   words sliding up into place, and a fixed height so nothing below it jumps. */
+.featured__eyebrow, .featured__title, .featured__text { transition: opacity 0.45s var(--ease), transform 0.55s var(--ease); will-change: opacity, transform; }
+.featured__eyebrow.is-swapping, .featured__title.is-swapping, .featured__text.is-swapping { opacity: 0; transform: translateY(14px); transition-duration: 0.22s, 0.22s; }
+.featured__title { min-height: 2.1em; }
+.featured__text { min-height: 4.6em; }
+/* Arrow and drag moves glide; the cards settle near a stop instead of snapping hard. */
+.reel__track { scroll-behavior: smooth; scroll-snap-type: x proximity; }
+@media (prefers-reduced-motion: reduce) { .reel__track { scroll-behavior: auto; } }

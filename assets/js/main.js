@@ -1706,7 +1706,7 @@
         var el = els[k];
         if (!el) return;
         el.classList.add("is-swapping");
-        setTimeout(function () { el.innerHTML = groups[key][k]; el.classList.remove("is-swapping"); }, reduceMotion ? 0 : 180);
+        setTimeout(function () { el.innerHTML = groups[key][k]; el.classList.remove("is-swapping"); }, reduceMotion ? 0 : 230);
       });
     }
     function update() {
