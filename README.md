@@ -1,4 +1,4 @@
-# Kian Studio: website
+# Onsite: the studio page
 
 The website for Kian Studio, Carl Palacio's design and build studio. It's plain HTML, CSS and JavaScript:
 there's **no build step and nothing to install**. Every page reads its text, projects and
@@ -253,10 +253,21 @@ same server as Onsite (143.198.207.20, SSH key `~/.ssh/sitetracker`). GitHub Pag
 To put a change live, bump the `?v=` number, commit, push, then from this folder:
 
 ```bash
-rsync -az --delete -e "ssh -i ~/.ssh/sitetracker" --exclude .git --exclude .claude --exclude listing-kit --exclude README.md --exclude PROMPT.md --exclude .DS_Store ./ root@143.198.207.20:/opt/kian-studio/
+rsync -az --delete -e "ssh -i ~/.ssh/sitetracker" --exclude .git --exclude .claude --exclude listing-kit --exclude README.md --exclude PROMPT.md --exclude server --exclude .DS_Store ./ root@143.198.207.20:/opt/kian-studio/
 ```
 
-Keep `sw.js`: it retires Onsite's old service worker on phones that installed Onsite at this address. Any address
+The page also has a small server of its own, `server/studio.py`, which takes the contact planner's messages
+(`POST /api/contact`) and serves Carl's page at `/admin` (messages, and what each website takes up, from figures
+`server/studio-usage.py` gathers every 10 minutes). It runs on the server as the `studio` service from `/opt/studio`
+with its data in `/var/lib/studio`; `rsync` of the page above leaves `server/` out. To put a server change live:
+
+```bash
+rsync -az -e "ssh -i ~/.ssh/sitetracker" server/ root@143.198.207.20:/opt/studio/ && ssh -i ~/.ssh/sitetracker root@143.198.207.20 "cp /opt/studio/studio-usage.py /usr/local/bin/ && python3 -m py_compile /opt/studio/studio.py && systemctl restart studio && sleep 1 && systemctl is-active studio"
+```
+
+Carl's page password is set on the server, never in a file: `sudo -u studio python3 /opt/studio/studio.py --data /var/lib/studio --set-password`.
+
+Keep `sw.js`: it retires OnCon's old service worker on phones that installed Onsite at this address. Any address
 here that isn't one of these files forwards to construction.getonsiteapp.com (Onsite), which Caddy does.
 
 **Netlify:** go to <https://app.netlify.com/drop> and drag this folder onto the page. Done.
