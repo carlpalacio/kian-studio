@@ -276,9 +276,9 @@
   }
 
   // The Onsite mark: an ink tile, a drawn "on" (the power symbol) and the red dot. Same drawing as assets/brand.
-  var MARK = '<svg viewBox="0 0 256 256" aria-hidden="true"><rect x="8" y="16" width="224" height="224" rx="60" fill="#0f0f0e"/>' +
-    '<path d="M86 92 A58 58 0 1 0 170 92" fill="none" stroke="#f5f4f0" stroke-width="22" stroke-linecap="round"/>' +
-    '<path d="M128 60 V130" fill="none" stroke="#f5f4f0" stroke-width="22" stroke-linecap="round"/>' +
+  var MARK = '<svg viewBox="0 0 256 256" aria-hidden="true"><rect x="8" y="16" width="224" height="224" rx="60" fill="#e9dfcf"/>' +
+    '<path d="M78 92 A58 58 0 1 0 162 92" fill="none" stroke="#0f0f0e" stroke-width="22" stroke-linecap="round"/>' +
+    '<path d="M120 60 V130" fill="none" stroke="#0f0f0e" stroke-width="22" stroke-linecap="round"/>' +
     '<circle cx="226" cy="30" r="26" fill="#e2442a" stroke="#f5f4f0" stroke-width="10"/></svg>';
   function monogram() { return MARK; }
 
