@@ -32,10 +32,15 @@ COOKIE = "studio_admin"
 SESSION_SECONDS = 12 * 3600
 PBKDF2_ROUNDS = 310000
 MAX_PER_HOUR = 5            # messages from one address
+MAX_ALL_PER_HOUR = 60       # messages from everyone together, so many made-up addresses can't fill the database
+MAX_WRONG_PER_HOUR = 10     # wrong admin passwords from one address
+MAX_WRONG_ALL_PER_HOUR = 200
 CONFIG = {"data": "data"}
 _lock = threading.Lock()
 _recent = {}                # ip -> [timestamps] for the contact form
-_failed = {}                # ip -> [timestamps] of wrong admin passwords
+_failed = {}                # ip -> [timestamps] of admin password tries (counted when they start)
+_all_recent = []            # every accepted message, newest last
+_all_failed = []            # every admin password try
 
 
 def path_of(name):
@@ -51,6 +56,10 @@ def connect():
 
 def init_db():
     os.makedirs(CONFIG["data"], exist_ok=True)
+    try:
+        os.chmod(CONFIG["data"], 0o700)   # messages and the password hash are for the studio service only
+    except OSError:
+        pass
     conn = connect()
     conn.executescript("""
     CREATE TABLE IF NOT EXISTS enquiries (
@@ -269,8 +278,18 @@ class Handler(BaseHTTPRequestHandler):
 
     # -- helpers
     def ip(self):
-        fwd = self.headers.get("X-Forwarded-For") or ""
-        return (fwd.split(",")[0].strip() or self.client_address[0])[:64]
+        """The visitor's address. Only Caddy reaches this server (127.0.0.1), and it puts the visitor's address last
+        in X-Forwarded-For; anything earlier in the list could have been typed by the visitor. From any other
+        sender the header is ignored. IPv6 visitors count by their /64, so one person can't switch addresses freely."""
+        peer = self.client_address[0]
+        addr = peer
+        if peer in ("127.0.0.1", "::1"):
+            parts = [x.strip() for x in (self.headers.get("X-Forwarded-For") or "").split(",") if x.strip()]
+            if parts:
+                addr = parts[-1]
+        if ":" in addr:
+            addr = ":".join(addr.lower().split(":")[:4])
+        return addr[:64]
 
     def send(self, status, body, ctype="text/html; charset=utf-8", extra=None):
         data = body.encode("utf-8") if isinstance(body, str) else body
@@ -281,6 +300,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("X-Robots-Tag", "noindex")
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "no-referrer")
+        self.send_header("Strict-Transport-Security", "max-age=31536000")
         if ctype.startswith("text/html"):
             self.send_header("X-Frame-Options", "DENY")
             self.send_header("Content-Security-Policy", "default-src 'none'; style-src 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'none'; base-uri 'none'")
@@ -356,7 +376,7 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/admin/logout":
                 conn.execute("DELETE FROM sessions WHERE token = ?", (hashlib.sha256(token.encode()).hexdigest(),))
                 conn.commit()
-                return self.redirect("/admin", {"Set-Cookie": "{}=; Path=/admin; Max-Age=0; HttpOnly; Secure; SameSite=Lax".format(COOKIE)})
+                return self.redirect("/admin", {"Set-Cookie": "{}=; Path=/admin; Max-Age=0; HttpOnly; Secure; SameSite=Strict".format(COOKIE)})
             if path == "/admin/read":
                 try:
                     eid = int(self.form().get("id") or 0)
@@ -373,26 +393,37 @@ class Handler(BaseHTTPRequestHandler):
 
     def login(self, conn):
         ip = self.ip()
-        with _lock:   # no more than 10 wrong passwords an hour from one address
-            tries = [t for t in _failed.get(ip, []) if t > time.time() - 3600]
-            _failed[ip] = tries
-            if len(tries) >= 10:
+        with _lock:   # no more than 10 tries an hour from one address, counted now so parallel guesses can't slip past
+            cutoff = time.time() - 3600
+            tries = [t for t in _failed.get(ip, []) if t > cutoff]
+            _all_failed[:] = [t for t in _all_failed if t > cutoff]
+            if len(tries) >= MAX_WRONG_PER_HOUR or len(_all_failed) >= MAX_WRONG_ALL_PER_HOUR:
+                _failed[ip] = tries
                 return self.send(429, login_page("Too many wrong passwords. Try again in an hour."))
+            tries.append(time.time())
+            _failed[ip] = tries
+            _all_failed.append(time.time())
+            if len(_failed) > 5000:
+                for k in [k for k, v in _failed.items() if not v or v[-1] < cutoff]:
+                    del _failed[k]
         time.sleep(0.4)   # slows guessing
         pw = self.form().get("password") or ""
         stored = conn.execute("SELECT value FROM settings WHERE key = 'admin_password'").fetchone()
         if not stored:
             return self.send(200, login_page("No password is set yet. On the server: python3 studio.py --set-password"))
         if not check_password(stored["value"], pw):
-            with _lock:
-                _failed.setdefault(ip, []).append(time.time())
             return self.send(200, login_page("That's not the password."))
+        with _lock:   # a right password doesn't use up a try
+            if _failed.get(ip):
+                _failed[ip].pop()
+            if _all_failed:
+                _all_failed.pop()
         token = secrets.token_urlsafe(32)
         expires = (datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=SESSION_SECONDS)).replace(microsecond=0).isoformat()
         conn.execute("INSERT INTO sessions (token, created_at, expires_at) VALUES (?,?,?)", (hashlib.sha256(token.encode()).hexdigest(), now(), expires))
         conn.execute("DELETE FROM sessions WHERE expires_at <= ?", (now(),))
         conn.commit()
-        self.redirect("/admin", {"Set-Cookie": "{}={}; Path=/admin; Max-Age={}; HttpOnly; Secure; SameSite=Lax".format(COOKIE, token, SESSION_SECONDS)})
+        self.redirect("/admin", {"Set-Cookie": "{}={}; Path=/admin; Max-Age={}; HttpOnly; Secure; SameSite=Strict".format(COOKIE, token, SESSION_SECONDS)})
 
     def contact(self):
         origin = (self.headers.get("Origin") or "").rstrip("/")
@@ -417,9 +448,11 @@ class Handler(BaseHTTPRequestHandler):
         ip = self.ip()
         with _lock:
             stamps = [t for t in _recent.get(ip, []) if t > time.time() - 3600]
-            if len(stamps) >= MAX_PER_HOUR:
+            _all_recent[:] = [t for t in _all_recent if t > time.time() - 3600]
+            if len(stamps) >= MAX_PER_HOUR or len(_all_recent) >= MAX_ALL_PER_HOUR:
                 return self.send_json(429, {"error": "That's a few messages in a row. Please try again in an hour, or call us."})
             stamps.append(time.time())
+            _all_recent.append(time.time())
             _recent[ip] = stamps
             if len(_recent) > 5000:   # forget addresses that haven't written for an hour
                 for k in [k for k, v in _recent.items() if not v or v[-1] < time.time() - 3600]:

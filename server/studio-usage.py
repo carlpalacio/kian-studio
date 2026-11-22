@@ -74,10 +74,16 @@ def main():
     result = {"measured_at": datetime.datetime.now(datetime.timezone.utc).replace(microsecond=0).isoformat(), "ip": ip,
               "disk": {"size": disk.total, "used": disk.used, "free": disk.free}, "memory": meminfo(), "sites": sites, "domains": domains()}
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    # This folder belongs to the studio service, which is not root. Write the temporary file the careful way, so a
+    # link planted there can't make root overwrite some other file.
     tmp = OUT + ".tmp"
-    with open(tmp, "w") as fh:
+    try:
+        os.unlink(tmp)
+    except FileNotFoundError:
+        pass
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o644)
+    with os.fdopen(fd, "w") as fh:
         json.dump(result, fh)
-    os.chmod(tmp, 0o644)
     os.replace(tmp, OUT)
 
 
