@@ -256,7 +256,7 @@
     return (
       '<header class="site-header" id="top"><nav class="nav wrap" aria-label="Main">' +
       '<a class="nav__logo" href="/" aria-label="' + esc(SITE.studioName) + ', home">' +
-      '<span class="mark" aria-hidden="true">' + esc(monogram()) + '</span><span class="nav__wordmark" aria-hidden="true">' + esc(SITE.studioName) + "</span></a>" +
+      '<span class="mark" aria-hidden="true">' + monogram() + '</span><span class="nav__wordmark" aria-hidden="true">' + esc(SITE.studioName) + "</span></a>" +
       '<div class="nav__links">' + links + "</div>" +
       '<div class="nav__end">' +
       link(NAV[3]) + link(NAV[4]) +
@@ -275,11 +275,12 @@
     );
   }
 
-  function monogram() {
-    var words = (SITE.studioName || "").split(/\s+/).filter(Boolean);
-    if (words.length === 1) return words[0].slice(0, 2);   // "Onsite" shows as "On"
-    return words.slice(0, 2).map(function (w) { return w[0].toUpperCase(); }).join("");
-  }
+  // The Onsite mark: an ink tile, a drawn "on" (the power symbol) and the red dot. Same drawing as assets/brand.
+  var MARK = '<svg viewBox="0 0 256 256" aria-hidden="true"><rect x="8" y="16" width="224" height="224" rx="60" fill="#0f0f0e"/>' +
+    '<path d="M86 92 A58 58 0 1 0 170 92" fill="none" stroke="#f5f4f0" stroke-width="22" stroke-linecap="round"/>' +
+    '<path d="M128 60 V130" fill="none" stroke="#f5f4f0" stroke-width="22" stroke-linecap="round"/>' +
+    '<circle cx="226" cy="30" r="26" fill="#e2442a" stroke="#f5f4f0" stroke-width="10"/></svg>';
+  function monogram() { return MARK; }
 
   function footer() {
     var year = new Date().getFullYear();

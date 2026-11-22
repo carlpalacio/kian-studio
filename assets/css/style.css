@@ -195,16 +195,8 @@ html { scroll-padding-top: calc(var(--header-h) + 12px); }
 .nav__logo { justify-self: start; display: inline-flex; align-items: center; gap: 10px; }
 .nav__end { display: flex; align-items: center; gap: 12px; justify-self: end; }
 
-.mark {
-  position: relative; display: inline-grid; place-items: center;
-  width: 36px; height: 36px; border-radius: 10px;
-  background: var(--ink); color: var(--bg);
-  font-weight: 800; font-size: 14px; letter-spacing: -0.06em;
-}
-.mark::after {
-  content: ""; position: absolute; top: -3px; right: -3px; width: 9px; height: 9px;
-  border-radius: 50%; background: var(--red); border: 2px solid var(--bg);
-}
+.mark { position: relative; display: inline-grid; place-items: center; width: 40px; height: 40px; }
+.mark svg { width: 40px; height: 40px; display: block; }
 .nav__wordmark { font-weight: 700; letter-spacing: -0.03em; font-size: 15px; }
 
 .menu-btn { display: inline-flex; }
