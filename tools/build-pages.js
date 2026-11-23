@@ -43,7 +43,7 @@ const PAGES = [
   { file: "about.html", page: "about", title: "About", description: SITE.owner + ", founder of " + NAME + ". Designer and developer of " + and(PROJECTS.map((p) => p.title)) + "." },
   { file: "contact.html", page: "contact", title: "Contact", description: "Plan your project in about two minutes and send it to " + NAME + ". You get a clear quote back." },
   { file: "404.html", page: "404", title: "Page not found", description: "This page doesn’t exist.", noindex: true,
-    comment: "Caddy serves this page, with status 404, for any address that has no page." },
+    comment: "Caddy serves this page, with status 404, for a /work/ address with no project. Other unknown addresses are old Onsite links and forward to OnCon." },
 ];
 for (const p of PROJECTS) {
   PAGES.push({ file: "work/" + p.slug + ".html", page: "project", slug: p.slug, title: p.title, description: p.summary });

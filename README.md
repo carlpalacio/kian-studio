@@ -108,9 +108,10 @@ rsync -az --delete -e "ssh -i ~/.ssh/sitetracker" --exclude .git --exclude .clau
 
 Caddy serves the site from `/opt/kian-studio` on the same server as Onsite (143.198.207.20, SSH key
 `~/.ssh/sitetracker`). Its settings in `/etc/caddy/Caddyfile` give the clean addresses
-(`try_files {path} {path}.html`), serve `404.html` with status 404 for any missing page, and forward
-old addresses: `/resume` to `/about#resume`, `/work/pos-system` to `/work/ontrack`, `/project.html?p=x`
-to `/work/x`. Other sessions edit that file too, so always download the live copy, edit it, check it
+(`try_files {path} {path}.html`), serve `404.html` with status 404 for a `/work/` address with no
+project, and forward old addresses: `/resume` to `/about#resume`, `/work/pos-system` to `/work/ontrack`,
+`/project.html?p=x` to `/work/x`. Any other address that isn't a file is an old Onsite link and
+forwards to oncon.getonsiteapp.com. Other sessions edit that file too, so always download the live copy, edit it, check it
 with `caddy validate`, upload it and reload Caddy. Never upload an old copy.
 
 Keep `sw.js`: it retires OnCon's old service worker on phones that installed it at this address.
