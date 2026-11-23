@@ -257,15 +257,22 @@ rsync -az --delete -e "ssh -i ~/.ssh/sitetracker" --exclude .git --exclude .clau
 ```
 
 The page also has a small server of its own, `server/studio.py`, which takes the contact planner's messages
-(`POST /api/contact`) and serves Carl's page at `/admin` (messages, and what each website takes up, from figures
-`server/studio-usage.py` gathers every 10 minutes). It runs on the server as the `studio` service from `/opt/studio`
-with its data in `/var/lib/studio`; `rsync` of the page above leaves `server/` out. To put a server change live:
+(`POST /api/contact`) and hands them to Carl's IT console at <https://it.getonsiteapp.com> (Messages, with Mark read
+and Mark unread). The console calls it on the server itself, at `/api/it-console/overview` and
+`/api/it-console/message-read`; those answer only a call from 127.0.0.1 that carries the console's code and no
+forwarding header, and look like any missing page to everyone else. Carl's old page at `/admin` is gone: every
+`/admin` address now forwards to the console's Messages page, and the storage figures live in the console too.
+It runs on the server as the `studio` service from `/opt/studio` with its data in `/var/lib/studio`; `rsync` of the
+page above leaves `server/` out. To put a server change live:
 
 ```bash
-rsync -az -e "ssh -i ~/.ssh/sitetracker" server/ root@143.198.207.20:/opt/studio/ && ssh -i ~/.ssh/sitetracker root@143.198.207.20 "cp /opt/studio/studio-usage.py /usr/local/bin/ && python3 -m py_compile /opt/studio/studio.py && systemctl restart studio && sleep 1 && systemctl is-active studio"
+rsync -az -e "ssh -i ~/.ssh/sitetracker" server/ root@143.198.207.20:/opt/studio/ && ssh -i ~/.ssh/sitetracker root@143.198.207.20 "python3 -m py_compile /opt/studio/studio.py && systemctl restart studio && sleep 1 && systemctl is-active studio"
 ```
 
-Carl's page password is set on the server, never in a file: `sudo -u studio python3 /opt/studio/studio.py --data /var/lib/studio --set-password`.
+Its settings come from the environment, never from a file in this folder: `IT_CONSOLE_TOKEN_SHA256` (the SHA-256 of the
+console's code, put in `/etc/systemd/system/studio.service.d/it-console.conf` by the console's own deploy; without it
+the console routes stay closed), `IT_CONSOLE_URL` (where `/admin` forwards, `https://it.getonsiteapp.com` unless set)
+and `STUDIO_URL` (this page's address). Tests: `cd server && python3 -m unittest discover -s tests`.
 
 Keep `sw.js`: it retires OnCon's old service worker on phones that installed Onsite at this address. Any address
 here that isn't one of these files forwards to construction.getonsiteapp.com (Onsite), which Caddy does.
