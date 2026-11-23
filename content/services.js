@@ -1,179 +1,175 @@
 /*
   SERVICES
   ────────
-  One block per service, shown in this order.
-    price   optional starting price. Leave "" to show "Quoted per project" (prices are off for now).
-    page    optional page with more about the service, e.g. "/brand-scaling".
+  One block per service, shown on the Services page in these groups and this order.
+    group     which heading it sits under on the Services page
+    name      its full name (also what the planner sends us)
+    label     the short name on the planner's chips
+    key       its short address: /contact?for=<key> opens the planner with this service ticked
+    page      optional page with more about it, e.g. "/brand-scaling", linked as `pageLabel`
+    demo      "chat" shows the example AI chat (SITE_CHAT below) beside it
+  Every project is quoted for you: there are no prices anywhere on the site.
 */
+window.SERVICE_GROUPS = ["Brand & marketing", "Websites & stores", "Apps & systems", "After launch"];
+
 window.SERVICES = [
   {
-    name: "Brand Identity",
+    group: "Brand & marketing",
+    name: "Brand identity",
+    label: "Brand identity",
+    key: "brand",
     description: "A logo and visual system that makes your business instantly recognizable, on a sign, a cup or a phone screen.",
-    includes: ["Logo & variations", "Color palette & typography", "Brand guidelines", "Social media kit", "Business cards & stationery"],
-    price: "",
+    includes: ["Logo & variations", "Colours & typography", "Brand guidelines", "Social media kit"],
   },
   {
-    name: "Brand Scaling & Ads",
-    description: "We plan, make and run the ads that bring in customers on Facebook, Instagram, Google and TikTok, then test every week and put more behind what works.",
-    includes: ["Facebook & Instagram ads", "Google Search & Maps ads", "TikTok ads", "Ad images, video & copy", "AI-made variations to test", "Landing pages & tracking", "Weekly tuning & monthly reports"],
-    price: "",
-    page: "/brand-scaling",
-  },
-  {
-    name: "Websites & Landing Pages",
-    description: "Fast, mobile-first websites that explain what you do and turn visitors into customers.",
-    includes: ["Custom design in any style", "Responsive build", "Contact & booking forms", "Basic SEO & analytics", "Hosting setup & launch"],
-    price: "",
-  },
-  {
-    name: "E-commerce & Online Ordering",
-    description: "Online stores and ordering pages that take payments and send orders straight to your team.",
-    includes: ["Product catalog", "Cart & checkout", "Online payments", "Pickup & delivery options", "Order notifications"],
-    price: "",
-  },
-  {
-    name: "Web & Mobile Apps",
-    description: "Custom apps for bookings, supplier payments, operations and customers, like Inest, Middleware, Onsite and The One App.",
-    includes: ["User flows & UI design", "Web app or installable app (PWA)", "Logins & user roles", "Offline support when needed", "Launch & support"],
-    price: "",
-  },
-  {
-    name: "POS & Inventory Systems",
-    description: "Point-of-sale and stock tracking built around how your shop or restaurant actually works, like OnTrack.",
-    includes: ["Tables, orders & receipts", "Cash & QR payments", "Recipes & stock levels", "Deliveries & suppliers", "Daily profit reports"],
-    price: "",
-  },
-  {
-    name: "AI Assistants & Automation",
-    description: "AI assistants that answer customers, take bookings and orders, and handle the busywork, day and night.",
-    includes: ["Website & Messenger chat assistants", "Trained on your products & FAQs", "Bookings & lead capture", "Internal assistants for your team", "Automated reports & follow-ups"],
-    price: "",
-  },
-  {
-    name: "Social Media & Content",
+    group: "Brand & marketing",
+    name: "Social media & content",
+    label: "Social media",
+    key: "social",
     description: "A consistent, on-brand feed that keeps your business top of mind.",
-    includes: ["Content calendar", "Post & story design", "Short-form video editing", "Captions", "Brand templates"],
-    price: "",
+    includes: ["Content calendar", "Post & story design", "Short-form video editing", "Captions"],
   },
   {
+    group: "Brand & marketing",
     name: "SEO & Google Business",
+    label: "SEO & Google",
+    key: "seo",
     description: "Get found on Google and Maps by the people already searching for what you sell.",
-    includes: ["Google Business Profile", "Local SEO", "Site speed & structure", "Search Console & analytics", "Review strategy"],
-    price: "",
+    includes: ["Google Business Profile", "Local SEO", "Site speed & structure", "Review strategy"],
   },
   {
-    name: "UI / UX Design",
+    group: "Brand & marketing",
+    name: "Brand scaling & ads",
+    label: "Ads",
+    key: "ads",
+    description: "Ads that bring in customers, tested every week, with your brand and pages built to back them up.",
+    includes: ["Ad strategy", "Ad images, video & copy", "Landing pages & tracking", "Monthly reports"],
+    page: "/brand-scaling",
+    pageLabel: "About brand scaling",
+  },
+  {
+    group: "Websites & stores",
+    name: "Websites & landing pages",
+    label: "Website",
+    key: "website",
+    description: "Fast, mobile-first websites that explain what you do and turn visitors into customers.",
+    includes: ["Custom design in any style", "Contact & booking forms", "Basic SEO & analytics", "Hosting setup & launch"],
+  },
+  {
+    group: "Websites & stores",
+    name: "E-commerce & online ordering",
+    label: "Online store",
+    key: "store",
+    description: "Online stores and ordering pages that take payments and send orders straight to your team.",
+    includes: ["Product catalog", "Cart & checkout", "Online payments", "Pickup & delivery options"],
+  },
+  {
+    group: "Websites & stores",
+    name: "UI / UX design",
+    label: "UI / UX design",
+    key: "design",
     description: "Clear, simple interfaces for apps and dashboards, designed and tested before a line of code.",
-    includes: ["User flows", "Wireframes", "High-fidelity screens", "Clickable prototype", "Design system"],
-    price: "",
+    includes: ["User flows", "Wireframes", "Clickable prototype", "Design system"],
   },
   {
-    name: "Hosting, Care & Support",
+    group: "Apps & systems",
+    name: "Web & mobile apps",
+    label: "App",
+    key: "app",
+    description: "Custom apps for bookings, supplier payments, operations and customers, like Inest, Middleware, OnCon and The One App.",
+    includes: ["User flows & UI design", "Web app or installable app", "Log-ins & user roles", "Offline support when needed"],
+  },
+  {
+    group: "Apps & systems",
+    name: "POS & inventory systems",
+    label: "POS & inventory",
+    key: "pos",
+    description: "Point-of-sale and stock tracking built around how your shop or restaurant actually works, like OnTrack.",
+    includes: ["Tables, orders & receipts", "Cash & QR payments", "Recipes & stock levels", "Daily profit reports"],
+  },
+  {
+    group: "Apps & systems",
+    name: "AI assistants & automation",
+    label: "AI assistant",
+    key: "ai",
+    description: "AI assistants that answer customers, take bookings and orders, and handle the busywork, day and night.",
+    includes: ["Website & Messenger chat", "Trained on your products & FAQs", "Bookings & lead capture", "Automated reports & follow-ups"],
+    demo: "chat",
+  },
+  {
+    group: "After launch",
+    name: "Hosting, care & support",
+    label: "Hosting & care",
+    key: "hosting",
     description: "We keep everything we build online, secure and up to date, so you never have to think about it.",
-    includes: ["Domains & business email", "Hosting & backups", "Updates & fixes", "New pages & features", "Priority support"],
-    price: "",
-  },
-  {
-    name: "Anything Else",
-    description: "Menus, packaging, signage, pitch decks, spreadsheets, a system nobody has built yet. If your business needs it, we’ll handle it.",
-    includes: ["Print & packaging", "Signage & menus", "Presentations", "Custom tools & integrations", "Just ask"],
-    price: "",
+    includes: ["Domains & business email", "Hosting & backups", "Updates & fixes", "New pages & features"],
   },
 ];
 
 /*
-  PRICING
-  ───────
-  Shown on the home page and the Services page. `startingAt` is the headline price.
-  Each plan's `price` is shown as written, or "" to show "For quotation" (prices are off for now).
-  `need` (optional) ticks that service in the Contact page planner when someone picks the plan.
-  `budgets` and `timelines` are the choices in the project planner on the Contact page.
+  The example AI chat on the Services page, for Mesa, a made-up café (the page says so).
+  `from` is "them" (the customer) or "ai". It shows the whole conversation; nothing plays by itself.
 */
-window.PRICING = {
-  startingAt: "",
-  note: "Every project is quoted for you after a free call, so you only pay for what you need.",
-  plans: [
-    {
-      name: "Basic",
-      price: "",
-      for: "A one-page website or landing page.",
-      includes: ["1 page, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
-      need: "Websites & Landing Pages",
-    },
-    {
-      name: "Standard",
-      price: "",
-      for: "A three-page website for a small business.",
-      includes: ["3 pages, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
-      need: "Websites & Landing Pages",
-      featured: true,
-    },
-    {
-      name: "Premium",
-      price: "",
-      for: "A five-page website with room to grow.",
-      includes: ["5 pages, designed or redesigned", "Designed in any style", "Contact form", "Mobile & tablet ready"],
-      need: "Websites & Landing Pages",
-    },
-    {
-      name: "Custom",
-      price: "",
-      for: "Apps, systems, stores and anything bigger.",
-      includes: ["More pages or an online store", "Web & mobile apps", "POS & inventory systems", "AI assistants & automation", "Brand scaling, ads & content"],
-    },
-  ],
-  budgets: ["Under $300", "$300 – $1,000", "$1,000 – $5,000", "$5,000+", "Not sure yet"],
+window.SITE_CHAT = [
+  { from: "them", text: "Hi! Are you open on Sunday?" },
+  { from: "ai", text: "Hi! Yes, we’re open Sunday from 8am to 6pm. Want me to save you a table?" },
+  { from: "them", text: "Yes please, 4 people at 10am" },
+  { from: "ai", text: "Done! Table for 4 on Sunday at 10:00am. I’ve sent the details to your phone." },
+];
+
+/*
+  HOW WE WORK (the Services page): four numbered steps.
+*/
+window.PROCESS = [
+  { name: "Talk", body: "A quick call or chat about your business, your customers and the style you like." },
+  { name: "Design", body: "We design in your chosen style and refine it with your feedback until it feels right." },
+  { name: "Build", body: "We build it mobile-first, fast and easy for your team to use and update." },
+  { name: "Launch & scale", body: "We launch, hand everything over, and stay on to run your ads and keep the brand growing." },
+];
+
+/*
+  PLANNER (the Contact page): the timing choices in step 2.
+*/
+window.PLANNER = {
   timelines: ["As soon as possible", "Within a month", "In 1–3 months", "I’m flexible"],
 };
 
 /*
-  FAQ (Services page)
+  FAQ (the Services page)
 */
 window.FAQ = [
   {
     q: "How much does a project cost?",
-    a: "Every project is quoted for you. Tell us what you need on a quick call or in a message, and we send a clear quote with no hidden fees. Websites, brand identities, brand scaling and ads, online stores, apps, POS and inventory systems and AI assistants all work this way.",
-  },
-  {
-    q: "How fast do you reply?",
-    a: "Within 24 hours, any day of the week. You talk to the people doing the work, so you get real answers, not a ticket number.",
-  },
-  {
-    q: "Is the first call free?",
-    a: "Yes. Tell us about your business on a call or in a message, and we’ll suggest what you need and send a clear quote. No pressure, no commitment.",
+    a: "Every project is quoted for you. Tell us what you need on a free first call or in a message, and we send a clear quote with no hidden fees.",
   },
   {
     q: "I only have a rough idea. Is that enough?",
     a: "Yes. Tell us what you want in your own words, even one line. We’ll ask questions, suggest what you need and send a clear quote before any work starts.",
   },
   {
-    q: "What can you help with?",
-    a: "Pretty much anything your business needs designed, built, automated or scaled: brands, websites, online stores, apps, POS and inventory, AI assistants, ads and brand scaling, social content, SEO and hosting. If it isn’t on the list, ask.",
-  },
-  {
     q: "How long does it take?",
-    a: "It depends on the project. A brand or website is much quicker than a custom app or system. You get a clear timeline with your quote, before any work starts.",
-  },
-  {
-    q: "Do you work with clients outside the Philippines?",
-    a: "Yes. We work remotely with clients anywhere, over calls, chat and email.",
+    a: "It depends on the project. A brand or website is much quicker than a custom app or system. You get a clear timeline with your quote.",
   },
   {
     q: "Can you redesign or fix something I already have?",
     a: "Yes. We can refresh an existing brand, redesign a website, take over an app or connect the tools you already use.",
   },
   {
+    q: "Do you work with clients outside the Philippines?",
+    a: "Yes, over calls, chat and email, wherever you are.",
+  },
+  {
     q: "What happens after launch?",
-    a: "We can host, update and maintain everything we build, add new features as you grow, and run your ads and content month to month to keep scaling the brand.",
+    a: "We can host, update and maintain everything we build, add new features as you grow, and run your ads and content month to month.",
   },
 ];
 
 /*
-  BRAND SCALING & ADS (/brand-scaling, and the dark band on the home page)
-  ────────────────────────────────────────────────────────────────────────────
-  channels      where the ads run
-  steps         the scaling loop, in order
-  deliverables  what's included every month
+  BRAND SCALING & ADS (/brand-scaling)
+  ────────────────────────────────────
+  channels      where the ads run (the page names all six)
+  steps         how it works, in order
+  deliverables  "What you get"
   faq           questions about ads
 */
 window.GROWTH = {
@@ -198,7 +194,7 @@ window.GROWTH = {
     "AI-made variations to test",
     "Landing pages that match the ads",
     "Tracking set up (Meta Pixel, Google tag)",
-    "Weekly tuning of budgets & ads",
+    "Weekly tuning of ads & spend",
     "A clear monthly report & next steps",
     "Brand kit & content to back it all up",
   ],
@@ -218,10 +214,6 @@ window.GROWTH = {
     {
       q: "Do I keep my ad accounts and pages?",
       a: "Yes. Everything runs in your own accounts, so you keep the ads, the data and the audiences.",
-    },
-    {
-      q: "Can you make the ads and videos too?",
-      a: "Yes. We design the images, edit short videos and write the copy, and use AI to make extra variations to test.",
     },
     {
       q: "Do I need a website first?",

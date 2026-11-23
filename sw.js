@@ -1,4 +1,4 @@
-/* OnCon (Onsite for construction) used to live at getonsiteapp.com and now lives at
+/* OnCon, the construction app, used to live at getonsiteapp.com and now lives at
    oncon.getonsiteapp.com. Phones that installed it here still hold its old service worker,
    which checks this address for updates. This replaces it: it clears what the old one saved,
    removes itself, and sends any open OnCon page to the new address. The Onsite studio page itself

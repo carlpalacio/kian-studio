@@ -1,171 +1,90 @@
 /*
   SITE SETTINGS
   ─────────────
-  Everything about you and the studio lives here. Change a value, save, refresh.
-
-  • Text in [square brackets] is a placeholder. The site shows it with a dotted
-    outline so you can spot what still needs real content. Replace the whole
-    thing, brackets included.
-  • Leave a value as "" (empty) to hide it from the site.
+  The studio's name, words and contact details. Change a value, save, refresh.
+  Leave a value as "" (empty) to hide it. Nothing here is ever shown as a placeholder.
 */
 window.SITE = {
-  // Change the studio name here and it updates everywhere on the site.
   studioName: "Onsite",
   owner: "Carl Palacio",
-  role: "Founder · designer & developer",
-  location: "Anywhere — working remotely with clients worldwide",
-
-  // Hero. `rotating` words cycle after `heroLead` ("Let’s build your website."), then rest on the first one.
-  eyebrow: "Design & build studio",
+  // About page, under "Hi, I'm Carl."
+  role: "Founder of Onsite. Designer and developer.",
   tagline: "Making life easier.",
-  heroLead: "Let’s build your",
-  rotating: ["idea.", "website.", "online store.", "booking system.", "app.", "POS system.", "brand."],
-  taglineSub: "Websites, apps, business systems and AI assistants, plus the ads that grow them. Bring any idea, even a rough one, and we’ll make it easy.",
+  // The one sentence under the name at the top of the home page.
+  intro: "We make our own products, like OnCon and OnTrack, and build websites, apps and business systems for other companies.",
 
-  shortBio:
-    "Onsite designs and builds what makes work easier: websites, apps, POS and inventory systems, AI assistants, and the Facebook, Google and TikTok ads that bring in customers.",
-
-  fullBio: [
-    "I'm Carl Palacio, the founder of Onsite. We design, build and scale what businesses need to look professional, run smoothly and grow: brand identities, websites, custom apps, point-of-sale and inventory systems, AI assistants, and the ad campaigns that bring in customers.",
-    "Our work ranges from a booking and billing platform for a condominium in Cebu City to a construction tracker that works without signal, a supplier payments system for a retail group, a restaurant POS with live inventory and an all-in-one fitness app. Every project is designed from scratch in whatever style fits the brand: minimal, bold, playful or premium.",
-    "We work remotely with clients anywhere and reply within 24 hours. You deal with the people designing and building your project from the first call to launch day, and we stay on afterwards to run your ads, grow your brand and keep everything up to date.",
+  // About page: two short paragraphs. A link to the work follows the last one.
+  bio: [
+    "I’m Carl Palacio, the founder of Onsite. We design and build what businesses need to look professional, run smoothly and grow, from scratch and in whatever style fits them.",
+    "You talk to the people designing and building your project, from the first call to launch day, and we stay on after launch to keep everything running and up to date.",
   ],
 
-  // Profile photo. Put your photo in assets/img/ and set the path, e.g. "assets/img/carl.webp".
-  // Leave "" to show a labeled placeholder.
+  // Portrait for the About page, e.g. "assets/img/carl.webp" (about 1000×1250). Leave "" for a one-column page.
   photo: "",
 
   contact: {
     phoneDisplay: "0991 698 8880",
     phoneLink: "+639916988880", // international format used for tap-to-call
-    email: "carlpalacio05@gmail.com", // Leave "" to hide.
-    // Optional chat apps. Paste your link to show a button, e.g. "https://wa.me/639916988880".
+    email: "carlpalacio05@gmail.com", // shown as plain text in the footer only
+    // Optional chat apps, e.g. "https://wa.me/639916988880". They show in the footer's "Find us" once set.
     whatsapp: "",
     viber: "",
-    // Contact form: create a free form at https://formspree.io and paste its endpoint,
-    // e.g. "https://formspree.io/f/abcdwxyz". Leave "" to hide the form.
-    formEndpoint: "",
-    availability: "Taking new projects. We reply within 24 hours.",
-    replyTime: "within 24 hours", // used in "We reply within 24 hours" around the site
+    availability: "Taking new projects.",
+    replyTime: "within 24 hours",
+    remote: "Working remotely with clients worldwide",
   },
 
-  // Where clients can hire you. Paste your profile link into `url` and it shows under the home page
-  // buttons ("Also on Fiverr"), in the "Let's build it together" box on every page, in the footer and
-  // on the Contact page. Empty ones stay hidden.
+  // Profiles shown in the footer's "Find us" line once their `url` is set. Empty ones stay hidden.
   marketplaces: [
     { label: "Fiverr", url: "" },
     { label: "Upwork", url: "" },
     { label: "OnlineJobs.ph", url: "" },
   ],
-
-  // Social pages shown in the footer and on the Contact page. Add as many as you like:
-  // { label: "LinkedIn", url: "https://linkedin.com/in/..." }
-  socials: [],
-
-  // The scrolling list of everything the studio can take on (home page).
-  capabilities: [
-    "Brand scaling",
-    "Logos & brand kits",
-    "Websites",
-    "Online stores",
-    "Booking systems",
-    "Mobile apps",
-    "POS systems",
-    "Inventory tracking",
-    "Supplier payments",
-    "AI chat assistants",
-    "Automations",
-    "Facebook & Instagram ads",
-    "Google & TikTok ads",
-    "Social media content",
-    "SEO & Google Maps",
-    "Dashboards & reports",
-    "Menus & packaging",
-    "Pitch decks",
-    "Hosting & support",
-    "Anything else you need",
+  socials: [
+    { label: "Instagram", url: "" }, // onsiteph, once the account is set up
   ],
 
-  // The stock-ticker strip across the top of every page. ▲ shows in green, ▼ in red.
-  ticker: ["Templates ▼ 0 used", "Quotes ▲ free, within 24h", "Your brand ▲ scaling", "Reply time ▼ under 24h", "Ad tests ▲ every week", "Design styles ▲ 20", "Hidden fees ▼ none", "Rough ideas ▲ welcome", "Your competitors ▼ nervous"],
-
-  // The red ribbon on the home page: short reasons to pick the studio.
-  promises: ["Every project quoted for you", "Brand scaling & ads", "Replies within 24 hours", "Any style, never a template", "First call free", "AI built in", "One team for everything", "Remote, worldwide"],
-
-  // "What do you want to build?" on the home page. `label` is what visitors tap. `need` is the service the
-  // planner ticks (it must match a service name in content/services.js exactly). `like` is optional: a
-  // project title from content/projects.js, shown as "We’ve built something like this".
-  ideas: [
-    { label: "A website", need: "Websites & Landing Pages" },
-    { label: "An online store", need: "E-commerce & Online Ordering" },
-    { label: "Online bookings", need: "Web & Mobile Apps", like: "Inest" },
-    { label: "Supplier payments", need: "Web & Mobile Apps", like: "Middleware" },
-    { label: "POS & stock tracking", need: "POS & Inventory Systems", like: "OnTrack" },
-    { label: "An app for my team", need: "Web & Mobile Apps", like: "OnCon" },
-    { label: "An app for my customers", need: "Web & Mobile Apps", like: "The One App" },
-    { label: "An AI that answers chats", need: "AI Assistants & Automation" },
-    { label: "A logo & brand", need: "Brand Identity" },
-    { label: "More customers from ads", need: "Brand Scaling & Ads" },
-    { label: "Something nobody’s built yet", need: "Anything Else" },
+  // Home page, "What we do": four rows that point to the Services page.
+  whatWeDo: [
+    { title: "Websites & online stores", body: "Fast, mobile-first sites and stores that explain what you do and take orders." },
+    { title: "Apps & business systems", body: "POS, bookings, payments and custom apps, built around how your business works." },
+    { title: "AI assistants", body: "Assistants that answer your customers and take bookings, day and night." },
+    { title: "Brand & ads", body: "A brand people remember, and the ads that bring in customers.", link: { label: "How we scale brands", href: "/brand-scaling" } },
   ],
 
-  // "AI, used well" on the home page. `chat` plays as an example conversation for a made-up café
-  // (it says so on the page). `from` is "them" (the customer) or "ai".
-  ai: {
-    points: [
-      { title: "AI assistants for your customers", body: "Answer questions, take bookings and orders, and catch leads day and night, on your website or Messenger." },
-      { title: "AI in your daily work", body: "Automatic replies, order summaries, stock alerts and reports, so your team spends less time on busywork." },
-      { title: "AI behind your ads", body: "More ad and caption variations, tested faster, so your budget goes to what works." },
-      { title: "AI in how we work", body: "Faster drafts and builds, so you get your project sooner, at a fair price." },
-    ],
-    chat: [
-      { from: "them", text: "Hi! Are you open on Sunday?" },
-      { from: "ai", text: "Hi! Yes, we’re open Sunday from 8am to 6pm. Want me to save you a table?" },
-      { from: "them", text: "Yes please, 4 people at 10am" },
-      { from: "ai", text: "Done! Table for 4 on Sunday at 10:00am. I’ve sent the details to your phone." },
-      { from: "them", text: "Do you have oat milk?" },
-      { from: "ai", text: "We do, at no extra charge. See you Sunday!" },
-    ],
-  },
-
-  // "Why Onsite" on the home page.
+  // Home page, "Why Onsite".
   reasons: [
-    { title: "Any style. Never a template.", body: "Every design starts from a blank page and the feeling you want, so your brand looks like nobody else’s." },
-    { title: "Live work you can try today.", body: "Don’t take our word for it. Open the products we’ve shipped and use them yourself.", live: true },
-    { title: "One team for everything.", body: "Brand, website, apps, AI and ads from the same people, so nothing gets lost between agencies." },
-    { title: "Quick to reply.", body: "Message us any day and you’ll hear back within 24 hours, with real answers from the people doing the work." },
-    { title: "You talk to the builders.", body: "No account managers in between. You deal with the people designing and building your project." },
-    { title: "Built to scale.", body: "We don’t stop at launch. We run the ads, content and updates that keep your brand growing, month to month." },
+    { title: "One team for everything", body: "Brand, website, apps, AI and ads from the same people, so nothing gets lost between agencies." },
+    { title: "You talk to the builders", body: "No account managers in between. You deal with the people designing and building your project." },
+    { title: "Any style, never a template", body: "Every design starts from a blank page and the feeling you want.", link: { label: "See the styles", href: "/styles" } },
   ],
 
   about: {
+    // "Skills & tools" on the About page.
     skills: [
       "Brand identity",
       "Logo design",
       "Web design",
-      "UI / UX design",
-      "Web development",
-      "App development",
+      "UI / UX",
+      "Web & app development",
       "Offline-first apps (PWA)",
       "POS & inventory systems",
       "AI assistants & automation",
-      "Brand scaling & ads",
+      "Ads & brand scaling",
       "SEO & local search",
       "Social media content",
+      "Next.js / React",
+      "Python",
+      "SQLite",
+      "HTML · CSS · JavaScript",
     ],
-    tools: ["Next.js", "React", "HTML · CSS · JavaScript", "Python", "SQLite", "[Add your design tools, e.g. Figma]"],
-    // Optional. Leave empty [] to hide the section.
-    // { name: "Client name" }
-    clients: [],
-    // Optional. Leave empty [] to hide the section.
-    // { quote: "...", name: "Jane Cruz", title: "Owner, Cafe Name" }
+    // Real client quotes only, once there are some: { quote: "...", name: "...", title: "..." }
     testimonials: [],
   },
 
   seo: {
-    // Your live address once deployed, e.g. "https://kianstudio.com" (used for share links).
     siteUrl: "https://getonsiteapp.com",
     description:
-      "Onsite designs and builds websites, apps, POS and inventory systems and AI assistants, and runs the Facebook, Instagram, Google and TikTok ads that bring in customers. Every project is quoted for you.",
+      "Onsite makes its own products, like OnCon and OnTrack, and builds websites, apps and business systems for other companies. Every project is quoted for you.",
   },
 };
