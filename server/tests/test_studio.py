@@ -16,7 +16,7 @@ import time
 import unittest
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SITE = "https://getonsiteapp.com"
+SITE = "https://onsiteph.com"
 CONSOLE = "http://localhost:8670"        # the IT console's address in these tests (IT_CONSOLE_URL)
 NOT_FOUND = {"error": "Not found"}
 
@@ -93,7 +93,7 @@ class StudioTests(unittest.TestCase):
 
     def it(self, method, path, data=None, token=True, extra=None, port=None, raw=None):
         """A call the way the IT console makes it: JSON, its code, the public Host, nothing else."""
-        headers = {"Content-Type": "application/json", "Host": "getonsiteapp.com"}
+        headers = {"Content-Type": "application/json", "Host": "onsiteph.com"}
         if token is not False:
             headers["X-IT-Console-Token"] = self.token if token is True else token
         headers.update(extra or {})
@@ -125,7 +125,23 @@ class StudioTests(unittest.TestCase):
         self.assertEqual(self.contact({"name": "A", "contact": "b"}, "10.0.0.1", origin=None)[0], 403)
         self.assertEqual(self.contact({"name": "A", "contact": "b"}, "10.0.0.1", origin="https://evil.example")[0], 403)
         self.assertEqual(self.contact({"name": "A", "contact": "b"}, "10.0.0.1", origin="null")[0], 403)
+        # the old domain only forwards now, so no page is ever sent from it
+        self.assertEqual(self.contact({"name": "A", "contact": "b"}, "10.0.0.1", origin="https://getonsiteapp.com")[0], 403)
         self.assertEqual(self.contact({"name": "A", "contact": "b"}, "10.0.0.1")[0], 200)
+
+    def test_without_the_site_setting_the_page_is_onsiteph_com(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            env = env_without_console()
+            env.pop("STUDIO_URL", None)
+            proc, port = start(tmp, env)
+            try:
+                headers = {"Content-Type": "application/json", "X-Forwarded-For": "10.0.9.1"}
+                body = json.dumps({"name": "A", "contact": "b"}).encode()
+                self.assertEqual(self.request("POST", "/api/contact", body, dict(headers, Origin="https://getonsiteapp.com"), port=port)[0], 403)
+                self.assertEqual(self.request("POST", "/api/contact", body, dict(headers, Origin="https://onsiteph.com"), port=port)[0], 200)
+            finally:
+                proc.terminate()
+                proc.wait(5)
 
     def test_contact_checks_and_trims_what_it_gets(self):
         self.assertEqual(self.contact({"name": "", "contact": "b"}, "10.0.1.1")[0], 400)
@@ -220,7 +236,7 @@ class StudioTests(unittest.TestCase):
                     self.assertEqual(self.it("POST", "/api/it-console/message-read", {"id": 1, "read": True}, port=port)[0], 404)
                     # and with no IT_CONSOLE_URL, /admin goes to the console's own address
                     status, h, _ = self.request("GET", "/admin", port=port)
-                    self.assertEqual((status, h["Location"]), (301, "https://it.getonsiteapp.com/messages"))
+                    self.assertEqual((status, h["Location"]), (301, "https://it.onsiteph.com/messages"))
                 finally:
                     proc.terminate()
                     proc.wait(5)

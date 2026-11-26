@@ -29,6 +29,7 @@ for (const f of ["site.js", "projects.js"]) {
 const SITE = sandbox.window.SITE;
 const PROJECTS = sandbox.window.PROJECTS;
 const NAME = SITE.studioName;
+const SITE_URL = SITE.seo.siteUrl.replace(/\/$/, "");   // the page's own address, from content/site.js
 
 const own = PROJECTS.filter((p) => !p.forClient).map((p) => p.title);
 const clients = PROJECTS.filter((p) => p.forClient).map((p) => p.title);
@@ -65,7 +66,7 @@ function shell(o) {
   <meta property="og:type" content="website">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(o.description)}">
-  <meta property="og:image" content="https://getonsiteapp.com/og-image.png?v=${v}">
+  <meta property="og:image" content="${SITE_URL}/og-image.png?v=${v}">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
@@ -107,9 +108,8 @@ for (const o of PAGES) {
 }
 
 // The sitemap lists every page except 404.
-const site = SITE.seo.siteUrl.replace(/\/$/, "");
 const urls = ["/", "/work", "/services", "/brand-scaling", "/styles", "/about", "/contact"].concat(PROJECTS.map((p) => "/work/" + p.slug));
 fs.writeFileSync(path.join(ROOT, "sitemap.xml"),
   '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
-  urls.map((u) => "  <url><loc>" + site + u + "</loc></url>").join("\n") + "\n</urlset>\n");
+  urls.map((u) => "  <url><loc>" + SITE_URL + u + "</loc></url>").join("\n") + "\n</urlset>\n");
 console.log("wrote sitemap.xml");

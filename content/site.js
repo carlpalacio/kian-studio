@@ -83,7 +83,7 @@ window.SITE = {
   },
 
   seo: {
-    siteUrl: "https://getonsiteapp.com",
+    siteUrl: "https://onsiteph.com",
     description:
       "Onsite makes its own products, like OnCon and OnTrack, and builds websites, apps and business systems for other companies. Every project is quoted for you.",
   },

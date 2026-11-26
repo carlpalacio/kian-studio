@@ -1,6 +1,7 @@
 # Onsite: the studio page
 
-The website for Onsite, Carl Palacio's design and build studio, live at <https://getonsiteapp.com>.
+The website for Onsite, Carl Palacio's design and build studio, live at <https://onsiteph.com>
+(www.onsiteph.com forwards there). getonsiteapp.com (the old domain) forwards to onsiteph.com since 2026-11-26.
 It's plain HTML, CSS and JavaScript with nothing to install. Every page draws its words, projects and
 services from the small files in `content/`, so most changes never touch design code.
 
@@ -111,15 +112,20 @@ Caddy serves the site from `/opt/kian-studio` on the same server as Onsite (143.
 (`try_files {path} {path}.html`), serve `404.html` with status 404 for a `/work/` address with no
 project, and forward old addresses: `/resume` to `/about#resume`, `/work/pos-system` to `/work/ontrack`,
 `/project.html?p=x` to `/work/x`. Any other address that isn't a file is an old Onsite link and
-forwards to oncon.getonsiteapp.com. Other sessions edit that file too, so always download the live copy, edit it, check it
+forwards to oncon.onsiteph.com. Other sessions edit that file too, so always download the live copy, edit it, check it
 with `caddy validate`, upload it and reload Caddy. Never upload an old copy.
 
-Keep `sw.js`: it retires OnCon's old service worker on phones that installed it at this address.
+getonsiteapp.com (the old domain) forwards to onsiteph.com since 2026-11-26: every old address goes to
+the same path on the new one, except `/sw.js` (below).
+
+Keep `sw.js`: it retires OnCon's old service worker on phones that installed OnCon at getonsiteapp.com.
+Browsers don't follow a forward for a service worker, so Caddy must keep answering
+`getonsiteapp.com/sw.js` with this file itself, not forward it.
 
 ## The contact server
 
 `server/studio.py` takes the planner's messages (`POST /api/contact`) and hands them to Carl's IT
-console at <https://it.getonsiteapp.com> (Messages). The console calls it on the server itself, at
+console at <https://it.onsiteph.com> (Messages). The console calls it on the server itself, at
 `/api/it-console/overview` and `/api/it-console/message-read`; those answer only a call from 127.0.0.1
 that carries the console's code and no forwarding header. Every `/admin` address forwards to the
 console's Messages page.
@@ -132,8 +138,9 @@ rsync -az -e "ssh -i ~/.ssh/sitetracker" server/ root@143.198.207.20:/opt/studio
 ```
 
 Its settings come from the environment, never from a file here: `IT_CONSOLE_TOKEN_SHA256` (set by the
-console's own deploy in `/etc/systemd/system/studio.service.d/it-console.conf`), `IT_CONSOLE_URL` and
-`STUDIO_URL`. Tests: `cd server && python3 -m unittest discover -s tests`.
+console's own deploy in `/etc/systemd/system/studio.service.d/it-console.conf`), `IT_CONSOLE_URL`
+(default `https://it.onsiteph.com`) and `STUDIO_URL` (default `https://onsiteph.com`; the contact form
+is taken only from this address). Tests: `cd server && python3 -m unittest discover -s tests`.
 
 ## Still waiting on Carl
 

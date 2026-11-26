@@ -75,7 +75,7 @@ window.PROJECTS = [
       },
     ],
     results: [],
-    link: "https://middleware.getonsiteapp.com",
+    link: "https://middleware.onsiteph.com",
     note: "All screens use made-up demo data. The suppliers, amounts and receipts are not the client’s.",
     images: [
       { src: "assets/img/projects/middleware/insights-1600.jpg", small: "assets/img/projects/middleware/insights-800.jpg", alt: "Middleware’s Insights for the owner: what is still owed by priority and which suppliers are owed the most", w: 1600, h: 1000 },
@@ -172,7 +172,7 @@ window.PROJECTS = [
       },
     ],
     results: [],
-    link: "https://oncon.getonsiteapp.com",
+    link: "https://oncon.onsiteph.com",
     note: "All screens use OnCon’s made-up demo company.",
     images: [
       { src: "assets/img/projects/oncon/app-1600.jpg", small: "assets/img/projects/oncon/app-800.jpg", alt: "The CEO’s overview in OnCon: every project, its progress and spending", w: 1600, h: 1000 },
@@ -231,7 +231,7 @@ window.PROJECTS = [
       },
     ],
     results: [],
-    link: "https://pos.getonsiteapp.com",
+    link: "https://pos.onsiteph.com",
     note: "All screens use OnTrack’s made-up demo restaurant.",
     images: [
       { src: "assets/img/projects/ontrack/tables-1600.jpg", small: "assets/img/projects/ontrack/tables-800.jpg", alt: "OnTrack’s tables screen: the floor colour-coded by time open, open bills and takeout", w: 1600, h: 1000 },
@@ -279,7 +279,7 @@ window.PROJECTS = [
       },
     ],
     results: [],
-    link: "https://coffee.getonsiteapp.com",
+    link: "https://coffee.onsiteph.com",
     images: [
       { src: "assets/img/projects/kape/recipe-1600.jpg", small: "assets/img/projects/kape/recipe-800.jpg", alt: "A Kape recipe with ingredients in grams and a step-by-step method", w: 1600, h: 1000 },
       { src: "assets/img/projects/kape/mobile-780.jpg", alt: "Kape’s index of drinks on a phone", caption: "Every drink, on a phone", w: 780, h: 1688 },

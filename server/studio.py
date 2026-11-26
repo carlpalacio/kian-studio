@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""The small server behind getonsiteapp.com (the Onsite studio page).
+"""The small server behind onsiteph.com (the Onsite studio page).
 
 It does two things the static page can't:
   POST /api/contact   saves a message from the contact page (the project planner). Nothing is emailed.
-  /api/it-console/*   hands those messages to Carl's IT console (it.getonsiteapp.com), and only to it: the console
+  /api/it-console/*   hands those messages to Carl's IT console (it.onsiteph.com), and only to it: the console
                       calls from this same server with its own code (see Handler.it_console_door).
 Carl's old /admin page is now the console's Messages page; every /admin address forwards there.
 
@@ -24,7 +24,7 @@ import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
-SITE_URL = os.environ.get("STUDIO_URL", "https://getonsiteapp.com")
+SITE_URL = os.environ.get("STUDIO_URL", "https://onsiteph.com")
 MAX_PER_HOUR = 5            # messages from one address
 MAX_ALL_PER_HOUR = 60       # messages from everyone together, so many made-up addresses can't fill the database
 CONFIG = {"data": "data"}
@@ -39,7 +39,7 @@ def it_console_hash(value):
     return value if re.fullmatch(r"[0-9a-f]{64}", value) else ""
 
 
-IT_CONSOLE_URL = (os.environ.get("IT_CONSOLE_URL") or "https://it.getonsiteapp.com").rstrip("/")
+IT_CONSOLE_URL = (os.environ.get("IT_CONSOLE_URL") or "https://it.onsiteph.com").rstrip("/")
 IT_CONSOLE_TOKEN_SHA256 = it_console_hash(os.environ.get("IT_CONSOLE_TOKEN_SHA256"))
 IT_CONSOLE_BODY = 16 * 1024     # the console only sends small JSON
 IT_MESSAGES = 300               # newest messages in the overview
