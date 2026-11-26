@@ -289,25 +289,38 @@ window.PROJECTS = [
   {
     slug: "the-one-app",
     title: "The One App",
-    line: "Fitness app · Launching soon",
-    status: "Launching soon",
+    line: "Training, food and coaching app",
+    status: "Live",
+    builtWith: "Python, SQLite, JavaScript",
+    worksOn: "Phones, tablets & laptops",
     accent: "#2547e8",
-    summary: "An all-in-one fitness app that brings training, food and recovery together.",
+    summary: "An all-in-one fitness app that brings training, food, recovery and coaching together. Free for everyone while it’s new.",
     sections: [
       {
         heading: "One score to start the day",
         body: "Recovery, Load and Sleep scores are worked out from what you log, on a home screen that’s yours to arrange.",
         points: [
           "Day and week planner with reminders",
+          "Your own username and log-in, saved across your devices",
+          "Dark, light and pastel pink themes",
         ],
       },
       {
         heading: "Train, eat, recover",
-        body: "Log unlimited workouts and the app spots every new personal record. A daily calorie target adjusts to your body, goal and training.",
+        body: "Log workouts and the app spots every new personal record. A daily calorie target adjusts to your body, goal and training.",
         points: [
           "52 activities, from running to yoga",
           "Food log with local favourites",
           "Barcode scanning",
+        ],
+      },
+      {
+        heading: "Coaches and their groups",
+        body: "Coaches apply and are approved, then build programs, workouts and meal plans. Members accept what they’re sent and log each one as done or not.",
+        points: [
+          "Send a program to a whole group or one member",
+          "Meal plans set by your coach",
+          "Nothing joins your plan until you accept it",
         ],
       },
       {
@@ -321,7 +334,7 @@ window.PROJECTS = [
       },
     ],
     results: [],
-    link: "",
+    link: "https://app.onsiteph.com",
     images: [
       { src: "assets/img/projects/the-one-app/mobile-450.webp", alt: "The One App’s Today screen with the day’s workout and its recovery, load and sleep scores", w: 450, h: 1000 },
       { src: "assets/img/projects/the-one-app/plan-1600.webp", small: "assets/img/projects/the-one-app/plan-800.webp", alt: "Weekly planner screens for editing and adding routines", caption: "The week planner", w: 1600, h: 900, art: true },
