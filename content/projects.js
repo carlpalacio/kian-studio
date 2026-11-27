@@ -294,7 +294,7 @@ window.PROJECTS = [
     builtWith: "Python, SQLite, JavaScript",
     worksOn: "Phones, tablets & laptops",
     accent: "#2547e8",
-    summary: "An all-in-one fitness app that brings training, food, recovery and coaching together. Free for everyone while it’s new.",
+    summary: "An all-in-one fitness app that brings training, food, recovery and coaching together. Invite only for now, for friends and family.",
     sections: [
       {
         heading: "One score to start the day",
